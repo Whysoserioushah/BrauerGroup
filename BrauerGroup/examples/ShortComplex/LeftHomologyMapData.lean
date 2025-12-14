@@ -38,13 +38,8 @@ def LeftHomologyMapData.ofModuleCat :
   φH := φH R S₁ S₂ f
   commi := ModuleCat.hom_ext <| LinearMap.ext fun ⟨x, hx⟩ ↦ by simp
   commf' := ModuleCat.hom_ext <| LinearMap.ext fun x ↦ by
-    simp only [ShortComplex.moduleCatLeftHomologyData_K, ModuleCat.hom_comp, ModuleCat.hom_ofHom,
-      ShortComplex.moduleCatLeftHomologyData_f'_hom, LinearMap.coe_comp, Function.comp_apply,
-      LinearMap.comp_codRestrict]
-    rw [Subtype.ext_iff]
-    simp only [LinearMap.restrict_coe_apply, LinearMap.codRestrict_apply, LinearMap.coe_comp,
-      Function.comp_apply]
-    rw [← ModuleCat.comp_apply, ← ModuleCat.comp_apply, f.4]
+    simp [Subtype.ext_iff]
+    simp only [← ModuleCat.comp_apply, ← ModuleCat.comp_apply, f.4]
   commπ := ModuleCat.hom_ext <| LinearMap.ext fun ⟨x, hx⟩ ↦ by simp
 
 def ShortComplex.IsQuasiIsoAt_iff_moduleCat :

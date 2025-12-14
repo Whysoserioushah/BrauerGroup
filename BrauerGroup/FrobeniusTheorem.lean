@@ -765,7 +765,6 @@ theorem centereqvCisoC (A : Type) [DivisionRing A] [Algebra ℝ A] [FiniteDimens
     map_zero' := _
     map_add' := _
     commutes' r := by
-      simp; change (algebraMap ℂ A) (algebraMap ℝ ℂ r) = _;
       rw [Algebra.algebraMap_eq_smul_one, Algebra.algebraMap_eq_smul_one,
         Algebra.algebraMap_eq_smul_one, smul_assoc, one_smul]} bij⟩
 

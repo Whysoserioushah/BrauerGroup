@@ -212,6 +212,7 @@ abbrev toC2 : Additive (BrauerGroup ℝ) →+ ZMod 2 where
       IsBrauerEquivalent.matrix_eqv' _ _ _ ⟩⟩
     simp [this]
 
+set_option linter.flexible false in
 abbrev C2toBrauerOverR : ZMod 2 →+ Additive (BrauerGroup ℝ) where
   toFun x := if hx : x = 0 then Quotient.mk'' one_in' else Quotient.mk'' ⟨.of ℝ ℍ[ℝ]⟩
   map_zero' := by simp only [↓reduceDIte]; rfl
