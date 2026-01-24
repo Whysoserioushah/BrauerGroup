@@ -207,8 +207,7 @@ lemma SubField.centralizer.nnratCast_eq (L : SubField K D) (q : NNRat) :
 
 instance centralizerSubfieldDiv (L : SubField K D) :
     DivisionRing (Subalgebra.centralizer K (A := D) L) where
-  mul_inv_cancel a ha := by
-    ext; simp only [mul_coe, inv_coe, OneMemClass.coe_one]; rw [mul_inv_cancel₀ (by aesop)]
+  mul_inv_cancel a ha := by ext; simp [*]
   inv_zero := by ext; simp
   ratCast_def q := by ext; simp [Rat.cast_def]
   nnratCast q := ⟨q, Subalgebra.mem_centralizer_iff _|>.2 fun x _ ↦ NNRat.cast_commute _ _|>.symm⟩
