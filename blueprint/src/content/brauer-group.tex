@@ -484,7 +484,7 @@ In this section, we construct a group isomorphism between $\br(K/F) \cong \HH^{2
     \end{aligned}
   \]
   \leanok
-  \lean{GoodRep.CrossProduct.a_one_left, GoodRep.CrossProduct.a_one_right}
+  \lean{CrossProductAlgebra.a_one_left, CrossProductAlgebra.a_one_right}
 \end{proof}
 
 In the following sections of this chapter, we assume that $X \in\br(F)$ and $A$ is a good representation of $X$. We use $\rho, \sigma, \tau$ to denote elements of $\gal(K/F)$. To improve typographic aesthetics of our proofs, we sometimes use subscript to mean function application.
@@ -739,7 +739,7 @@ Let $\mathfrak{a} \in \mathcal{B}^{2}\left(\gal(K/F), K^{\star}\right)$ be any 2
     it is often, if not always, sufficient to consider the special cases of $\Delta_{\sigma, c}$ and extend the result linearly.
   For multiplications, we define the result of multiplying $\Delta_{\sigma, c},\Delta_{\tau, d} \cross_{\mathfrak{a}}$ to be $\Delta_{\sigma\tau, c\sigma(d)\, \mathfrak{a}(\sigma,\tau)}$. Immediately, if either $c$ or $d$ is $0$, the result of multiplication is also zero. That is, for all $c \in \cross_{\mfa}$, we have $c\cdot 0=0\cdot c =0$. For any $r \in F$ and $\Delta_{\sigma, c} \in \cross_{\mathfrak{a}}$, we define $r \cdot \Delta_{\sigma, c}$ to be $\Delta_{\sigma, r\cdot c}$.
   \leanok
-  \lean{GoodRep.crossProductMul, GoodRep.crossProductSMul, GoodRep.CrossProduct.addCommGroup}
+  \lean{CrossProductAlgebraMul, CrossProductAlgebraSMul, CrossProductAlgebra.addCommGroup}
 \end{construction}
 
 \begin{remark}
@@ -749,7 +749,7 @@ Let $\mathfrak{a} \in \mathcal{B}^{2}\left(\gal(K/F), K^{\star}\right)$ be any 2
 \begin{lemma}
   The cross product $\cross_{\mathfrak{a}}$ is a ring with the multiplicative unit $\Delta_{\mathsf{id}, \mathfrak{a}(\mathsf{id}, \mathsf{id})^{-1}}$. The $F$-action on $\cross_{\mathfrak{a}}$ defined by $r \cdot \Delta_{\sigma, c} := \Delta_{\sigma, r\cdot c}$ makes it an $F$-algebra.
   \leanok
-  \lean{GoodRep.CrossProduct.algebra}
+  \lean{CrossProductAlgebra.algebra}
   % \uses{def:second-group-coh, lem:2-cocycle-one-one}
 \end{lemma}
 \begin{proof}
@@ -828,7 +828,7 @@ From now on, we feel free to write $1 \in \cross_{\mfa}$ instead of $\Delta_{\id
   indeed:
   $\iota_{\mfa}(b)\Delta_{\sigma, c} = \Delta_{\id,b \mfa(\id,\id)^{-1}}\Delta_{\sigma, c} = \Delta_{\sigma, b\mfa(\id,\id)^{-1}c\mfa(\id,\sigma)} = \Delta_{\sigma,b\mfa(\id,\id)^{-1}c\mfa(\id,\id)} = \Delta_{\sigma, bc}$ by~\cref{lem:2-cocycle-one-one}. In another word, for any $b \in F$ and $c \in \cross_{\mfa}$, the $K$-action of $b$ on $c$ and the $F$-action of $b$ on $c$ agree.
 
-  \leanok \lean{GoodRep.CrossProduct.ι,GoodRep.CrossProduct.identity_double_cross'}
+  \leanok \lean{CrossProductAlgebra.ι,CrossProductAlgebra.identity_double_cross'}
   % \uses{lem:2-cocycle-one-one}
  \end{construction}
 
@@ -836,7 +836,7 @@ From now on, we feel free to write $1 \in \cross_{\mfa}$ instead of $\Delta_{\id
    \label{lem:cross-product-delta-invertible}
    For every $\sigma \in \gal(K/F)$, $\Delta_{\sigma,1}$ is invertible.
    \leanok
-   \lean{GoodRep.CrossProduct.x_}
+   \lean{CrossProductAlgebra.x_}
  \end{lemma}
 
  \begin{proof}
@@ -870,7 +870,7 @@ From now on, we feel free to write $1 \in \cross_{\mfa}$ instead of $\Delta_{\id
      \Delta_{\sigma,1}\,\iota_{\mfa}(c)\,\Delta_{\sigma, 1}^{-1} = \iota_{\mfa}(\sigma \cdot c).
    \]
    \leanok
-   \lean{GoodRep.CrossProduct.x__conj}
+   \lean{CrossProductAlgebra.x__conj}
  \end{lemma}
 
  \begin{proof}
@@ -894,7 +894,7 @@ From now on, we feel free to write $1 \in \cross_{\mfa}$ instead of $\Delta_{\id
      \Delta_{\sigma, c}\Delta_{\tau,d} = \left(c \sigma(d)\mfa(\sigma,\tau)\right) \cdot \Delta_{\sigma\tau, 1}.
    \]
    \leanok
-   \lean{GoodRep.CrossProduct.x__mul,GoodRep.CrossProduct.mul_single_in_xAsBasis}
+   \lean{CrossProductAlgebra.x__mul,CrossProductAlgebra.mul_single_in_xAsBasis}
    % \uses{con:cross-product-iota,lem:cross-product-basis-conj}
  \end{lemma}
  \begin{proof}
@@ -917,7 +917,7 @@ From now on, we feel free to write $1 \in \cross_{\mfa}$ instead of $\Delta_{\id
    \label{lem:cross-product-basis}
    The set $\{\Delta_{\sigma, 1}|\sigma\in\gal(K/F)\}$ forms a $K$-basis for $\cross_{\mfa}$.
    \leanok
-   \lean{GoodRep.CrossProduct.x_AsBasis}
+   \lean{CrossProductAlgebra.x_AsBasis}
    % \uses{con:cross-product-iota}
  \end{lemma}
  \begin{proof}
@@ -937,7 +937,7 @@ which proves linear independence. The fact that $\{\Delta_{\sigma, 1}|\sigma\in\
   \label{cor:dim-cross-product}
   When $K/F$ is a finite dimensional Galois extension, the $K$-dimension of $\cross_{\mfa}$ is $\dim_{F}K$ and the $F$-dimension of $\cross_{\mfa}$ is ${\left(\dim_{F}K\right)}^{2}$.
   \leanok
-  \lean{GoodRep.CrossProduct.dim_eq_square}
+  \lean{CrossProductAlgebra.dim_eq_square}
 \end{corollary}
 
 Now we see that cross product, like a good representation, is a $K$-module and $F$-algebra with a $K$-embedding and correct $F$-dimension. In the next sections, we prove that $\cross_{a}$ is in fact a central simple $F$-algebra.
@@ -949,7 +949,7 @@ We will assume $K/F$ is a finite dimensional Galois extension.
 \begin{theorem}[Centrality]\label{thm:cross-product-central}
   $\cross_{\mfa}$ is a central $F$-algebra.
   \leanok
-  \lean{GoodRep.CrossProduct.is_central}
+  \lean{CrossProductAlgebra.is_central}
   % \uses{lem:cross-product-basis-mul,lem:cross-product-basis-conj, lem:cross-product-basis}
 \end{theorem}
 
@@ -1024,13 +1024,13 @@ In this section we assume $K/F$ is a finite dimensional field extension. Let $I 
 
   Hence ${}^{\cross_{\mfa}}/_{I}$ is also a $K$-module by pulling back the $\Pi$-module structure along $K \to \Pi$ given by $a \mapsto \pi\left(\iota_{\mfa}(a)\right)$. Note that $\pi$ is a $K$-linear map between $\cross_{\mfa}$ and ${}^{\cross_{\mfa}}/_{I}$ by this construction.
   \leanok
-  \lean{GoodRep.CrossProduct.is_simple_proofs.smul_def_quot, GoodRep.CrossProduct.is_simple_proofs.K_smul_quot}
+  \lean{CrossProductAlgebra.is_simple_proofs.smul_def_quot, CrossProductAlgebra.is_simple_proofs.K_smul_quot}
 \end{construction}
 
 \begin{lemma}\label{lem:cross-product-quotient-basis}
   If $I \ne \cross_{\mfa}$, the set $\{\pi\left(\Delta_{\sigma, 1}\right)|\sigma\in\gal(K/F)\}$ forms a $K$-basis for ${}^{\cross_{\mfa}}/_{I}$.
   \leanok
-  \lean{GoodRep.CrossProduct.is_simple_proofs.basis}
+  \lean{CrossProductAlgebra.is_simple_proofs.basis}
   % \uses{lem:cross-product-basis,thm:conj-seq-basis,con:cross-product-simple-ring-mod,con:cross-product-iota, lem:cross-product-basis-conj, lem:cross-product-delta-invertible}
 \end{lemma}
 \begin{proof}
@@ -1083,7 +1083,7 @@ In this section we assume $K/F$ is a finite dimensional field extension. Let $I 
 \begin{corollary}\label{cor:cross-product-quot-iso}
   If $I \ne \cross_{\mfa}$, the quotient ring ${}^{\cross_{\mfa}}/_{I}$ is isomorphic to $\cross_{\mfa}$ as $K$-modules. In particular $\pi$ is a $K$-linear isomorphism between $\cross_{\mfa}$ and the quotient ring ${}^{\cross_{\mfa}}/_{I}$.
   \leanok
-  \lean{GoodRep.CrossProduct.is_simple_proofs.π₁}
+  \lean{CrossProductAlgebra.is_simple_proofs.π₁}
   % \uses{lem:cross-product-basis,lem:cross-product-quotient-basis}
 \end{corollary}
 
@@ -1094,7 +1094,7 @@ In this section we assume $K/F$ is a finite dimensional field extension. Let $I 
 \begin{corollary}[Simple Ring]\label{cor:cross-product-simple}
   $\cross_{\mfa}$ is a simple ring.
   \leanok
-  \lean{GoodRep.CrossProduct.is_simple}
+  \lean{CrossProductAlgebra.is_simple}
   % \uses{cor:cross-product-quot-iso}
 \end{corollary}
 
@@ -1105,7 +1105,7 @@ In this section we assume $K/F$ is a finite dimensional field extension. Let $I 
 \begin{theorem}\label{thm:cross-product-csa}
   Let $K/F$ be a finite dimensional and Galois field extension and $\mfa$ be a 2-cocycle in $\mathcal{B}^{2}\left(\gal(K/F), K^{\star}\right)$, $\cross_{a}$ is a finite dimensional central simple $F$-algebra.
   \leanok
-  \lean{GoodRep.CrossProduct.asCSA}
+  \lean{CrossProductAlgebra.asCSA}
   % \uses{thm:cross-product-central, lem:cross-product-basis, cor:cross-product-simple}
 \end{theorem}
 \begin{proof}
