@@ -58,7 +58,6 @@ lemma IsCentral.left_of_tensor (B C : Type*)
     change _ ⊗ₜ _ = _ at h
     simp only [RingHom.coe_coe, Subalgebra.coe_val] at h⊢
     exact h⟩
-
   have e : ((Algebra.TensorProduct.includeLeft (R := K) (B := C)).comp
     (Subalgebra.center K B).val).range ≃ₐ[K] (Subalgebra.center K B) :=
     (AlgEquiv.ofBijective f
@@ -218,7 +217,7 @@ abbrev Mat.inv (n : ℕ) : Module.End R (Matrix (Fin n) (Fin n) R) →ₗ[R]
   map_add' := fun f1 f2 ↦ by
     simp [add_smul, Finset.sum_add_distrib]
   map_smul' := fun r f ↦ by
-    simp [MulAction.mul_smul, Finset.smul_sum]
+    simp [SemigroupAction.mul_smul, Finset.smul_sum]
 
 lemma single.eq (n : ℕ) (i j : Fin n) :
     single i j (1 : R) = of (fun i' j' ↦ if i = i' ∧ j = j' then 1 else 0) := rfl

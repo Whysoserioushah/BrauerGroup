@@ -502,7 +502,7 @@ def algebraMapEndIdealMop (I : Ideal B) : K →+* (Module.End B I)ᵐᵒᵖ wher
     map_smul' := fun k' x => by ext; simp
   }
   map_one' := unop_injective <| by ext; simp
-  map_mul' _ _ := unop_injective <| by ext; simp [MulAction.mul_smul]
+  map_mul' _ _ := unop_injective <| by ext; simp [SemigroupAction.mul_smul]
   map_zero' := unop_injective <| by ext; simp
   map_add' _ _ := unop_injective <| by ext; simp [add_smul]
 

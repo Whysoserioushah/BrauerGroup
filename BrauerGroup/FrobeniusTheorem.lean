@@ -284,7 +284,6 @@ lemma x2_is_real (x : Dˣ) (hx : ∀ z, x.1⁻¹ * f k e z * x = k.val z)
       simp only [SetLike.coe_eq_coe, EmbeddingLike.apply_eq_iff_eq, Complex.mk.injEq, true_and]
         at x_commutes_k
       norm_num at x_commutes_k
-
   change _ ∈ (⊥ : Subalgebra ℝ D)
   rw [← Algebra.IsCentral.center_eq_bot ℝ D]
   exact x2_is_central

@@ -17,7 +17,7 @@ abbrev N [Group G] : Rep.ofMulAction k G G ⟶ Rep.ofMulAction k G G where
     rw [← Module.End.mul_apply, ← map_mul (Representation.asAlgebraHom _)]
     congr 2
     ext g2
-    simp
+    simp only [MonoidAlgebra.mul_single_apply, mul_one, MonoidAlgebra.single_mul_apply, one_mul]
     -- Note: Add `MonoidAlgebra.finset_sum_apply`
     rw [Finsupp.finset_sum_apply, Finsupp.finset_sum_apply]
     simp
@@ -57,7 +57,7 @@ def ChainComplexAbel [CommGroup G] : ChainComplex (Rep k G) ℕ where
         ∑ i : G, MonoidAlgebra.single i 1) = 0 by rw [this, map_zero]
       rw [sub_mul, sub_eq_zero]
       ext
-      simp
+      simp only [MonoidAlgebra.single_mul_apply, one_mul]
       rw [Finsupp.finset_sum_apply, Finsupp.finset_sum_apply]
       simp
     · ext : 2
@@ -67,7 +67,7 @@ def ChainComplexAbel [CommGroup G] : ChainComplex (Rep k G) ℕ where
       suffices (∑ i, .single i 1) * (.single σ 1 - 1 : MonoidAlgebra k G) = 0 by rw [this, map_zero]
       rw [mul_sub, sub_eq_zero]
       ext
-      simp
+      simp only [MonoidAlgebra.mul_single_apply, mul_one]
       rw [Finsupp.finset_sum_apply, Finsupp.finset_sum_apply]
       simp
 
@@ -87,7 +87,7 @@ abbrev π_aux [CommGroup G] : Action.Hom ((ChainComplexAbel G k σ).X Nat.zero)
       simp
     | hadd f g _ _ =>
       classical
-      simp
+      simp only [map_add, Pi.one_apply]
       rw [Finsupp.sum_add_index (by simp) (by simp),
         Finsupp.sum_add_index (by simp) (by simp)]
       simp_all
@@ -181,13 +181,15 @@ lemma MonoidAlgebra.sum_apply [Group G] {α : Type*} (s : Finset α)
 lemma im_sigmainus1_eq_ker_π [CommGroup G] (hσ : Submonoid.powers σ = ⊤) :
     LinearMap.ker ((CyclicCoh.π G k σ).f 0).1.hom ≤
     LinearMap.range (sigmaminus1 G k σ).1.hom := fun (x : MonoidAlgebra k G) hx ↦ by
-  simp [CyclicCoh.π] at hx ⊢
+  simp only [ChainComplex.single₀_obj_zero, CyclicCoh.π, Nat.rec_zero, ModuleCat.hom_ofHom,
+    LinearMap.mem_ker, map_sub, Representation.asAlgebraHom_single, one_smul, map_one,
+    LinearMap.mem_range] at hx ⊢
   change _ = (0 : k) at hx
-
   let r' : ℕ → k := fun m ↦ - (∑ i : Fin (m + 1), x.2 (σ^i.1))
   use ∑ i ∈ Finset.range (Fintype.card G), .single (σ^i) (r' i)
   erw [map_sum]
-  simp [Representation.ofMulAction_single, ← pow_succ']
+  simp only [LinearMap.sub_apply, Representation.ofMulAction_single, smul_eq_mul, ← pow_succ',
+    End.one_apply, Finset.sum_sub_distrib]
   -- rw [← Finset.sum_sub_distrib]
   change (∑ i ∈ _, _ - ∑ i ∈ _, _ : MonoidAlgebra k G) = _
   ext g
@@ -219,7 +221,9 @@ def singletonVasRep [Group G] (V : ModuleCat k) [Subsingleton V] : CategoryTheor
     (⟨V, ⟨⟨0, Subsingleton.elim _ _⟩, fun _ _ ↦ rfl⟩⟩ : Rep k G) where
   unique_to W := ⟨⟨⟨0, fun _ ↦ by simp⟩, fun _ ↦ by ext (x : V); simp [Subsingleton.elim x 0]⟩⟩
   unique_from W := ⟨⟨⟨ModuleCat.ofHom 0, fun _ ↦ rfl⟩, fun f ↦ by
-    ext x; simp; rw [Subsingleton.elim (f.1.hom x) 0]⟩⟩
+    ext x
+    simp only [ModuleCat.hom_ofHom, LinearMap.zero_apply]
+    rw [Subsingleton.elim (f.1.hom x) 0]⟩⟩
 
 omit [Fintype G] in
 lemma singleton_isZero [Group G] : ∀ X : Rep k G, Limits.IsZero X → Subsingleton X := by
@@ -253,31 +257,47 @@ instance CyclicCoh.quasiIso [CommGroup G] (hσ : Submonoid.powers σ = ⊤) :
       refine ShortComplex.IsQuasiIsoAt_iff_moduleCat k _ _ _ |>.2 ⟨by
         simpa [eq_comm (a := (0 : (forget₂ (Rep k G) (ModuleCat k)).obj _)),
           ChainComplexAbel, -map_sub] using im_sigmainus1_eq_ker_π G k σ hσ, by
-        simp
+        simp only [Functor.mapShortComplex_obj, ShortComplex.map_X₂, shortComplexFunctor'_obj_X₂,
+          ChainComplex.single₀_obj_zero, ShortComplex.map_X₃, shortComplexFunctor'_obj_X₃,
+          ShortComplex.map_g, shortComplexFunctor'_obj_g, ComplexShape.down_Rel, zero_add,
+          one_ne_zero, not_false_eq_true, shape, Functor.map_zero, ModuleCat.hom_zero,
+          LinearMap.zero_apply, ShortComplex.map_X₁, shortComplexFunctor'_obj_X₁,
+          ShortComplex.map_f, shortComplexFunctor'_obj_f, single_obj_d,
+          Functor.mapShortComplex_map_τ₂, shortComplexFunctor'_map_τ₂, exists_const, true_and,
+          forall_const]
         intro (a : k)
         change ∃ (x : MonoidAlgebra k G), (0 : k) = _ - _
         change ∃ (x : MonoidAlgebra k G), _ = ((π G k σ).1 0).1.hom x - _
-        simp [π, π_aux]
+        simp only [ChainComplex.single₀_obj_zero, π, π_aux, Nat.zero_eq, Nat.rec_zero,
+          ModuleCat.hom_ofHom]
         exact ⟨Finsupp.single 1 a, by
           rw [eq_comm, sub_eq_zero]; exact Finsupp.lsum_single _ _ _ _⟩⟩
-
     | succ n =>
       rw [quasiIsoAt_iff_exactAt]
       · rw [HomologicalComplex.exactAt_iff,
           ← ShortComplex.exact_map_iff_of_faithful _ (forget₂ (Rep k G) (ModuleCat k)),
           ShortComplex.moduleCat_exact_iff]
         intro x hx
-        simp at *
+        simp only [ShortComplex.map_X₃, shortComplexFunctor_obj_X₃, ShortComplex.map_X₂,
+          shortComplexFunctor_obj_X₂, ShortComplex.map_g, shortComplexFunctor_obj_g, single_obj_d,
+          Functor.map_zero, ModuleCat.hom_zero, LinearMap.zero_apply, ShortComplex.map_X₁,
+          shortComplexFunctor_obj_X₁, ShortComplex.map_f, shortComplexFunctor_obj_f,
+          exists_const] at *
         change (forget₂ (Rep k G) (ModuleCat k)).obj 0 at x
         exact Subsingleton.elim 0 x
       · rw [HomologicalComplex.exactAt_iff,
           ← ShortComplex.exact_map_iff_of_faithful _ (forget₂ (Rep k G) (ModuleCat k)),
           ShortComplex.moduleCat_exact_iff]
         intro x hx
-        simp [ChainComplexAbel, Nat.even_add_one] at *
+        simp only [ChainComplexAbel, ShortComplex.map_X₃, shortComplexFunctor_obj_X₃,
+          ShortComplex.map_X₂, shortComplexFunctor_obj_X₂, ShortComplex.map_g,
+          shortComplexFunctor_obj_g, ChainComplex.next_nat_succ,
+          ↓reduceIte, Nat.even_add_one, Nat.not_even_iff_odd, ShortComplex.map_X₁,
+          shortComplexFunctor_obj_X₁, ShortComplex.map_f, shortComplexFunctor_obj_f,
+          ChainComplex.prev, Nat.not_odd_iff_even] at *
         split_ifs with h
         · rw [← Nat.not_odd_iff_even] at h
-          simp [h] at hx
+          simp only [h, ↓reduceIte] at hx
           change (sigmaminus1 G k σ).1.hom x = 0 at hx
           change MonoidAlgebra k G at x
           -- simp? at hx
@@ -285,7 +305,7 @@ instance CyclicCoh.quasiIso [CommGroup G] (hσ : Submonoid.powers σ = ⊤) :
           rw [← LinearMap.mem_ker, sigmaminus1_ker_eq_N_im] at hx
           exact hx
         · rw [Nat.not_even_iff_odd] at h
-          simp [h] at hx
+          simp only [h, ↓reduceIte] at hx
           change (N G k).1.hom x = 0 at hx
           rw [← LinearMap.mem_ker, N_ker_eq_im_sigmainus1 G k σ] at hx
           exact hx
@@ -298,7 +318,6 @@ def ProjectResolCyclic [CommGroup G] (hσ : Submonoid.powers σ = ⊤) :
   projective n := by
     classical
     change Projective (Rep.ofMulAction k G G)
-
     exact Rep.equivalenceModuleMonoidAlgebra.toAdjunction.projective_of_map_projective _ <|
       @ModuleCat.projective_of_free.{0} _ _
         (ModuleCat.of (MonoidAlgebra k G) (Representation.ofMulAction k G (G)).asModule)
@@ -306,13 +325,13 @@ def ProjectResolCyclic [CommGroup G] (hσ : Submonoid.powers σ = ⊤) :
           convert (Basis.singleton Unit (MonoidAlgebra k G))
           ext a b
           change (Representation.ofMulAction k G G).asAlgebraHom _ _ = a * b
-
           induction b using MonoidAlgebra.induction_on with
           | hM b =>
             induction a using MonoidAlgebra.induction_on with
             | hM a =>
               ext
-              simp
+              simp only [MonoidAlgebra.of_apply, Representation.asAlgebraHom_single, one_smul,
+                Representation.ofMulAction_single, smul_eq_mul]
               rw [MonoidAlgebra.single_mul_single]
               simp [MonoidAlgebra.single_apply]
             | hadd f g _ _ => simp_all [add_mul]
@@ -399,15 +418,28 @@ abbrev equiv_Acomplex [CommGroup G] (A : Rep k G) : (ChainComplexAbel G k σ).li
   HomologicalComplex.Hom.isoOfComponents (fun i ↦ (Rep.leftRegularHomEquiv A).toModuleIso)
   fun i j hij ↦ by
   cases hij
-  simp [Acomplex, ChainComplexAbel]
+  simp only [ChainComplexAbel, ChainComplex.linearYonedaObj_X, Acomplex,
+    Functor.mapHomologicalComplex_obj_X, forget₂_obj_coe, LinearEquiv.toModuleIso_hom,
+    Functor.mapHomologicalComplex_obj_d, ↓reduceIte, forget₂_map_hom,
+    ChainComplex.linearYonedaObj_d]
   split_ifs
   · ext (f : Rep.ofMulAction k G G ⟶ A)
-    simp [Representation.ofMulAction_single]
+    simp only [linearYoneda_obj_obj_carrier, linearYoneda_obj_obj_isAddCommGroup,
+      linearYoneda_obj_obj_isModule, map_sum, Representation.asAlgebraHom_single, one_smul,
+      ModuleCat.hom_comp, ModuleCat.hom_ofHom, LinearMap.coe_comp, LinearMap.coe_sum,
+      LinearEquiv.coe_coe, Function.comp_apply, Rep.leftRegularHomEquiv_apply, Finset.sum_apply,
+      Linear.leftComp_apply, Action.comp_hom, Representation.ofMulAction_single, smul_eq_mul,
+      mul_one]
     -- needs fixing
     conv => enter [1, 2, c]; rw [← Rep.hom_comm_apply]
     simp [Representation.ofMulAction_single]
   · ext (f : Rep.ofMulAction k G G ⟶ A)
-    simp [Representation.ofMulAction_single]
+    simp only [linearYoneda_obj_obj_carrier, linearYoneda_obj_obj_isAddCommGroup,
+      linearYoneda_obj_obj_isModule, map_sub, Representation.asAlgebraHom_single, one_smul, map_one,
+      ModuleCat.hom_comp, ModuleCat.hom_ofHom, LinearMap.coe_comp, LinearEquiv.coe_coe,
+      Function.comp_apply, Rep.leftRegularHomEquiv_apply, LinearMap.sub_apply, End.one_apply,
+      Linear.leftComp_apply, Action.comp_hom, Representation.ofMulAction_single, smul_eq_mul,
+      mul_one, sub_left_inj]
     rw [← Rep.hom_comm_apply]
     simp [Representation.ofMulAction_single]
 
@@ -467,12 +499,20 @@ abbrev CyclicCoh.groupCohEven (hn : Even n) [h : NeZero n] [CommGroup G] [Decida
     A.ρ.invariants.subtype) :=
   (CyclicCoh.groupCoh n G k σ A hσ) ≪≫ (moduleCatLeftHomologyData k _ _
   (by
-    simp [Acomplex, Nat.even_add_one, hn]
+    simp only [Acomplex, HomologicalComplex.shortComplexFunctor_obj_X₂,
+      Functor.mapHomologicalComplex_obj_X, forget₂_obj_coe,
+      HomologicalComplex.shortComplexFunctor_obj_X₃, HomologicalComplex.shortComplexFunctor_obj_g,
+      Functor.mapHomologicalComplex_obj_d, CochainComplex.next, ↓reduceIte,
+      Nat.even_add_one, hn, not_true_eq_false, forget₂_map_hom, map_sub,
+      Representation.asAlgebraHom_single, one_smul, map_one, ModuleCat.hom_ofHom]
     ext x
     exact ⟨fun hx ↦ by
-      simp [sub_eq_zero] at hx ⊢
+      simp only [Representation.mem_invariants, LinearMap.mem_ker, LinearMap.sub_apply,
+        End.one_apply, sub_eq_zero] at hx ⊢
       exact hx σ, fun hx ↦ by
-      simp [sub_eq_zero, SetLike.ext_iff, Submonoid.mem_powers_iff] at hx hσ ⊢
+      simp only [LinearMap.mem_ker, LinearMap.sub_apply, End.one_apply, sub_eq_zero,
+        SetLike.ext_iff, Submonoid.mem_powers_iff, Submonoid.mem_top, iff_true,
+        Representation.mem_invariants] at hx hσ ⊢
       intro g
       obtain ⟨m, hm⟩ := hσ g
       subst hm
@@ -490,7 +530,7 @@ abbrev CyclicCoh.groupCohEven (hn : Even n) [h : NeZero n] [CommGroup G] [Decida
         CochainComplex.prev_nat_succ, ↓reduceIte, hn, forget₂_map_hom,
         inf_eq_right]
         rintro x ⟨y, rfl⟩
-        simp
+        simp only [LinearMap.coe_sum, Finset.sum_apply, Representation.mem_invariants, map_sum]
         intro g
         simp_rw [←  Module.End.mul_apply, ← map_mul]
         conv_rhs => rw [← Equiv.sum_comp (Equiv.mulLeft g) _]
@@ -513,7 +553,8 @@ abbrev CyclicCoh.groupCohOdd (hn : Odd n) [h : NeZero n] [CommGroup G] [Decidabl
         Functor.mapHomologicalComplex_obj_d, CochainComplex.prev_nat_succ,
         ↓reduceIte, hn, not_true_eq_false, forget₂_map_hom, inf_eq_right]
       rintro x ⟨y, rfl⟩
-      simp [sub_eq_zero]
+      simp only [LinearMap.sub_apply, End.one_apply, LinearMap.mem_ker, LinearMap.coe_sum,
+        Finset.sum_apply, map_sub, sub_eq_zero]
       simp_rw [←  Module.End.mul_apply, ← map_mul]
       conv_rhs => rw [← Equiv.sum_comp (Equiv.mulRight σ) _]
       rfl)).homologyIso
