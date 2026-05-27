@@ -131,7 +131,6 @@ instance : PartialOrder (AllSepSubfield K D) where
   le_trans _ _ _ _ _ _ _ := by aesop
   le_antisymm _ _ _ _ := by aesop
 
-set_option maxHeartbeats 500000 in
 noncomputable abbrev iSup_chain_sepsubfield (c : Set (AllSepSubfield K D)) [Nonempty c]
     (hc1 : IsChain (· ≤ ·) c) : AllSepSubfield K D where
   val := {
@@ -141,9 +140,8 @@ noncomputable abbrev iSup_chain_sepsubfield (c : Set (AllSepSubfield K D)) [None
         SetLike.mem_coe] at hx hy
       have := Subalgebra.coe_iSup_of_directed hc1.directed
       dsimp at this
-      change x ∈ (_ : Set _) at hx ; change _ ∈ ( _ : Set _) at hy
+      change x ∈ (_ : Set _) at hx ; change y ∈ ( _ : Set _) at hy
       erw [this] at hx hy
-
       -- rw [this] at hx hy
       simp only [Set.iUnion_coe_set, Set.mem_iUnion, SetLike.mem_coe, exists_prop] at hx hy
       obtain ⟨L1, hL1, hx⟩ := hx
@@ -319,8 +317,6 @@ theorem IsSeparable.of_algHom'.{u_1, u_2, u_3}
     simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, map_zero, ← aeval_algHom_apply, minpoly.aeval])
   (Eq.mp (congrArg Separable hq) h).of_mul_left
 
-set_option synthInstance.maxHeartbeats 500000 in
-set_option maxHeartbeats 1000000 in
 open Subalgebra in
 theorem exists_sep_masSubfield' : ∃ (a : D), IsMax (SubField.bot_adjoin K D a) ∧
     Algebra.IsSeparable K (SubField.bot_adjoin K D a) := by
@@ -460,7 +456,6 @@ theorem exists_sep_splitting : ∃ (L : Type u)(_ : Field L)(_ : Algebra K L)(_ 
   obtain ⟨L, hL1, hL2⟩ := exists_sep_masSubfield K D
   exact ⟨L, inferInstance, inferInstance, inferInstance, hL2, isSplit_of_isMax K D L hL1⟩
 
-set_option synthInstance.maxHeartbeats 40000 in
 theorem exists_finite_galois_split : ∃ (L : Type u)(_ : Field L)(_ : Algebra K L)(_ : FiniteDimensional K L),
     IsGalois K L ∧ isSplit K D L := by
   obtain ⟨L, _, _, _, hL1, hL2⟩ := exists_sep_splitting K D

@@ -45,12 +45,10 @@ theorem dim_max_subfield (k : SubField K D) (hk : IsMax k) :
           rw [mul_assoc, h2, ← mul_assoc, h1, mul_assoc]
         · intro _ _ _ _ _ _ h1 h2
           rw [← mul_assoc, h1, mul_assoc, h2, mul_assoc] }
-
     have : IsField (Algebra.adjoin K (insert a k) : Subalgebra K D) := by
       rw [ ← Algebra.IsIntegral.isField_iff_isField (R := K)]
       · exact Semifield.toIsField K
       · exact FaithfulSMul.algebraMap_injective K _
-
     let L : SubField K D := {
       __ := Algebra.adjoin K (insert a k.1)
       mul_comm x hx y hy := by
