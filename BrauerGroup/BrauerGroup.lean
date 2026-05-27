@@ -50,7 +50,6 @@ lemma bijective_of_dim_eq_of_isCentralSimple
         ext
         exact hx, add_zero, h] at this
       rw [← LinearMap.range_eq_top]
-
       apply Submodule.eq_top_of_finrank_eq
       exact this
     · have : (1 : A) ∈ TwoSidedIdeal.ker f.toRingHom := by
@@ -60,7 +59,6 @@ lemma bijective_of_dim_eq_of_isCentralSimple
       have hmm : Nontrivial B := by
         let e := LinearEquiv.ofFinrankEq _ _ h
         exact Equiv.nontrivial e.symm.toEquiv
-
       exact one_ne_zero this |>.elim
 
 lemma bijective_of_surj_of_isCentralSimple
@@ -310,7 +308,6 @@ lemma matrixEquivForward_surjective
     rw [map_sum]
     simp_rw [map_sum]
     simp_rw [ha]
-
   intro i j
   rw [show Matrix.single i j (x i j) = (x i j) • Matrix.single i j 1 by
     rw [Matrix.smul_single, Algebra.smul_def,  mul_one]
@@ -348,7 +345,6 @@ def matrix_eqv (m n : ℕ) : (Matrix (Fin m) (Fin m) K) ⊗[K] (Matrix (Fin n) (
       refine ⟨?_, matrixEquivForward_surjective _ _⟩ <;>
       intro x y _ <;>
       apply Subsingleton.elim
-
     else
     have : Nonempty (Fin n) := ⟨0, by omega⟩
     have : Nonempty (Fin m) := ⟨0, by omega⟩
@@ -710,7 +706,6 @@ def e3 [Algebra.IsCentral K A] [csa_A : IsSimpleRing A] :
         have : NeZero m := ⟨hm⟩
         letI r1 : Ring ((E ⊗[K] A) ⊗[E] (E ⊗[K] Matrix (Fin m) (Fin m) K)) := inferInstance
         letI r2 : Ring (E ⊗[K] (A ⊗[K] Matrix (Fin m) (Fin m) K)) := inferInstance
-
         apply bijective_of_surj_of_isCentralSimple E _ _ _ <| e3Aux5 (K := K) (E := E) A m
 
 def e4 :
@@ -787,8 +782,7 @@ def e6Aux0 : (E ⊗[K] A) ⊗[E] (E ⊗[K] B) →ₐ[E] E ⊗[K] (A ⊗[K] B) :=
         simp only [Algebra.TensorProduct.tmul_mul_tmul, _root_.mul_one, _root_.one_mul]
         rw [mul_comm]
 
-set_option synthInstance.maxHeartbeats 40000 in
--- FIXME: Get rid of the raised heartbeats
+-- e6: equivalence (E ⊗[K] A) ⊗[E] (E ⊗[K] B) ≃ₐ[E] E ⊗[K] (A ⊗[K] B)
 def e6 [Algebra.IsCentral K A] [csa_A : IsSimpleRing A]
     [Algebra.IsCentral K B] [csa_B : IsSimpleRing B] :
     (E ⊗[K] A) ⊗[E] (E ⊗[K] B) ≃ₐ[E] E ⊗[K] (A ⊗[K] B) :=

@@ -210,7 +210,6 @@ theorem isSplit_iff_dimension [FiniteDimensional F K] (A : CSA F) :
         intros a x
         ext r a'
         simp [smul_eq_mul, smul_assoc, LinearMap.smul_apply] }
-
     let μ' : K ⊗[F] B →ₗ[F] Module.End K B := TensorProduct.lift μ
     let μ'' : K ⊗[F] B →ₗ[K] Module.End K B :=
     { __ := μ'

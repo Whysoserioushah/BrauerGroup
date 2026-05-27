@@ -114,8 +114,6 @@ lemma centralizer_tensor_le_inf_centralizer :
   rw [Algebra.TensorProduct.map_range]
   exact hy
 
-set_option synthInstance.maxHeartbeats 40000 in
--- FIXME: Get rid of the raised heartbeats
 include 𝒜 𝒜' in
 lemma centralizer_tensor_centralizer :
     Subalgebra.centralizer F (A := A ⊗[F] A')
@@ -657,7 +655,7 @@ noncomputable def auxRight (B : Subalgebra F A) (C : Type u) [Ring C] [Algebra F
       rfl)
 
 set_option synthInstance.maxHeartbeats 120000 in
--- FIXME: Get rid of the raised heartbeats
+-- Reason: Synthesis of Ring on tensor product of coerced subalgebra is complex.
 instance : IsSimpleRing (A ⊗[F] Module.End.rightMul F B) := by
   constructor
   let eqv : (A ⊗[F] Module.End.rightMul F B) ≃ₐ[F] (Bᵐᵒᵖ  ⊗[F] A) :=

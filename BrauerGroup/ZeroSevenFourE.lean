@@ -617,7 +617,6 @@ lemma exists_gen (M : Type v) [AddCommGroup M]
     [Module A M] [IsSimpleModule A M] :
     ∃ m : M, m ≠ 0 ∧ ∀ m', ∃ a : A, m' = a • m := by
     have i : Submodule.IsPrincipal (⊤ : Submodule A M) := inferInstance
-
     refine ⟨i.1.choose, ?_, fun m ↦ by
       classical
       have : m ∈ Submodule.span A {i.1.choose} := by
@@ -701,7 +700,6 @@ lemma IsBalanced.congr_aux (M N : Type v) [AddCommGroup M] [AddCommGroup N] [Mod
   simp only [toEndEnd_apply, DistribMulAction.toLinearMap_apply]
   have := congr($hb <| l.symm n)
   simp only [toEndEnd_apply, DistribMulAction.toLinearMap_apply] at this
-
   apply_fun l at this
   -- simp [this]
   aesop
@@ -825,7 +823,6 @@ lemma Wedderburn_Artin_uniqueness₁
     rw [← eq1, mul_comm] at inst1
     exact lt_of_le_of_lt (Cardinal.le_mul_left (a := Module.rank k D) (b := n * n) (by
       simpa only [ne_eq, mul_eq_zero, Nat.cast_eq_zero, or_self] using NeZero.ne n)) inst1
-
   have eq1 := Module.finrank_matrix k D (Fin n) (Fin n)
   have eq2 := Module.finrank_matrix k D (Fin n') (Fin n')
   simp only [Fintype.card_fin] at eq1 eq2

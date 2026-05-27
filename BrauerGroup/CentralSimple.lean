@@ -418,7 +418,6 @@ lemma TensorProduct.map_comap_eq_of_isSimple_isCentralSimple
           apply TwoSidedIdeal.subset_span
           simp only [Set.mem_singleton_iff]
         exact b_ne_zero i₀ hi₀ mem
-
       have one_mem : (1 : B) ∈ TwoSidedIdeal.span {b i₀} := by rw [span_bi₀]; trivial
       rw [TwoSidedIdeal.mem_span_iff_exists_fin] at one_mem
       obtain ⟨ℐ, inst1, xL, xR, y, one_eq⟩ := one_mem
@@ -570,13 +569,9 @@ instance TensorProduct.simple
         rw [show a ⊗ₜ[K] b = (a ⊗ₜ 1) * (1 ⊗ₜ b) by simp]
         exact TwoSidedIdeal.mul_mem_right _ _ _ <| TwoSidedIdeal.subset_span ⟨a, ⟨⟩, rfl⟩
       | add x y hx hy => exact TwoSidedIdeal.add_mem _ hx hy
-
   apply TensorProduct.map_comap_eq_of_isSimple_isCentralSimple
-
 -- We can't have `L` to have different universe level of `D` in this proof, again due that we used
 -- `flatness`
-set_option synthInstance.maxHeartbeats 40000 in
--- FIXME: Get rid of the raised heartbeats
 instance baseChange
     (D L : Type u) [Ring D] [Algebra K D]
     [Field L] [Algebra K L]
@@ -590,17 +585,28 @@ instance baseChange
     | tmul l d =>
       obtain ⟨k, hk⟩ := h.out d.2
       refine ⟨k • l, ?_⟩
-      simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, Algebra.TensorProduct.map_tmul,
-        Subalgebra.coe_val, ← hk]
-      simp only [Algebra.ofId_apply, Algebra.TensorProduct.algebraMap_apply,
-        Algebra.algebraMap_self, RingHom.id_apply]
-      rw [TensorProduct.smul_tmul, Algebra.algebraMap_eq_smul_one]
+      simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, Algebra.ofId_apply,
+        Algebra.TensorProduct.algebraMap_apply, Algebra.algebraMap_self, RingHom.id_apply]
+      rw [Algebra.TensorProduct.map_tmul, TensorProduct.smul_tmul]
+      rw [← Algebra.algebraMap_eq_smul_one]
+      change (Subalgebra.center K L).val l ⊗ₜ[K] (Algebra.ofId K D).toRingHom k =
+        (Subalgebra.center K L).val l ⊗ₜ[K] (Subalgebra.center K D).val d
+      rw [hk]
+      rfl
     | add x y hx hy =>
       obtain ⟨kx, (hkx : kx ⊗ₜ 1 = _)⟩ := hx
       obtain ⟨ky, (hky : ky ⊗ₜ 1 = _)⟩ := hy
-      exact ⟨kx + ky, by simp only [AlgHom.toRingHom_eq_coe, map_add, RingHom.coe_coe,
-        Algebra.ofId_apply, Algebra.TensorProduct.algebraMap_apply, Algebra.algebraMap_self,
-        RingHom.id_apply, hkx, hky]⟩
+      exact ⟨kx + ky, by
+        change (kx + ky) ⊗ₜ[K] (1 : D) =
+          (Algebra.TensorProduct.map (Subalgebra.center K L).val
+            (Subalgebra.center K D).val) (x + y)
+        rw [TensorProduct.add_tmul, map_add]
+        change kx ⊗ₜ[K] 1 + ky ⊗ₜ[K] 1 =
+          (Algebra.TensorProduct.map (Subalgebra.center K L).val
+            (Subalgebra.center K D).val).toRingHom x +
+          (Algebra.TensorProduct.map (Subalgebra.center K L).val
+            (Subalgebra.center K D).val).toRingHom y
+        rw [← hkx, ← hky]⟩
 
 end IsCentralSimple
 

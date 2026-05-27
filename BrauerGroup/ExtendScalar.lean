@@ -23,36 +23,33 @@ def releaseAddHom : L ⊗[k] A →+ L ⊗[K] (K ⊗[k] A) :=
       repeat rw [TensorProduct.add_tmul]
   } fun r l a ↦ by simp only [AddMonoidHom.coe_mk, ZeroHom.coe_mk, TensorProduct.tmul_smul]; rfl
 
-set_option synthInstance.maxHeartbeats 40000 in
--- FIXME: Get rid of the raised heartbeats
 def release : L ⊗[k] A →ₐ[L] L ⊗[K] (K ⊗[k] A) where
   __ := releaseAddHom k K L A
-  map_one' := by simp only [releaseAddHom, Algebra.TensorProduct.one_def, ZeroHom.toFun_eq_coe,
-    AddMonoidHom.toZeroHom_coe, TensorProduct.liftAddHom_tmul, AddMonoidHom.coe_mk,
-    ZeroHom.coe_mk]
+  map_one' := rfl
   map_mul' x y := by
+    change (releaseAddHom k K L A) (x * y) = (releaseAddHom k K L A) x * (releaseAddHom k K L A) y
     induction x using TensorProduct.induction_on with
-    | zero => simp only [zero_mul, ZeroHom.toFun_eq_coe, map_zero, AddMonoidHom.toZeroHom_coe]
+    | zero =>
+      rw [zero_mul, map_zero (releaseAddHom k K L A), zero_mul]
     | tmul l a =>
       induction y using TensorProduct.induction_on with
-      | zero => simp only [mul_zero, ZeroHom.toFun_eq_coe, map_zero, AddMonoidHom.toZeroHom_coe]
+      | zero =>
+        rw [mul_zero, map_zero (releaseAddHom k K L A), mul_zero]
       | tmul l' a' =>
-        simp only [Algebra.TensorProduct.tmul_mul_tmul, ZeroHom.toFun_eq_coe,
-          AddMonoidHom.toZeroHom_coe]
+        rw [Algebra.TensorProduct.tmul_mul_tmul]
         change (l * l') ⊗ₜ[K] (1 ⊗ₜ[k] (a * a')) = (l ⊗ₜ[K] (1 ⊗ₜ[k] a)) * (l' ⊗ₜ[K] (1 ⊗ₜ[k] a'))
         rw [Algebra.TensorProduct.tmul_mul_tmul, Algebra.TensorProduct.tmul_mul_tmul, mul_one]
       | add x y hx hy =>
-        simp only [mul_add, ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe, map_add]
-        change releaseAddHom k K L A _ = releaseAddHom k K L A _ * releaseAddHom k K L A _ at hx
-        change releaseAddHom k K L A _ = releaseAddHom k K L A _ * releaseAddHom k K L A _ at hy
+        rw [mul_add]
+        rw [map_add (releaseAddHom k K L A), map_add (releaseAddHom k K L A)]
+        rw [mul_add]
         rw [hx, hy]
     | add z w hz hw =>
-      simp only [add_mul, ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe, map_add]
-      simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe] at hw hz ⊢
+      rw [add_mul]
+      rw [map_add (releaseAddHom k K L A), map_add (releaseAddHom k K L A)]
+      rw [add_mul]
       rw [hz, hw]
-  commutes' := fun l ↦ by
-    simp only [Algebra.TensorProduct.algebraMap_apply, ZeroHom.toFun_eq_coe,
-      AddMonoidHom.toZeroHom_coe, Algebra.TensorProduct.one_def]; rfl
+  commutes' l := rfl
 
 def absorbMap (l : L) : K ⊗[k] A →ₗ[k] L ⊗[k] A :=
   TensorProduct.lift {
