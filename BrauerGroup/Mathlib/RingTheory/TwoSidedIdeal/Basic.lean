@@ -8,7 +8,7 @@ section NonUnitalNonAssocRing
 variable [NonUnitalNonAssocRing R] {I : TwoSidedIdeal R} {x : R}
 
 lemma smul_mem (r : R) (hx : x ∈ I) : r • x ∈ I := by
-  simpa using I.ringCon.mul (I.ringCon.refl r) hx
+  exact I.mul_mem_left r x hx
 
 end NonUnitalNonAssocRing
 

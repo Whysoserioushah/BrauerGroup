@@ -129,16 +129,21 @@ lemma centralizer_range_includeRight_eq_center_tensorProduct [Module.Free R A] :
     · rfl
   · rintro ⟨y, hy⟩
     refine ⟨(Algebra.TensorProduct.comm R _ _) y, (Algebra.TensorProduct.comm R A B).injective ?_⟩
-    rw [← hy]
-    change
-      ((Algebra.TensorProduct.comm R A B).toAlgHom.comp
-        (Algebra.TensorProduct.map (AlgHom.id R A) (center R B).val)).comp
-        (Algebra.TensorProduct.comm R (↥(center R B)) A) y =
-      ((Algebra.TensorProduct.map _ _)) y
-    congr 1
-    ext
-    · rfl
-    · rfl
+    calc
+      (Algebra.TensorProduct.comm R A B)
+          ((Algebra.TensorProduct.map (AlgHom.id R A) (center R B).val)
+            ((Algebra.TensorProduct.comm R (↥(center R B)) A) y)) =
+          (Algebra.TensorProduct.map (center R B).val (AlgHom.id R A)) y := by
+            change
+              ((Algebra.TensorProduct.comm R A B).toAlgHom.comp
+                (Algebra.TensorProduct.map (AlgHom.id R A) (center R B).val)).comp
+                (Algebra.TensorProduct.comm R (↥(center R B)) A) y =
+              ((Algebra.TensorProduct.map _ _)) y
+            congr 1
+            ext
+            · rfl
+            · rfl
+      _ = (Algebra.TensorProduct.comm R A B) x := hy
 
 lemma centralizer_tensorProduct_eq_center_tensorProduct_left [Module.Free R B] :
     Subalgebra.centralizer R

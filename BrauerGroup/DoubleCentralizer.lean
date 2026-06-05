@@ -364,9 +364,11 @@ AlgEquiv.symm <| AlgEquiv.ofBijective
     map_mul' := by intros; ext; simp
     map_zero' := by ext; simp
     map_add' := by intros; ext; simp [mul_add]
-    commutes' := by intros; ext; simp only [MulOpposite.algebraMap_apply, MulOpposite.unop_op,
-      LinearMap.mulRight_apply, SubalgebraClass.coe_algebraMap, algebraMap_end_apply,
-      Algebra.smul_def, Algebra.commutes] } <| by
+    commutes' := by
+      intro r
+      ext x
+      change x * algebraMap F B r = (algebraMap F (Module.End F B) r) x
+      simp only [algebraMap_end_apply, Algebra.smul_def, Algebra.commutes] } <| by
   constructor
   · intro x y hxy
     have := congr($hxy.1 1)
@@ -462,9 +464,9 @@ def Subalgebra.toConj (B : Subalgebra F A) (x : Aˣ) : B →ₐ[F] B.conj x wher
   commutes' := by
     intros r
     ext
-    simp only [SubalgebraClass.coe_algebraMap, mul_assoc]
-    rw [Algebra.commutes r, ← mul_assoc]
-    simp only [Units.mul_inv, one_mul]
+    change (x : A) * algebraMap F A r * (↑x⁻¹ : A) = algebraMap F A r
+    rw [← Algebra.commutes r (x : A), mul_assoc]
+    simp only [Units.mul_inv, mul_one]
 
 @[simps]
 def Subalgebra.fromConj (B : Subalgebra F A) (x : Aˣ) : B.conj x →ₐ[F] B where

@@ -14,9 +14,16 @@ lemma TensorProduct.flip_mk_injective {R M N : Type*} [CommRing R] [AddCommGroup
     Function.Injective ((TensorProduct.mk R M N).flip a) := by
   intro x y e
   -- simp only [LinearMap.flip_apply, mk_apply] at e
+  have hinj : Function.Injective (LinearMap.toSpanSingleton R N a) := by
+    intro c c' h
+    simp only [LinearMap.toSpanSingleton_apply] at h
+    have hh : (c - c') • a = 0 := by rw [sub_smul, h, sub_self]
+    rcases eq_zero_or_eq_zero_of_smul_eq_zero hh with h1 | h1
+    · exact sub_eq_zero.mp h1
+    · exact absurd h1 ha
   apply (TensorProduct.rid R M).symm.injective
   apply Module.Flat.lTensor_preserves_injective_linearMap (M := M) (LinearMap.toSpanSingleton R N a)
-    (smul_left_injective R ha)
+    hinj
   simpa using e
 
 lemma IsCentral.left_of_tensor (B C : Type*)

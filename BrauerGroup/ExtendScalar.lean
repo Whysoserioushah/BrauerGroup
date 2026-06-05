@@ -1,4 +1,5 @@
 import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.Tactic.SuppressCompilation
 
 suppress_compilation
 

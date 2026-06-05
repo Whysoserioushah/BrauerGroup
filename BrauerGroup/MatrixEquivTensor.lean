@@ -1,5 +1,6 @@
 import Mathlib.Data.Matrix.Basis
 import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.Tactic.SuppressCompilation
 
 suppress_compilation
 
@@ -44,8 +45,7 @@ abbrev toTensorMatrix : K ⊗[F] Matrix n n A →ₐ[K] Matrix n n (K ⊗[F] A) 
     induction t2 with
     | zero => simp
     | tmul x0 y0 =>
-        simp [mul_comm x x0, SemigroupAction.mul_smul]
-        erw [Matrix.map_mul]; rfl
+        simp [mul_comm x x0, SemigroupAction.mul_smul, Matrix.map_mul]
     | add _ _ h1 h2 => simp_all [mul_add]
   | add _ _ h1 h2 => simp_all [add_mul]
 

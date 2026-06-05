@@ -20,6 +20,7 @@ abbrev toEnd_map : ℍ[ℝ] ⊗[ℝ] ℍ[ℝ] →ₗ[ℝ] Module.End ℝ (ℍ[�
   map_smul' := fun r x ↦ by ext : 2; simp
 }
 
+set_option maxSynthPendingDepth 2 in
 lemma toEnd_map.map_mul (x1 x2 : ℍ[ℝ] ⊗[ℝ] ℍ[ℝ]) : toEnd_map (x1 * x2) =
     toEnd_map x1 * toEnd_map x2 := by
   induction x1 using TensorProduct.induction_on with
@@ -173,11 +174,8 @@ abbrev toC2 : Additive (BrauerGroup ℝ) →+ ZMod 2 where
       else
       simp only [hA, ↓reduceIte, hB, zero_add, ite_eq_right_iff, zero_ne_one, imp_false]
       have : IsBrauerEquivalent (mul A B) B := by
-        obtain ⟨n, m, hn, hm, ⟨e⟩⟩ := hA
-        exact ⟨n * 1, m * 1, by omega, by omega, ⟨((kroneckerMatrixTensor' A B n 1).symm.trans
-          <| (Algebra.TensorProduct.congr e AlgEquiv.refl).trans
-          <| (kroneckerMatrixTensor' ℝ B m 1).trans <| AlgEquiv.mapMatrix (
-            Algebra.TensorProduct.lid _ _) : Matrix _ _ (A ⊗[ℝ] B) ≃ₐ[ℝ] Matrix _ _ B)⟩⟩
+        exact (eqv_tensor_eqv A one_in' B B hA (IsBrauerEquivalent.refl B)).trans <|
+          IsBrauerEquivalent.iso_to_eqv _ _ (Algebra.TensorProduct.lid ℝ B)
       -- rw [this]
       by_contra! hBB
       haveI := this.symm.trans hBB
@@ -186,11 +184,8 @@ abbrev toC2 : Additive (BrauerGroup ℝ) →+ ZMod 2 where
     if hB : IsBrauerEquivalent B one_in' then
     simp only [hA, ↓reduceIte, hB, add_zero, ite_eq_right_iff, zero_ne_one, imp_false]
     have : IsBrauerEquivalent (mul A B) A := by
-      obtain ⟨n, m, hn, hm, ⟨e⟩⟩ := hB
-      exact ⟨1 * n, 1 * m, by omega, by omega, ⟨(kroneckerMatrixTensor' A B 1 n).symm.trans <|
-        (Algebra.TensorProduct.congr AlgEquiv.refl e).trans <|
-        (kroneckerMatrixTensor' A ℝ 1 m).trans <| AlgEquiv.mapMatrix <|
-        Algebra.TensorProduct.rid _ _ _⟩⟩
+      exact (eqv_tensor_eqv A A B one_in' (IsBrauerEquivalent.refl A) hB).trans <|
+        IsBrauerEquivalent.iso_to_eqv _ _ (Algebra.TensorProduct.rid ℝ ℝ A)
     by_contra! hAA
     haveI := this.symm.trans hAA
     tauto
@@ -202,26 +197,27 @@ abbrev toC2 : Additive (BrauerGroup ℝ) →+ ZMod 2 where
     have hB1 := BrauerOverR B
     simp only [hA, false_or] at hA1
     simp only [hB, false_or] at hB1
-    obtain ⟨n1, m1, hn1, hm1, ⟨e1⟩⟩ := hA1
-    obtain ⟨n2, m2, hn2, hm2, ⟨e2⟩⟩ := hB1
     have : IsBrauerEquivalent (mul A B) one_in' :=
-      ⟨n1 * n2, m1 * m2 * 4, by aesop, by aesop, ⟨kroneckerMatrixTensor' _ _ _ _ |>.symm.trans <|
-      Algebra.TensorProduct.congr e1 e2|>.trans <| kroneckerMatrixTensor' _ _ _ _ |>.trans <|
-      QuaternionTensorEquivMatrix.mapMatrix.trans <| Matrix.compAlgEquiv _ _ _ _ |>.trans <|
-      IsBrauerEquivalent.matrix_eqv' _ _ _ ⟩⟩
+      (eqv_tensor_eqv A ⟨.of ℝ ℍ[ℝ]⟩ B ⟨.of ℝ ℍ[ℝ]⟩ hA1 hB1).trans <| by
+        simpa [mul, one_in'] using QuaternionTensorEquivOne
     simp [this]
 
 abbrev C2toBrauerOverR : ZMod 2 →+ Additive (BrauerGroup ℝ) where
   toFun x := if hx : x = 0 then Quotient.mk'' one_in' else Quotient.mk'' ⟨.of ℝ ℍ[ℝ]⟩
   map_zero' := by simp only [↓reduceDIte]; rfl
   map_add' x y := by
-    fin_cases x <;> fin_cases y <;> simp <;> try rfl
-    erw [show 1 + 1 = (0 : ZMod 2) from rfl]
-    simp only [↓reduceIte]
-    change _ = Quotient.mk'' _
-    rw [Quotient.sound']
-    change IsBrauerEquivalent _ ⟨.of ℝ (ℍ[ℝ] ⊗[ℝ] ℍ[ℝ])⟩
-    exact QuaternionTensorEquivOne.symm
+    let H : CSA ℝ := ⟨.of ℝ ℍ[ℝ]⟩
+    fin_cases x <;> fin_cases y <;> simp only [dite_eq_ite]
+    · change (1 : BrauerGroup ℝ) = 1 * 1
+      simp
+    · change ((Quotient.mk'' H : BrauerGroup ℝ)) = 1 * Quotient.mk'' H
+      simp
+    · change ((Quotient.mk'' H : BrauerGroup ℝ)) = Quotient.mk'' H * 1
+      simp
+    · change (1 : BrauerGroup ℝ) = Quotient.mk'' H * Quotient.mk'' H
+      apply Quotient.sound
+      change IsBrauerEquivalent one_in' (mul H H)
+      exact QuaternionTensorEquivOne.symm
 
 lemma toC2.left_inv : Function.LeftInverse C2toBrauerOverR toC2 := fun A ↦ by
   induction A using Quotient.inductionOn' with | h A
@@ -234,11 +230,20 @@ lemma toC2.left_inv : Function.LeftInverse C2toBrauerOverR toC2 := fun A ↦ by
     exact Quotient.sound' h2.symm
 
 lemma toC2.right_inv : Function.RightInverse C2toBrauerOverR toC2 := fun x ↦ by
+  classical
+  let H : CSA ℝ := ⟨.of ℝ ℍ[ℝ]⟩
   fin_cases x
-  · simp [IsBrauerEquivalent.refl]
-  · simp only [Nat.reduceAdd, Fin.mk_one, Fin.isValue, AddMonoidHom.coe_mk, dite_eq_ite,
-    ZeroHom.coe_mk, one_ne_zero, ↓reduceIte, Quotient.lift_mk, ite_eq_right_iff, zero_ne_one,
-    imp_false]; exact QuaternionNotEquivR
+  · change toC2 (if ((0 : ZMod 2) = 0) then Quotient.mk'' one_in' else Quotient.mk'' H) = 0
+    rw [if_pos rfl]
+    simp [toC2, IsBrauerEquivalent.refl]
+  · change toC2 (if ((1 : ZMod 2) = 0) then Quotient.mk'' one_in' else Quotient.mk'' H) = 1
+    have hone : ¬ ((1 : ZMod 2) = 0) := by norm_num
+    rw [if_neg hone]
+    change toC2 (Quotient.mk'' H) = (1 : ZMod 2)
+    change (if IsBrauerEquivalent H one_in' then (0 : ZMod 2) else 1) = 1
+    have hH : ¬ IsBrauerEquivalent H one_in' := by
+      exact QuaternionNotEquivR
+    rw [if_neg hH]
 
 def BrauerGroupOverR : Additive (BrauerGroup ℝ) ≃+ ZMod 2 where
   toFun := toC2

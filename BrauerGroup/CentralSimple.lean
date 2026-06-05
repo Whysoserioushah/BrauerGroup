@@ -501,7 +501,6 @@ lemma TensorProduct.map_comap_eq_of_isSimple_isCentralSimple
         specialize LI s (fun i =>
           if i = i₀ then 1
           else if h : i ∈ s.erase i₀ then k i h else 0) (by
-          dsimp only
           simp_rw [ite_smul, one_smul, dite_smul, zero_smul]
           rw [Finset.sum_ite,
             show ∑ x ∈ Finset.filter (fun x ↦ x = i₀) s, 𝒜 x = ∑ x ∈ {i₀}, 𝒜 x by
@@ -645,6 +644,6 @@ theorem CSA_implies_CSA (K : Type*) (B : Type*) [Field K] [Ring B] [Algebra K B]
       · rfl)
   refine ⟨k, ?_⟩
   apply_fun (· 0 0) at hk
-  simpa using hk
+  simpa [Matrix.algebraMap_matrix_apply] using hk
 
 end CSA_implies_CSA

@@ -20,28 +20,29 @@ If `I` is a two-sided-ideal of `A`, then `Mₙ(I) := {(xᵢⱼ) | ∀ i j, xᵢ�
 `Mₙ(A)`.
 -/
 @[simps]
-def TwoSidedIdeal.mapMatrix (I : TwoSidedIdeal A) : TwoSidedIdeal M[ι, A] := .mk
-{
-  r := fun X Y => ∀ i j, I.ringCon (X i j) (Y i j)
-  iseqv :=
-  { refl := fun X i j ↦ I.ringCon.refl (X i j)
-    symm := fun h i j ↦ I.ringCon.symm (h i j)
-    trans := fun h1 h2 i j ↦ I.ringCon.trans (h1 i j) (h2 i j) }
-  mul' := by
-    intro _ _ _ _ h h' i j
-    rw [Matrix.mul_apply, Matrix.mul_apply]
-    rw [TwoSidedIdeal.rel_iff, ← Finset.sum_sub_distrib]
-    apply I.finsetSum_mem
-    rintro k -
-    rw [← TwoSidedIdeal.rel_iff]
-    apply I.ringCon.mul (h _ _) (h' _ _)
-  add' := fun {X X' Y Y'} h h' i j ↦ by
-    simpa only [Matrix.add_apply] using I.ringCon.add (h _ _) (h' _ _)
-}
+def TwoSidedIdeal.mapMatrix (I : TwoSidedIdeal A) : TwoSidedIdeal M[ι, A] :=
+  TwoSidedIdeal.mk' {X | ∀ i j, X i j ∈ I}
+    (by intro i j; exact I.zero_mem)
+    (by
+      intro X Y hX hY i j
+      simpa only [Matrix.add_apply] using I.add_mem (hX i j) (hY i j))
+    (by
+      intro X hX i j
+      simpa only [Matrix.neg_apply] using I.neg_mem (hX i j))
+    (by
+      classical
+      intro X Y hY i j
+      rw [Matrix.mul_apply]
+      exact I.finsetSum_mem _ _ fun k _ ↦ I.mul_mem_left (X i k) (Y k j) (hY k j))
+    (by
+      classical
+      intro X Y hX i j
+      rw [Matrix.mul_apply]
+      exact I.finsetSum_mem _ _ fun k _ ↦ I.mul_mem_right (X i k) (Y k j) (hX i k))
 
 @[simp] lemma TwoSidedIdeal.mem_mapMatrix (I : TwoSidedIdeal A) (x) : x ∈ I.mapMatrix A ι ↔
     ∀ i j, x i j ∈ I :=
-  Iff.rfl
+  TwoSidedIdeal.mem_mk' _ _ _ _ _ _ _
 
 /--
 The two-sided-ideals of `A` corresponds bijectively to that of `Mₙ(A)`.
@@ -107,7 +108,7 @@ def TwoSidedIdeal.equivRingConMatrix (oo : ι) : TwoSidedIdeal A ≃ TwoSidedIde
     · intro h
       choose y hy1 hy2 using h
       simp only [sub_zero] at hy2
-      exact hy2 ▸ hy1 _ _
+      exact hy2 ▸ (TwoSidedIdeal.mem_mapMatrix A ι I y).1 hy1 oo oo
     · intro h
       exact ⟨of fun _ _ => x, by simp [h], by simp⟩
 
@@ -530,19 +531,19 @@ lemma Wedderburn_Artin_algebra_version' (R : Type u) (A : Type v) [CommRing R] [
   ext i j
   apply MulOpposite.unop_injective
   simp only [endPowEquivMatrix, RingEquiv.coe_trans, Function.comp_apply, equivEndMop_apply,
-    RingEquiv.op_apply_apply, unop_op, RingEquiv.coe_mk, Equiv.coe_fn_mk, AlgEquiv.coe_ringEquiv,
+    RingEquiv.op_apply_apply, unop_op, RingEquiv.coe_mk, Equiv.coe_fn_mk,
     matrixEquivMatrixMop_symm_apply, map_apply, transpose_apply, diagonal, Pi.algebraMap_apply,
     MulOpposite.algebraMap_apply, of_apply, endEquiv]
   split_ifs with h
   · subst h
     ext x : 1
-    simp only [endVecAlgEquivMatrixEnd_apply_apply, LinearMap.coe_comp, LinearEquiv.coe_coe,
-      LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply, unop_op, Module.algebraMap_end_apply]
+    simp only [unop_op, Module.algebraMap_end_apply]
     rw [show r • x = Function.update (0 : Fin n → I) i (r • x) i by simp]
     refine congr_fun (e.injective ?_) i
-    simp only [LinearEquiv.apply_symm_apply]
     rw [show Function.update (0 : Fin n → I) i (r • x) = r • Function.update (0 : Fin n → I) i x
       by ext : 1; simp [Function.update]]
+    simp only [LinearEquiv.invFun_eq_symm, LinearMap.coe_comp, LinearMap.coe_mk,
+      AddHom.coe_mk, LinearEquiv.coe_coe, Function.comp_apply, LinearEquiv.apply_symm_apply]
     rw [← Algebra.commutes, ← smul_eq_mul, ← e.map_smul]
     exact congr_arg e <| by ext; simp [Pi.single]
   · ext x : 1
@@ -554,6 +555,7 @@ lemma Wedderburn_Artin_algebra_version' (R : Type u) (A : Type v) [CommRing R] [
       Function.comp_apply]
     rw [show Function.update (0 : Fin n → I) i (r • x) = r • Function.update (0 : Fin n → I) i x
       by ext : 1; simp [Function.update]]
+    simp only [LinearEquiv.invFun_eq_symm, LinearEquiv.apply_symm_apply]
     rw [← Algebra.commutes, ← smul_eq_mul, ← e.map_smul]
     exact congr_arg e <| by ext; simp [Pi.single]
 
@@ -585,8 +587,9 @@ theorem is_central_of_wdb [hctr : Algebra.IsCentral K B]
     rw [Subalgebra.mem_center_iff] at hx' ⊢
     exact fun b ↦ Wdb.injective <| by simpa using hx' (Wdb b)
   obtain ⟨s, (hs : algebraMap _ _ s = _)⟩ := hctr.out hx''
-  exact ⟨s, show algebraMap _ _ _ = _ by
-    simpa using Matrix.ext_iff.2 congr(Wdb $hs) 0 0⟩
+  exact ⟨s, by
+    have hentry := Matrix.ext_iff.2 congr(Wdb $hs) 0 0
+    simpa [Matrix.algebraMap_matrix_apply] using hentry⟩
 
 theorem is_fin_dim_of_wdb {n : ℕ} (hn : n ≠ 0) (S : Type*) [h : DivisionRing S] [Algebra K S]
     (Wdb : B ≃ₐ[K] M[Fin n, S]) : FiniteDimensional K S := by

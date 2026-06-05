@@ -92,15 +92,14 @@ instance (n : ℕ) [NeZero n] : Functor.Additive (moritaEquivalentToMatrix A (Fi
 instance (n : ℕ) [NeZero n] : Functor.Linear R (moritaEquivalentToMatrix A (Fin n)).functor where
   map_smul {M N} f r := by
     ext m
-    simp
-    ext i
-    rw [moritaEquivalentToMatrix_functor_map_hom_apply]
+    apply funext
+    intro i
     simp only [hom_smul, LinearMap.smul_apply, moritaEquivalentToMatrix,
-      toModuleCatOverMatrix_obj_isAddCommGroup, toModuleCatOverMatrix_obj_isModule,
-      toModuleCatOverMatrix_map, hom_ofHom, LinearMap.coe_mk, AddHom.coe_mk]
+      toModuleCatOverMatrix_map]
     change (algebraMap R A r) • (f.hom _) =
       ∑ j : Fin n, (algebraMap R (Matrix (Fin n) (Fin n) A) r) _ _ • _
     simp [Matrix.algebraMap_matrix_apply]
+    rfl
 
 -- attribute [-instance] Linear.preadditiveIntLinear Linear.preadditiveNatLinear in
 def matrix (n : ℕ) : MoritaEquivalence R A (Matrix (Fin (n+1)) (Fin (n + 1)) A) :=
@@ -217,10 +216,13 @@ def mopToEnd : Aᵐᵒᵖ →ₐ[R] End (ModuleCat.of A A) where
 lemma moptoend_bij : Function.Bijective (mopToEnd R A) :=
   ⟨RingHom.injective_iff_ker_eq_bot _ |>.mpr <|
     SetLike.ext fun (α : Aᵐᵒᵖ) => ⟨fun (h : _ = _) => by
-      rw [ModuleCat.hom_ext_iff] at h
-      simp only [mopToEnd, hom_zero, LinearMap.ext_iff, LinearMap.zero_apply] at h
-      specialize h (1 : A)
-      simp_all,
+      have h1 := congrArg (fun φ : End (ModuleCat.of A A) => φ.hom (1 : A)) h
+      rw [Submodule.mem_bot]
+      have hα : α.unop = (0 : A) := by
+        have hzero : (Hom.hom (0 : End (ModuleCat.of A A))) (1 : A) = 0 := rfl
+        simpa only [mopToEnd_apply, hom_ofHom, LinearMap.coe_mk, AddHom.coe_mk,
+          ModuleCat.hom_zero, LinearMap.zero_apply, one_mul, hzero] using h1
+      exact MulOpposite.unop_injective hα,
       by rintro rfl; simp⟩, fun φ => ⟨MulOpposite.op (φ.hom.toFun (1 : A)), ModuleCat.hom_ext <|
       LinearMap.ext fun r ↦ by
       simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, mopToEnd_apply, MulOpposite.unop_op,
@@ -254,24 +256,27 @@ variable (e : MoritaEquivalence R A B)
 variable {R S} in
 def aux1 : End (ModuleCat.of A A) ≃ₐ[R] End (e.eqv.functor.obj <| .of A A) where
   toFun (f : _ ⟶ _) := e.eqv.functor.map f
-  invFun g := e.eqv.unit.app _ ≫ e.eqv.inverse.map g ≫ e.eqv.unitInv.app _
+  invFun g := e.eqv.fullyFaithfulFunctor.preimage g
   left_inv := by
     intro f
-    simp only [Functor.comp_obj, Equivalence.inv_fun_map, Functor.id_obj, Category.assoc,
-      Iso.hom_inv_id_app, Category.comp_id]
-    rw [← Category.assoc]
-    change (e.eqv.unit ≫ e.eqv.unitInv).app _ ≫ _ = _
-    simp
+    exact e.eqv.fullyFaithfulFunctor.preimage_map f
   right_inv := by
     intro g
-    simp only [Functor.comp_obj, Functor.map_comp, Equivalence.fun_inv_map, Functor.id_obj,
-      Category.assoc, Equivalence.counitInv_functor_comp, Category.comp_id]
-    exact e.eqv.functor_unit_comp_assoc (ModuleCat.of A A) g
+    exact e.eqv.fullyFaithfulFunctor.map_preimage g
   map_mul' x y := by simp
-  map_add' x y := by rw [e.eqv.functor.map_add]
+  map_add' x y := by
+    exact Functor.map_add e.eqv.functor (f := x) (g := y)
   commutes' r := by
-    rw [Algebra.algebraMap_eq_smul_one, e.linear.map_smul, Algebra.algebraMap_eq_smul_one]
-    simp only [End.one_def, CategoryTheory.Functor.map_id]
+    rw [Algebra.algebraMap_eq_smul_one (A := End (ModuleCat.of A A))]
+    calc
+      e.eqv.functor.map (r • (1 : End (ModuleCat.of A A)))
+          = r • e.eqv.functor.map (1 : End (ModuleCat.of A A)) :=
+            e.linear.map_smul (1 : End (ModuleCat.of A A)) r
+      _ = r • (1 : End (e.eqv.functor.obj (ModuleCat.of A A))) := by
+        exact congrArg (fun z ↦ r • z) (e.eqv.functor.map_id (ModuleCat.of A A))
+      _ = (algebraMap R (End (e.eqv.functor.obj (ModuleCat.of A A)))) r :=
+        (Algebra.algebraMap_eq_smul_one
+          (A := End (e.eqv.functor.obj (ModuleCat.of A A))) r).symm
 
 -- instance (M : Type*) [AddCommGroup M] [Module B M] : Algebra R (Module.End B M) :=
 -- {
@@ -315,7 +320,12 @@ def aux2 (M N : ModuleCat B) (f : M ≅ N) : End M ≃ₐ[R] End N where
   left_inv x := by simp
   right_inv x := by simp
   map_mul' x y := by simp
-  map_add' x y := by rw [Preadditive.add_comp, Preadditive.comp_add]
+  map_add' x y := by
+    calc
+      f.inv ≫ (x + y) ≫ f.hom = (f.inv ≫ x + f.inv ≫ y) ≫ f.hom := by
+        exact congrArg (fun z ↦ z ≫ f.hom) (Preadditive.comp_add _ _ _ f.inv x y)
+      _ = f.inv ≫ x ≫ f.hom + f.inv ≫ y ≫ f.hom :=
+        Preadditive.add_comp _ _ _ (f.inv ≫ x) (f.inv ≫ y) f.hom
   commutes' r := by
     apply hom_ext
     ext n

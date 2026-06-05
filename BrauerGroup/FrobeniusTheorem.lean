@@ -666,12 +666,137 @@ abbrev linEquivH (x : Dˣ) (hx : ∀ z, x.1⁻¹ * f k e z * x = k.val z)
 lemma toFun_i_eq (x : Dˣ) (hx : ∀ z, x.1⁻¹ * f k e z * x = k.val z)
     (h : Module.finrank ℝ D = 4) :
     toFun _ _ _ hx h ((QuaternionAlgebra.basisOneIJK (-1 : ℝ) 0 (-1 : ℝ)) 1) = e.symm ⟨0, 1⟩ := by
-  simp only [QuaternionAlgebra.lift_apply, QuaternionAlgebra.Basis.liftHom, map_inv₀,
-    QuaternionAlgebra.basisOneIJK, Fin.isValue, Basis.coe_ofEquivFun,
-    QuaternionAlgebra.coe_linearEquivTuple_symm, QuaternionAlgebra.equivTuple_symm_apply, ne_eq,
-    zero_ne_one, not_false_eq_true, Pi.single_eq_of_ne, Pi.single_eq_same, Fin.reduceEq,
-    AlgHom.coe_mk', RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, QuaternionAlgebra.Basis.lift,
-    map_zero, one_smul, zero_add, zero_smul, add_zero]
+  simp only [QuaternionAlgebra.lift_apply]
+  rw [show ((QuaternionAlgebra.basisOneIJK (-1 : ℝ) 0 (-1 : ℝ)) 1) =
+      ({ re := 0, imI := 1, imJ := 0, imK := 0 } : ℍ[ℝ]) by
+    ext <;> simp [QuaternionAlgebra.basisOneIJK]]
+  change (({
+      i := ↑(e.symm { re := 0, im := 1 })
+      j := (algebraMap ℝ D) (√(x_corre_R k e x hx h).choose)⁻¹ * ↑x
+      k := ↑(e.symm { re := 0, im := 1 }) *
+        ((algebraMap ℝ D) (√(x_corre_R k e x hx h).choose)⁻¹ * ↑x)
+      i_mul_i := by rw [i_mul_i _ e, zero_smul, add_zero]
+      j_mul_j := j_mul_j _ _ _ hx h
+      i_mul_j := by rfl
+      j_mul_i := by rw [j_mul_i_eq_neg_i_mul_j _ _ _ hx h, zero_smul, zero_sub]
+    } : QuaternionAlgebra.Basis D (-1 : ℝ) 0 (-1 : ℝ)).liftHom
+      ({ re := 0, imI := 1, imJ := 0, imK := 0 } : ℍ[ℝ])) =
+      ↑(e.symm { re := 0, im := 1 })
+  change (({
+      i := ↑(e.symm { re := 0, im := 1 })
+      j := (algebraMap ℝ D) (√(x_corre_R k e x hx h).choose)⁻¹ * ↑x
+      k := ↑(e.symm { re := 0, im := 1 }) *
+        ((algebraMap ℝ D) (√(x_corre_R k e x hx h).choose)⁻¹ * ↑x)
+      i_mul_i := by rw [i_mul_i _ e, zero_smul, add_zero]
+      j_mul_j := j_mul_j _ _ _ hx h
+      i_mul_j := by rfl
+      j_mul_i := by rw [j_mul_i_eq_neg_i_mul_j _ _ _ hx h, zero_smul, zero_sub]
+    } : QuaternionAlgebra.Basis D (-1 : ℝ) 0 (-1 : ℝ)).lift
+      ({ re := 0, imI := 1, imJ := 0, imK := 0 } : ℍ[ℝ])) =
+      ↑(e.symm { re := 0, im := 1 })
+  simp [QuaternionAlgebra.Basis.lift]
+
+lemma toFun_one_eq (x : Dˣ) (hx : ∀ z, x.1⁻¹ * f k e z * x = k.val z)
+    (h : Module.finrank ℝ D = 4) :
+    toFun _ _ _ hx h ((QuaternionAlgebra.basisOneIJK (-1 : ℝ) 0 (-1 : ℝ)) 0) = 1 := by
+  simp only [QuaternionAlgebra.lift_apply]
+  rw [show ((QuaternionAlgebra.basisOneIJK (-1 : ℝ) 0 (-1 : ℝ)) 0) =
+      ({ re := 1, imI := 0, imJ := 0, imK := 0 } : ℍ[ℝ]) by
+    ext <;> simp [QuaternionAlgebra.basisOneIJK]]
+  change (({
+      i := ↑(e.symm { re := 0, im := 1 })
+      j := (algebraMap ℝ D) (√(x_corre_R k e x hx h).choose)⁻¹ * ↑x
+      k := ↑(e.symm { re := 0, im := 1 }) *
+        ((algebraMap ℝ D) (√(x_corre_R k e x hx h).choose)⁻¹ * ↑x)
+      i_mul_i := by rw [i_mul_i _ e, zero_smul, add_zero]
+      j_mul_j := j_mul_j _ _ _ hx h
+      i_mul_j := by rfl
+      j_mul_i := by rw [j_mul_i_eq_neg_i_mul_j _ _ _ hx h, zero_smul, zero_sub]
+    } : QuaternionAlgebra.Basis D (-1 : ℝ) 0 (-1 : ℝ)).liftHom
+      ({ re := 1, imI := 0, imJ := 0, imK := 0 } : ℍ[ℝ])) = 1
+  change (({
+      i := ↑(e.symm { re := 0, im := 1 })
+      j := (algebraMap ℝ D) (√(x_corre_R k e x hx h).choose)⁻¹ * ↑x
+      k := ↑(e.symm { re := 0, im := 1 }) *
+        ((algebraMap ℝ D) (√(x_corre_R k e x hx h).choose)⁻¹ * ↑x)
+      i_mul_i := by rw [i_mul_i _ e, zero_smul, add_zero]
+      j_mul_j := j_mul_j _ _ _ hx h
+      i_mul_j := by rfl
+      j_mul_i := by rw [j_mul_i_eq_neg_i_mul_j _ _ _ hx h, zero_smul, zero_sub]
+    } : QuaternionAlgebra.Basis D (-1 : ℝ) 0 (-1 : ℝ)).lift
+      ({ re := 1, imI := 0, imJ := 0, imK := 0 } : ℍ[ℝ])) = 1
+  simp [QuaternionAlgebra.Basis.lift]
+
+lemma toFun_j_eq (x : Dˣ) (hx : ∀ z, x.1⁻¹ * f k e z * x = k.val z)
+    (h : Module.finrank ℝ D = 4) :
+    toFun _ _ _ hx h ((QuaternionAlgebra.basisOneIJK (-1 : ℝ) 0 (-1 : ℝ)) 2) =
+      (algebraMap ℝ D) (√(x_corre_R k e x hx h).choose)⁻¹ * ↑x := by
+  simp only [QuaternionAlgebra.lift_apply]
+  rw [show ((QuaternionAlgebra.basisOneIJK (-1 : ℝ) 0 (-1 : ℝ)) 2) =
+      ({ re := 0, imI := 0, imJ := 1, imK := 0 } : ℍ[ℝ]) by
+    ext <;> simp [QuaternionAlgebra.basisOneIJK]]
+  change (({
+      i := ↑(e.symm { re := 0, im := 1 })
+      j := (algebraMap ℝ D) (√(x_corre_R k e x hx h).choose)⁻¹ * ↑x
+      k := ↑(e.symm { re := 0, im := 1 }) *
+        ((algebraMap ℝ D) (√(x_corre_R k e x hx h).choose)⁻¹ * ↑x)
+      i_mul_i := by rw [i_mul_i _ e, zero_smul, add_zero]
+      j_mul_j := j_mul_j _ _ _ hx h
+      i_mul_j := by rfl
+      j_mul_i := by rw [j_mul_i_eq_neg_i_mul_j _ _ _ hx h, zero_smul, zero_sub]
+    } : QuaternionAlgebra.Basis D (-1 : ℝ) 0 (-1 : ℝ)).liftHom
+      ({ re := 0, imI := 0, imJ := 1, imK := 0 } : ℍ[ℝ])) =
+      (algebraMap ℝ D) (√(x_corre_R k e x hx h).choose)⁻¹ * ↑x
+  change (({
+      i := ↑(e.symm { re := 0, im := 1 })
+      j := (algebraMap ℝ D) (√(x_corre_R k e x hx h).choose)⁻¹ * ↑x
+      k := ↑(e.symm { re := 0, im := 1 }) *
+        ((algebraMap ℝ D) (√(x_corre_R k e x hx h).choose)⁻¹ * ↑x)
+      i_mul_i := by rw [i_mul_i _ e, zero_smul, add_zero]
+      j_mul_j := j_mul_j _ _ _ hx h
+      i_mul_j := by rfl
+      j_mul_i := by rw [j_mul_i_eq_neg_i_mul_j _ _ _ hx h, zero_smul, zero_sub]
+    } : QuaternionAlgebra.Basis D (-1 : ℝ) 0 (-1 : ℝ)).lift
+      ({ re := 0, imI := 0, imJ := 1, imK := 0 } : ℍ[ℝ])) =
+      (algebraMap ℝ D) (√(x_corre_R k e x hx h).choose)⁻¹ * ↑x
+  simp [QuaternionAlgebra.Basis.lift]
+
+lemma toFun_k_eq (x : Dˣ) (hx : ∀ z, x.1⁻¹ * f k e z * x = k.val z)
+    (h : Module.finrank ℝ D = 4) :
+    toFun _ _ _ hx h ((QuaternionAlgebra.basisOneIJK (-1 : ℝ) 0 (-1 : ℝ)) 3) =
+      ↑(e.symm { re := 0, im := 1 }) *
+        ((algebraMap ℝ D) (√(x_corre_R k e x hx h).choose)⁻¹ * ↑x) := by
+  simp only [QuaternionAlgebra.lift_apply]
+  rw [show ((QuaternionAlgebra.basisOneIJK (-1 : ℝ) 0 (-1 : ℝ)) 3) =
+      ({ re := 0, imI := 0, imJ := 0, imK := 1 } : ℍ[ℝ]) by
+    ext <;> simp [QuaternionAlgebra.basisOneIJK]]
+  change (({
+      i := ↑(e.symm { re := 0, im := 1 })
+      j := (algebraMap ℝ D) (√(x_corre_R k e x hx h).choose)⁻¹ * ↑x
+      k := ↑(e.symm { re := 0, im := 1 }) *
+        ((algebraMap ℝ D) (√(x_corre_R k e x hx h).choose)⁻¹ * ↑x)
+      i_mul_i := by rw [i_mul_i _ e, zero_smul, add_zero]
+      j_mul_j := j_mul_j _ _ _ hx h
+      i_mul_j := by rfl
+      j_mul_i := by rw [j_mul_i_eq_neg_i_mul_j _ _ _ hx h, zero_smul, zero_sub]
+    } : QuaternionAlgebra.Basis D (-1 : ℝ) 0 (-1 : ℝ)).liftHom
+      ({ re := 0, imI := 0, imJ := 0, imK := 1 } : ℍ[ℝ])) =
+      ↑(e.symm { re := 0, im := 1 }) *
+        ((algebraMap ℝ D) (√(x_corre_R k e x hx h).choose)⁻¹ * ↑x)
+  change (({
+      i := ↑(e.symm { re := 0, im := 1 })
+      j := (algebraMap ℝ D) (√(x_corre_R k e x hx h).choose)⁻¹ * ↑x
+      k := ↑(e.symm { re := 0, im := 1 }) *
+        ((algebraMap ℝ D) (√(x_corre_R k e x hx h).choose)⁻¹ * ↑x)
+      i_mul_i := by rw [i_mul_i _ e, zero_smul, add_zero]
+      j_mul_j := j_mul_j _ _ _ hx h
+      i_mul_j := by rfl
+      j_mul_i := by rw [j_mul_i_eq_neg_i_mul_j _ _ _ hx h, zero_smul, zero_sub]
+    } : QuaternionAlgebra.Basis D (-1 : ℝ) 0 (-1 : ℝ)).lift
+      ({ re := 0, imI := 0, imJ := 0, imK := 1 } : ℍ[ℝ])) =
+      ↑(e.symm { re := 0, im := 1 }) *
+        ((algebraMap ℝ D) (√(x_corre_R k e x hx h).choose)⁻¹ * ↑x)
+  simp [QuaternionAlgebra.Basis.lift]
 
 @[simp] theorem succ_two_eq_three (n : ℕ) : Fin.succ (2 : Fin (n + 3)) = 3 := rfl
 
@@ -681,30 +806,30 @@ lemma linEquivH_eq_toFun (x : Dˣ) (hx : ∀ z, x.1⁻¹ * f k e z * x = k.val z
   intro i
   change (linEquivH _ _ _ hx h) _ = (toFun _ _ _ hx h) _
   fin_cases i
-  · erw [Basis.equiv_apply]
-    simp only [Fin.isValue, Fin.zero_eta, Equiv.coe_fn_mk, Matrix.cons_val_zero, Basis.coe_mk,
-      basisijk, map_inv₀, QuaternionAlgebra.lift_apply, QuaternionAlgebra.Basis.liftHom,
-      QuaternionAlgebra.basisOneIJK, Basis.coe_ofEquivFun,
-      QuaternionAlgebra.coe_linearEquivTuple_symm, QuaternionAlgebra.equivTuple_symm_apply,
-      Pi.single_eq_same, ne_eq, one_ne_zero, not_false_eq_true, Pi.single_eq_of_ne, Fin.reduceEq,
-      AlgHom.coe_mk', RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, QuaternionAlgebra.Basis.lift,
-      map_one, zero_smul, add_zero]
-    rw [← Fin.succ_one_eq_two, Fin.cons_succ, ← Fin.succ_zero_eq_one, Fin.cons_succ]; simp
-  · erw [Basis.equiv_apply]
-    simp only [Fin.isValue, Fin.mk_one, Equiv.coe_fn_mk, Matrix.cons_val_one, Matrix.cons_val_zero,
-      Basis.coe_mk, basisijk, map_inv₀, QuaternionAlgebra.lift_apply,
-      QuaternionAlgebra.Basis.liftHom, QuaternionAlgebra.basisOneIJK, Basis.coe_ofEquivFun,
-      QuaternionAlgebra.coe_linearEquivTuple_symm, QuaternionAlgebra.equivTuple_symm_apply, ne_eq,
-      zero_ne_one, not_false_eq_true, Pi.single_eq_of_ne, Pi.single_eq_same, Fin.reduceEq,
-      AlgHom.coe_mk', RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, QuaternionAlgebra.Basis.lift,
-      map_zero, one_smul, zero_add, zero_smul, add_zero]
-    rw [← succ_two_eq_three, Fin.cons_succ, ← Fin.succ_one_eq_two, Fin.cons_succ]; simp
-  · erw [Basis.equiv_apply]
-    simp [QuaternionAlgebra.basisOneIJK, QuaternionAlgebra.Basis.liftHom,
-      QuaternionAlgebra.Basis.lift]
-  · erw [Basis.equiv_apply]
-    simp [QuaternionAlgebra.basisOneIJK, QuaternionAlgebra.Basis.liftHom,
-      QuaternionAlgebra.Basis.lift]
+  · erw [Basis.equiv_apply
+      (b := QuaternionAlgebra.basisOneIJK (-1 : ℝ) 0 (-1 : ℝ))
+      (b' := isBasisijk k e x hx h)]
+    simp only [isBasisijk, basisijk, Equiv.coe_fn_mk, Basis.coe_mk]
+    norm_num
+    simpa [toFun, QuaternionAlgebra.lift_apply] using (toFun_one_eq k e x hx h).symm
+  · erw [Basis.equiv_apply
+      (b := QuaternionAlgebra.basisOneIJK (-1 : ℝ) 0 (-1 : ℝ))
+      (b' := isBasisijk k e x hx h)]
+    simp only [isBasisijk, basisijk, Equiv.coe_fn_mk, Basis.coe_mk]
+    norm_num
+    simpa [toFun, QuaternionAlgebra.lift_apply] using (toFun_i_eq k e x hx h).symm
+  · erw [Basis.equiv_apply
+      (b := QuaternionAlgebra.basisOneIJK (-1 : ℝ) 0 (-1 : ℝ))
+      (b' := isBasisijk k e x hx h)]
+    simp only [isBasisijk, basisijk, Equiv.coe_fn_mk, Basis.coe_mk]
+    norm_num
+    simpa [toFun, QuaternionAlgebra.lift_apply] using (toFun_j_eq k e x hx h).symm
+  · erw [Basis.equiv_apply
+      (b := QuaternionAlgebra.basisOneIJK (-1 : ℝ) 0 (-1 : ℝ))
+      (b' := isBasisijk k e x hx h)]
+    simp only [isBasisijk, basisijk, Equiv.coe_fn_mk, Basis.coe_mk]
+    norm_num
+    simpa [toFun, QuaternionAlgebra.lift_apply] using (toFun_k_eq k e x hx h).symm
 
 -- set_option maxHeartbeats 600000 in
 lemma bij_tofun (x : Dˣ) (hx : ∀ z, x.1⁻¹ * f k e z * x = k.val z)
@@ -731,7 +856,7 @@ abbrev SmulCA (A : Type) [DivisionRing A] [Algebra ℝ A] [FiniteDimensional ℝ
   map_zero' := by simp
   map_add' z1 z2 := by simp
 
-instance AlgCA (A : Type) [DivisionRing A] [Algebra ℝ A] [FiniteDimensional ℝ A]
+abbrev AlgCA (A : Type) [DivisionRing A] [Algebra ℝ A] [FiniteDimensional ℝ A]
     (e : ℂ ≃ₐ[ℝ] (Subalgebra.center ℝ A)) : Algebra ℂ A where
   __ := SmulCA A e
   smul z a := (SmulCA A e z) * a

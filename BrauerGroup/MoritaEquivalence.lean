@@ -60,7 +60,7 @@ def toModuleCatOverMatrix : ModuleCat R ⥤ ModuleCat M[ι, R] where
   map_comp _ _ := rfl
 
 @[simps]
-def fromModuleCatOverMatrix.α [Inhabited ι] (M : Type*) [AddCommGroup M] [Module M[ι, R] M] :
+def fromModuleCatOverMatrix.α (M : Type*) [AddCommGroup M] [Module M[ι, R] M] :
     AddSubgroup M where
   carrier := Set.range ((single (default : ι) (default : ι) (1 : R) : M[ι, R]) • ·)
   add_mem' := by
@@ -175,18 +175,12 @@ def matrix.unitIsoHom :
         simp only [single, of_apply, ite_smul, zero_smul, one_smul, Finset.smul_sum,
           smul_ite, smul_zero]}
   naturality {X Y} f := by
-    simp only [Functor.comp_obj, toModuleCatOverMatrix_obj_carrier, Functor.id_obj,
-      Functor.comp_map, Functor.id_map]
+    simp only [Functor.id_obj, Functor.comp_map, Functor.id_map]
     ext ⟨_, x, rfl⟩
     change ∑ _, _ = f _
     rw [fromModuleCatOverMatrix_map]
-    simp only [toModuleCatOverMatrix_obj_isAddCommGroup, toModuleCatOverMatrix_obj_isModule,
-      fromModuleCatOverMatrix_obj_carrier, toModuleCatOverMatrix_obj_carrier,
-      fromModuleCatOverMatrix_obj_isAddCommGroup, fromModuleCatOverMatrix_obj_isModule,
-      toModuleCatOverMatrix_map, ModuleCat.hom_ofHom, LinearMap.coe_mk, AddHom.coe_mk]
-    change ∑ _, (ModuleCat.Hom.hom _ _) = (ConcreteCategory.hom f) (ModuleCat.Hom.hom _ _)
-    rw [ModuleCat.hom_ofHom]
-    change _ = f (∑ i : ι, ∑ _, _)
+    simp only [toModuleCatOverMatrix_map]
+    change ∑ _, (ModuleCat.Hom.hom f) _ = (ConcreteCategory.hom f) (∑ i : ι, ∑ _, _)
     rw [map_sum]
     refine Finset.sum_congr rfl fun i _ => ?_
     simp only [map_sum, _root_.map_smul]
@@ -202,7 +196,8 @@ def matrix.unitIsoInv :
     { toFun x := by
         refine ⟨Function.update (0 : ι → X) default x, fun _ => x, ?_⟩
         dsimp
-        ext i
+        apply funext
+        intro i
         change ∑ _, _ = _
         simp only [single, of_apply, ite_smul, one_smul, zero_smul, Function.update,
           eq_rec_constant, Pi.zero_apply, dite_eq_ite]
@@ -215,7 +210,6 @@ def matrix.unitIsoInv :
           tauto
       map_add' := by
         rintro (x : X) (y : X)
-        simp only [toModuleCatOverMatrix_obj_carrier]
         refine Subtype.ext <| funext fun i ↦ ?_
         change _ =
           (Function.update (0 : ι → X) default x + Function.update (0 : ι → X) default y) i
@@ -233,13 +227,9 @@ def matrix.unitIsoInv :
         · rw [single_apply_of_row_ne, zero_smul]
           exact Ne.symm h }
   naturality {X Y} f := by
-    simp only [Functor.id_obj, Functor.comp_obj, toModuleCatOverMatrix_obj_carrier,
-      Functor.id_map, Functor.comp_map]
+    simp only [Functor.id_obj, Functor.id_map, Functor.comp_map]
     ext x
     refine Subtype.ext <| funext fun i ↦ ?_
-    simp only [toModuleCatOverMatrix_obj_carrier, fromModuleCatOverMatrix_obj_carrier]
-    erw [LinearMap.coe_mk, AddHom.coe_mk, Subtype.coe_mk, fromModuleCatOverMatrix_map,
-      ← ModuleCat.ofHom_comp, toModuleCatOverMatrix_map, ModuleCat.hom_ofHom]
     change Function.update (0 : ι → Y) default (f x) i =
       f (Function.update (0 : ι → X) default x i)
     simp only [Function.update, eq_rec_constant, Pi.zero_apply, dite_eq_ite]
@@ -255,19 +245,10 @@ def matrix.unitIso :
   inv := matrix.unitIsoInv R ι
   hom_inv_id := by
     ext X ⟨_, x, rfl⟩
-    simp only [Functor.comp_obj, toModuleCatOverMatrix_obj_carrier, NatTrans.comp_app,
-      Functor.id_obj, NatTrans.id_app, ModuleCat.id_apply]
+    simp only [NatTrans.comp_app, Functor.id_obj, NatTrans.id_app]
     refine Subtype.ext <| funext fun i ↦ ?_
-    simp only [toModuleCatOverMatrix_obj_isAddCommGroup, toModuleCatOverMatrix_obj_isModule,
-      fromModuleCatOverMatrix_obj_isAddCommGroup, toModuleCatOverMatrix_obj_carrier,
-      fromModuleCatOverMatrix_obj_isModule, ModuleCat.hom_comp, fromModuleCatOverMatrix_obj_carrier,
-      LinearMap.coe_comp, Function.comp_apply]
-    erw [matrix.unitIsoInv_app, ModuleCat.hom_ofHom]
-    change _ = ∑ _, _
-    erw [matrix.unitIsoHom_app, ModuleCat.hom_ofHom]
-    simp only [toModuleCatOverMatrix_obj_carrier, toModuleCatOverMatrix_obj_isAddCommGroup,
-      toModuleCatOverMatrix_obj_isModule, LinearMap.coe_mk, AddHom.coe_mk, map_sum,
-      AddSubgroup.val_finset_sum, Finset.sum_apply]
+    change Function.update (0 : ι → X) default (∑ j, (single default default 1 • x) j) i =
+      ∑ j : ι, single default default 1 i j • x j
     simp only [Function.update, eq_rec_constant, Pi.zero_apply, dite_eq_ite]
     split_ifs with h
     · refine Finset.sum_congr rfl fun i _ => ?_
@@ -282,16 +263,13 @@ def matrix.unitIso :
         rw [if_neg]
         tauto
     · symm
-      refine Finset.sum_congr rfl fun j _ => ?_
-      dsimp only [single, of_apply]
-      rw [if_neg, zero_smul]
-      tauto
+      apply Finset.sum_eq_zero
+      intro j _
+      rw [single_apply_of_row_ne, zero_smul]
+      exact Ne.symm h
   inv_hom_id := by
     ext X (x : X)
-    simp only [Functor.id_obj, NatTrans.comp_app, Functor.comp_obj, NatTrans.id_app,
-      ModuleCat.id_apply]
-    rw [matrix.unitIsoHom_app, matrix.unitIsoInv_app, ← ModuleCat.ofHom_comp,
-      ModuleCat.hom_ofHom]
+    simp only [Functor.id_obj, NatTrans.comp_app, NatTrans.id_app]
     change (∑ i : ι, Function.update (0 : ι → X) default x i) = x
     simp [Function.update]
 
@@ -309,7 +287,7 @@ noncomputable def matrix.counitIsoHomMap (M : ModuleCat M[ι, R]) :
       map_smul' x m := funext fun i ↦ Subtype.ext <| by
         simp only [RingHom.id_apply]
         change _ = Subtype.val (∑ _, _)
-        simp only [AddSubmonoidClass.coe_finset_sum, smul_α_coe]
+        simp only [AddSubmonoidClass.coe_finsetSum, smul_α_coe]
         simp_rw [← SemigroupAction.mul_smul, single_mul_single_same, mul_one, ← Finset.sum_smul]
         congr 2
         conv_lhs => rw [Matrix.matrix_eq_sum_single x]
@@ -358,7 +336,7 @@ noncomputable def matrix.counitIsoHomMap (M : ModuleCat M[ι, R]) :
       by_cases hij : i = j
       · subst hij
         change Subtype.val (∑ _, _) = _
-        simp only [AddSubmonoidClass.coe_finset_sum, smul_α_coe, Function.update_self]
+        simp only [AddSubmonoidClass.coe_finsetSum, smul_α_coe, Function.update_self]
         simp_rw [← SemigroupAction.mul_smul, single_mul_single_same, mul_one]
         rw [Finset.sum_eq_single_of_mem (a := default), single_apply_same]
         pick_goal 2
@@ -375,7 +353,7 @@ noncomputable def matrix.counitIsoHomMap (M : ModuleCat M[ι, R]) :
         pick_goal 2
         · exact Ne.symm hij
         change Subtype.val (∑ _, _) = 0
-        simp only [AddSubmonoidClass.coe_finset_sum, smul_α_coe]
+        simp only [AddSubmonoidClass.coe_finsetSum, smul_α_coe]
         apply Finset.sum_eq_zero
         intro k _
         rw [single_apply_of_ne, single_zero, zero_smul]
@@ -386,18 +364,13 @@ noncomputable def matrix.counitIsoHom :
     fromModuleCatOverMatrix R ι ⋙ toModuleCatOverMatrix R ι ⟶ 𝟭 (ModuleCat M[ι, R]) where
   app M := (matrix.counitIsoHomMap R ι M).inv
   naturality X Y f := by
-    simp only [Functor.comp_obj, Functor.id_obj, Functor.comp_map, Functor.id_map]
+    simp only [Functor.id_obj, Functor.comp_map, Functor.id_map]
     rw [Iso.eq_inv_comp, ← Category.assoc, Iso.comp_inv_eq]
     ext x
-    simp only [toModuleCatOverMatrix_obj_carrier, fromModuleCatOverMatrix_obj_carrier,
-      toModuleCatOverMatrix_obj_isAddCommGroup, fromModuleCatOverMatrix_obj_isAddCommGroup,
-      toModuleCatOverMatrix_obj_isModule, fromModuleCatOverMatrix_obj_isModule, ModuleCat.hom_comp,
-      LinearMap.coe_comp, Function.comp_apply]
-    refine funext fun i ↦ ?_
-    erw [toModuleCatOverMatrix_map, ModuleCat.hom_ofHom]
-    refine Subtype.ext ?_
-    erw [counitIsoHomMap_hom_hom_apply_coe]
-    simp [counitIsoHomMap]
+    simp only [ModuleCat.hom_comp, toModuleCatOverMatrix_map, fromModuleCatOverMatrix_map]
+    refine funext fun i ↦ Subtype.ext ?_
+    change f (single default i 1 • x) = single default i 1 • f x
+    rw [map_smul]
 
 @[simps]
 noncomputable def matrix.counitIsoInv :
@@ -405,15 +378,12 @@ noncomputable def matrix.counitIsoInv :
     fromModuleCatOverMatrix R ι ⋙ toModuleCatOverMatrix R ι where
   app M := (matrix.counitIsoHomMap R ι M).hom
   naturality X Y f := by
-    simp only [Functor.id_obj, Functor.comp_obj, Functor.id_map, Functor.comp_map]
+    simp only [Functor.id_obj, Functor.id_map, Functor.comp_map]
     ext x
-    simp only [Functor.comp_obj, fromModuleCatOverMatrix_obj_carrier,
-      toModuleCatOverMatrix_obj_carrier]
+    simp only [ModuleCat.hom_comp, toModuleCatOverMatrix_map, fromModuleCatOverMatrix_map]
     refine funext fun i ↦ Subtype.ext ?_
-    erw [counitIsoHomMap_hom_hom_apply_coe, fromModuleCatOverMatrix_map,
-      toModuleCatOverMatrix_map]
-    simp [counitIsoHomMap]
-    rfl
+    change single default i 1 • f x = f (single default i 1 • x)
+    rw [map_smul]
 
 @[simps]
 noncomputable def matrix.counitIso :
@@ -430,34 +400,24 @@ noncomputable def moritaEquivalentToMatrix : ModuleCat R ≌ ModuleCat M[ι, R] 
   unitIso := matrix.unitIso R ι |>.symm
   counitIso := matrix.counitIso R ι
   functor_unitIso_comp X := by
-    simp only [Functor.id_obj, Functor.comp_obj, Iso.symm_hom, matrix.unitIso_inv,
+    simp only [Iso.symm_hom, matrix.unitIso_inv, toModuleCatOverMatrix_map,
       matrix.counitIso_hom]
-    ext (x : ι → X)
-    simp only [matrix.counitIsoHom_app, Functor.comp_obj,
-      toModuleCatOverMatrix_obj_carrier]
-    apply_fun (matrix.counitIsoHomMap R ι _).hom using LinearEquiv.injective _
-    change (ModuleCat.Hom.hom (matrix.counitIsoHomMap R ι ((toModuleCatOverMatrix R ι).obj X)).hom)
-      (((toModuleCatOverMatrix R ι).map ((matrix.unitIsoInv R ι).app X) ≫
-        (matrix.counitIsoHomMap R ι ((toModuleCatOverMatrix R ι).obj X)).inv) x) =
-      (ModuleCat.Hom.hom _) _
-    rw [ModuleCat.hom_id, LinearMap.id_apply]
-    erw [Iso.inv_hom_id_apply (matrix.counitIsoHomMap R ι _)]
-    change ModuleCat.Hom.hom _ _ = _
-    simp only [Functor.comp_obj, toModuleCatOverMatrix_obj_carrier,
-      fromModuleCatOverMatrix_obj_carrier, toModuleCatOverMatrix_obj_isAddCommGroup,
-      toModuleCatOverMatrix_obj_isModule, Functor.id_obj,
-      fromModuleCatOverMatrix_obj_isAddCommGroup, fromModuleCatOverMatrix_obj_isModule,
-      matrix.unitIsoInv_app, toModuleCatOverMatrix_map, ModuleCat.hom_ofHom, LinearMap.coe_mk,
-      AddHom.coe_mk, matrix.counitIsoHomMap, LinearEquiv.toModuleIso_hom, LinearEquiv.coe_coe,
-      LinearEquiv.ofBijective_apply]
-    ext i : 1
-    simp only [Subtype.mk.injEq]
-    change _ = fun k ↦ ∑ j, _
-    ext k
-    simp [Function.update_apply, single]
-    split_ifs with h
-    · subst h; simp
-    · exact Eq.symm <| Finset.sum_eq_zero fun l _ ↦ by simp; tauto
+    ext v
+    apply_fun (matrix.counitIsoHomMap R ι ((toModuleCatOverMatrix R ι).obj X)).hom using
+      LinearEquiv.injective _
+    rw [ModuleCat.hom_id]
+    change _ = (ModuleCat.Hom.hom (matrix.counitIsoHomMap R ι
+      ((toModuleCatOverMatrix R ι).obj X)).hom) v
+    erw [Iso.inv_hom_id_apply]
+    refine funext fun i => ?_
+    apply Subtype.ext
+    funext j
+    change Function.update (0 : ι → X) default (v i) j =
+      (∑ k : ι, single default i (1 : R) j k • v k)
+    by_cases h : j = default
+    · subst h
+      simp [Function.update, single]
+    · simp [Function.update, single, h, Ne.symm h]
 
 namespace IsMoritaEquivalent
 namespace division_ring -- auxilaries for division rings, don't use
@@ -578,18 +538,18 @@ lemma IsSimpleModule.functor
   rw [isSimpleModule_iff_injective_or_eq_zero] at simple_module ⊢
   rcases simple_module with ⟨nontriv, H⟩
   refine ⟨e.nontrivial (h := nontriv), fun N f => ?_⟩
-  let F := e.unit.app M ≫ e.inverse.map f
+  let F : M ⟶ e.inverse.obj N := e.unit.app M ≫ e.inverse.map f
   rcases H _ F with H|H
-  · simp only [Functor.id_obj, Functor.comp_obj, Preadditive.IsIso.comp_left_eq_zero, F] at H
-    replace H : e.inverse.map f = e.inverse.map 0 := by simpa using H
+  · have hzero : e.inverse.map f = 0 := by
+      apply (cancel_epi (e.unit.app M)).1
+      convert H using 1
+    replace H : e.inverse.map f = e.inverse.map 0 := by simpa using hzero
     exact .inl <| e.inverse.map_injective H
-  · simp only [Functor.id_obj, Functor.comp_obj, F] at H
-    refine Or.inr ?_
+  · refine Or.inr ?_
     rw [← ModuleCat.mono_iff_injective] at H ⊢
-    have m1 : Mono (e.functor.map <| e.unit.app M ≫ e.inverse.map f) := e.functor.map_mono _
-    simp only [Functor.id_obj, Functor.comp_obj, Functor.map_comp, Equivalence.fun_inv_map,
-      Equivalence.functor_unit_comp_assoc] at m1
-    exact mono_of_mono f (e.counitInv.app N)
+    have hInv : Mono (e.inverse.map f) :=
+      (mono_comp_iff_of_isIso (e.unit.app M) (e.inverse.map f)).1 H
+    exact e.inverse.mono_of_mono_map hInv
 
 end division_ring
 
