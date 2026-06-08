@@ -454,7 +454,8 @@ noncomputable def moritaEquivalentToMatrix : ModuleCat R ≌ ModuleCat M[ι, R] 
     simp only [Subtype.mk.injEq]
     change _ = fun k ↦ ∑ j, _
     ext k
-    simp [Function.update_apply, single]
+    simp only [Function.update_apply, Pi.zero_apply, single, of_apply, ite_smul, one_smul,
+      zero_smul]
     split_ifs with h
     · subst h; simp
     · exact Eq.symm <| Finset.sum_eq_zero fun l _ ↦ by simp; tauto

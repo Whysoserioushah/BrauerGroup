@@ -159,8 +159,7 @@ lemma maxsubfield_of_div_iff (L : SubField K D) : (∀ (L' : Subalgebra K D)
 lemma IsMaxSubfield.ofAlgEquiv (L1 L2 : SubField K D) (e : L1 ≃ₐ[K] L2)
     (hL1 : IsMax L1) : IsMax L2 := by
   have hL11 := dim_max_subfield K D L1 hL1
-  have dim_eq := e.toLinearEquiv.finrank_eq
-  simp [dim_eq] at hL11
+  rw [e.toLinearEquiv.finrank_eq] at hL11
   exact maxsubfield_of_div_iff K D L2|>.1 <| cor_two_2to3 K D L2 hL11
 
 end cors_of_DC
