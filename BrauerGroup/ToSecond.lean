@@ -354,7 +354,7 @@ lemma exists_iso :
   have eq3 := eq1.symm.trans eq2
   haveI : FiniteDimensional F D := is_fin_dim_of_wdb _ _ (NeZero.ne _) _ isoB
   have : 0 < Module.finrank F D := Module.finrank_pos
-  rw [Nat.mul_right_inj (by cutsat), ← pow_two, ← pow_two] at eq3
+  rw [Nat.mul_right_inj (by lia), ← pow_two, ← pow_two] at eq3
   simp only [zero_le, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, pow_left_inj₀] at eq3
   subst eq3
   exact ⟨isoA.trans isoB.symm⟩
@@ -798,7 +798,8 @@ def fromSnd :
             rw [val_smul, val_mul]
             unfold basis
             erw [Basis.unitsSMul_apply, Basis.unitsSMul_apply, Basis.unitsSMul_apply]
-            erw [val_smul, val_smul, val_smul, val_smul, val_smul]
+            erw [CrossProductAlgebra.val_smul, CrossProductAlgebra.val_smul,
+              CrossProductAlgebra.val_smul]
             simp only [CrossProductAlgebra.basis, Basis.coe_ofRepr, valLinearEquiv_symm_apply,
               AddEquiv.toEquiv_eq_coe, Equiv.invFun_as_coe, AddEquiv.coe_toEquiv_symm,
               valAddEquiv_symm_apply_val, Finsupp.smul_single, smul_eq_mul, _root_.mul_one,
