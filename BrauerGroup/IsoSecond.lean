@@ -240,7 +240,9 @@ def C_smul_aux (c : C) : M α β →ₗ[F] M α β :=
     simp only [← smul_mul_assoc, basis_smul_comm]
     congr 2
     apply val_injective
-    simp [CrossProductAlgebra.basis]
+    simp only [basis, Basis.coe_ofRepr, valLinearEquiv_symm_apply, AddEquiv.toEquiv_eq_coe,
+      Equiv.invFun_as_coe, AddEquiv.coe_toEquiv_symm, val_mul, val_smul, valAddEquiv_symm_apply_val,
+      Finsupp.smul_single, smul_eq_mul, mul_one]
     induction b.val using Finsupp.induction_linear with
     | zero => simp
     | add f g _ _ => simp_all
@@ -365,7 +367,11 @@ instance : MulAction C (M α β) where
         apply val_injective; simp [CrossProductAlgebra.basis], C_smul_calc, mul_smul,
         show basis 1 = (⟨.single 1 1⟩ : CrossProductAlgebra α) from rfl,
         show ((α (1, 1)).1)⁻¹ • (⟨.single 1 1⟩ : A) = ⟨(↑(α (1, 1)))⁻¹ • .single 1 1⟩ by
-          apply val_injective; simp; congr; change _ = (α (1, 1))⁻¹.1 * 1; simp,
+          apply val_injective
+          simp only [smul_mk, Finsupp.smul_single, smul_eq_mul, mul_one]
+          congr
+          change _ = (α (1, 1))⁻¹.1 * 1
+          simp,
         Finsupp.smul_single, show (α (1, 1))⁻¹ • 1 = (α (1, 1)).1⁻¹ by
           change (α (1, 1))⁻¹.1 * 1 = _; simp,
         show (⟨.single 1 (α (1, 1)).1⁻¹⟩ : A) = 1 by rfl,
@@ -756,7 +762,7 @@ def mopEquivEnd' : Cᵐᵒᵖ ≃ₐ[F] Module.End C C :=
   simp [mopEquivEnd, Algebra.algebraMap_eq_smul_one]
 
 def C_iso_aux : Cᵐᵒᵖ ≃ₐ[F] Module.End C (Fin (Fintype.card ι) → SM) :=
-  mopEquivEnd'.trans <| (isoιSMPow' α β).algConj F
+  mopEquivEnd'.trans <| (isoιSMPow' α β).conjAlgEquiv F
 
 def C_iso_aux' :
     Cᵐᵒᵖ ≃ₐ[F] Matrix (Fin (Fintype.card ι)) (Fin (Fintype.card ι)) (Module.End C SM) :=

@@ -828,10 +828,9 @@ lemma double_centralizer :
     have eq2 := dim_centralizer F (A := A) (Subalgebra.centralizer F B)
     have eq3 := eq1.trans eq2.symm
     rw [mul_comm] at eq3
-    have eq4 := Nat.mul_left_inj (by
+    exact Nat.mul_left_inj (by
       suffices 0 < Module.finrank F (Subalgebra.centralizer F (B : Set A)) by omega
       apply Module.finrank_pos) |>.1 eq3
-    exact eq4
 
 /-
 074U

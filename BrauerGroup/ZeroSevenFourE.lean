@@ -233,8 +233,6 @@ lemma simple_mod_of_wedderburn {n : ℕ} (hn : n ≠ 0)
     haveI : IsSimpleModule D (ModuleCat.of D D) := inferInstanceAs <| IsSimpleModule D D
     exact IsMoritaEquivalent.division_ring.IsSimpleModule.functor D (Matrix (Fin n) (Fin n) D)
       (moritaEquivalentToMatrix D (Fin n)) (ModuleCat.of D D)
-  -- have : IsSimpleModule (Matrix (Fin n) (Fin n) D)
-  --   (ModuleCat.of (Matrix (Fin n) (Fin n) D) <| Fin n → D) := inst1
   have := IsMoritaEquivalent.division_ring.IsSimpleModule.functor (Matrix (Fin n) (Fin n) D) A
     e.symm (ModuleCat.of (Matrix (Fin n) (Fin n) D) (Fin n → D))
   exact this
@@ -701,7 +699,6 @@ lemma IsBalanced.congr_aux (M N : Type v) [AddCommGroup M] [AddCommGroup N] [Mod
   have := congr($hb <| l.symm n)
   simp only [toEndEnd_apply, DistribMulAction.toLinearMap_apply] at this
   apply_fun l at this
-  -- simp [this]
   aesop
 
 omit [IsSimpleRing A] in

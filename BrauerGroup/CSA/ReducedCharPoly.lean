@@ -52,7 +52,7 @@ def φ_m (φ : F →ₐ[K] E) : Matrix (Fin n) (Fin n) F →ₐ[K] Matrix (Fin n
 omit [NeZero n] in
 variable {K F E} in
 lemma φ_m_inj (φ : F →ₐ[K] E) : Function.Injective (φ_m n φ) := fun M N h ↦ funext fun i ↦
-  funext fun j ↦ by simp only [← Matrix.ext_iff, φ_m_apply] at h; exact φ.injective (h i j)
+  funext fun j ↦ by rw [← Matrix.ext_iff] at h; exact φ.injective (h i j)
 
 variable {K F E} in
 abbrev e1Aux (φ : F →ₐ[K] E) : Matrix (Fin n) (Fin n) φ.range ≃ₐ[K] (φ_m n φ).range where
@@ -81,20 +81,14 @@ variable {K F E} in
 abbrev e1'' (φ : F →ₐ[K] E) : φ.range ⊗[K] A ≃ₐ[φ.range] Matrix (Fin n) (Fin n) φ.range where
   __ := e1' K F E A n e φ
   commutes' := fun ⟨x, ⟨y, eq⟩⟩ ↦ Matrix.ext_iff.1 fun i j ↦ by
-    simp only [AlgEquiv.toEquiv_eq_coe, Algebra.TensorProduct.algebraMap_apply,
-      Algebra.algebraMap_self, RingHom.id_apply, Equiv.toFun_as_coe, EquivLike.coe_coe,
-      AlgEquiv.trans_apply, AlgEquiv.symm_mk, AlgEquiv.ofInjectiveField,
-      Algebra.TensorProduct.congr_apply, AlgEquiv.refl_toAlgHom, Algebra.TensorProduct.map_tmul,
-      AlgHom.coe_coe, AlgHom.coe_id, id_eq, AlgEquiv.coe_mk, AlgEquiv.coe_ofBijective,
-      Equiv.coe_fn_mk, AlgHom.coe_codRestrict, φ_m_apply]
+    dsimp [AlgEquiv.ofInjectiveField]
     rw [← mul_one ((AlgEquiv.ofInjective φ _).symm ⟨x, _⟩), ← smul_eq_mul,
       ← TensorProduct.smul_tmul', map_smul, ← Algebra.TensorProduct.one_def, map_one]
-    simp only [Matrix.smul_apply, smul_eq_mul, map_mul, Matrix.algebraMap_matrix_apply,
-      Algebra.algebraMap_self, RingHom.id_apply]
+    dsimp [Matrix.algebraMap_matrix_apply]
     split_ifs with h
     · subst h
       simp only [AlgEquiv.ofInjective, AlgEquiv.ofLeftInverse_symm_apply, Matrix.one_apply_eq,
-        map_one, mul_one, Subtype.mk.injEq]
+        mul_one, Subtype.mk.injEq]
       set ψ := Classical.choose _ with ψ_eq
       let hψ := Classical.choose_spec φ.injective.hasLeftInverse
       simp only [Function.LeftInverse, ← ψ_eq] at hψ

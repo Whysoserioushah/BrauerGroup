@@ -40,9 +40,6 @@ lemma exists_embedding_of_isSplit [FiniteDimensional F K] (A : CSA F) (split : i
     constructor
     have : 0 < Module.finrank F (Fin n → K) := Module.finrank_pos
     omega
-  -- haveI : IsCentralSimple F (Matrix (Fin (Module.finrank F (Fin n → K)))
-  --   (Fin (Module.finrank F (Fin n → K))) F) := by
-  --   apply MatrixRing.isCentralSimple
   haveI : Algebra.IsCentral F (Module.End F (Fin n → K)) := by
     have f := algEquivMatrix (R := F) (M := Fin n → K) (Module.finBasis _ _)
     refine f.symm.isCentral

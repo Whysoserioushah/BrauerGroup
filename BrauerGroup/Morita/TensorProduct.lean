@@ -63,8 +63,8 @@ abbrev moduleMap : B ⊗[R] C →ₐ[R]
     ((aux0 R A B e1 _).comp (moduleMapAux R A C _))) fun b c ↦ by ext; simp
 
 instance modulefromtensor (M : ModuleCat (A ⊗[R] C)) :
-  Module (B ⊗[R] C) (e1.obj ((ModuleCat.restrictScalars
-    (Algebra.TensorProduct.includeLeftRingHom)).obj M)) :=
+    Module (B ⊗[R] C) (e1.obj ((ModuleCat.restrictScalars
+      (Algebra.TensorProduct.includeLeftRingHom)).obj M)) :=
   Module.compHom _ (moduleMap R A B C e1 M).toRingHom
 
 -- set_option maxHeartbeats 800000 in
@@ -315,9 +315,6 @@ instance : (equivModuleOverTensor R A C).functor.Additive where
 instance : (equivModuleOverTensor R A C).functor.Linear R where
   map_smul {M N} f r := by
     ext m
-    simp only [ModuleCat.hom_ofHom, LinearMap.coe_mk, LinearMap.coe_toAddHom, ModuleCat.hom_smul,
-      LinearMap.smul_apply]
-    change (r • f.hom).hom m = _
     change (r • f.hom.hom) m = _
     rw [LinearMap.smul_apply]
     congr 1
@@ -359,9 +356,7 @@ instance (e : ModuleCat A ≌ ModuleCat B) [e.functor.Additive] [e.functor.Linea
 
 instance (e : ModuleCat A ≌ ModuleCat B) [e.functor.Additive] [e.functor.Linear R] :
     (MoritaTensorAux0 R A B C e).functor.Linear R where
-  map_smul {M N} f r := by
-    ext1
-    exact e.functor.map_smul _ _
+  map_smul {M N} f r := by ext1; exact e.functor.map_smul _ _
 
 abbrev MoritaTensorAux1 (e : ModuleCat A ≌ ModuleCat B) [e.functor.Additive] [e.functor.Linear R] :
     ModuleCat (A ⊗[R] C) ≌ ModuleCat (B ⊗[R] C) :=

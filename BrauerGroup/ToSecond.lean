@@ -702,8 +702,6 @@ def fromSnd :
     (groupCohomology.shortComplexH2 (galAct F K)).moduleCatLeftHomologyData.H
     -- H2 (galAct F K)
     → RelativeBrGroup K F :=
-  -- ShortComplex.descHomology _ (groupCohomology.isoCocycles₂ (galAct F K) ≫ )--_ _ _
-  -- sorry
   Quotient.lift fromCocycles₂ <| by
     rintro ⟨(a : _ → Kˣ), ha⟩ ⟨(b : _ → Kˣ), hb⟩ (hab : Submodule.quotientRel _ _ _)
     have H' : H2π (galAct F K) ⟨a, ha⟩ - H2π (galAct F K) ⟨b, hb⟩ = 0 := by
@@ -838,7 +836,6 @@ open GoodRep groupCohomology in
 lemma toSnd_fromSnd : toSnd ∘ fromSnd F K ∘ (H2Iso (galAct F K)).hom = id := by
   ext a
   induction a using H2_induction_on with | h a =>
-  -- rcases a with ⟨(a : _ → Kˣ), ha'⟩
   let am := Additive.toMul ∘ Amelia.toAdditive _ _ ∘ a
   have ha : IsMulCocycle₂ am :=
     isMulCocycle₂_of_mem_cocycles₂ _ (by simpa using a.2)
@@ -847,18 +844,13 @@ lemma toSnd_fromSnd : toSnd ∘ fromSnd F K ∘ (H2Iso (galAct F K)).hom = id :=
   let A : GoodRep K (Quotient.mk'' <| CrossProductAlgebra.asCSA am) :=
     ⟨CrossProductAlgebra.asCSA am, rfl, CrossProductAlgebra.incl am, CrossProductAlgebra.dim_eq_sq⟩
   let y_ σ : A.conjFactor σ :=
-    ⟨CrossProductAlgebra.of am σ,
-    fun c ↦ by erw [CrossProductAlgebra.of_conj]; rfl⟩
+    ⟨CrossProductAlgebra.of am σ, fun c ↦ by erw [CrossProductAlgebra.of_conj]; rfl⟩
   simp only [CategoryTheory.ShortComplex.moduleCatLeftHomologyData_H, H2π, ModuleCat.hom_comp,
     LinearMap.coe_comp, Function.comp_apply, π_comp_H2Iso_hom_apply, Submodule.Quotient.mk,
     CategoryTheory.Iso.inv_hom_id_apply]
   rw [fromSnd_wd]
   rw [toSnd_wd _ _ y_]
-  -- rw [toSnd_wd (fromSnd F K _)]
   let b : Gal(K, F) × Gal(K, F) → Kˣ := A.toCocycles₂ y_
-  -- rw [show A.toH2 y_ = Quotient.mk'' ⟨b, _⟩ by rfl]
-  -- rw [Quotient.eq'']
-  -- change (twoCoboundaries (galAct F K)).quotientRel.r _ _
   change H2π _ _ = H2π _ _
   rw [← sub_eq_zero, ← map_sub, H2π_eq_zero_iff]
   -- rw [Submodule.quotientRel_def]
@@ -868,17 +860,12 @@ lemma toSnd_fromSnd : toSnd ∘ fromSnd F K ∘ (H2Iso (galAct F K)).hom = id :=
   intro σ τ
   simp only [smul_one, div_self', _root_.mul_one, cocyclesOfIsMulCocycle₂_coe, Function.comp_apply,
     cocycles₂.val_eq_coe]
-  -- change _ = (Additive.toMul _) / (am (σ, τ))
   erw [Equiv.symm_apply_apply]
   simp only [toCocycles₂, conjFactorCompCoeffAsUnit]
-  -- change _ = _ / _
   ext : 1
   simp only [Units.val_one, Units.val_div_eq_div_val]
   field_simp
   change (am (σ, τ)).1 = _
-  -- simp [conjFactorCompCoeff, conjFactorTwistCoeff]
-
-  -- simp only [AlgEquiv.mul_apply, y_]
   change _ = A.conjFactorCompCoeff (y_ σ) (y_ τ) (y_ (σ * τ))
   apply_fun A.ι using RingHom.injective _
   rw [conjFactorCompCoeff_spec'', CrossProductAlgebra.of_mul_of, _root_.mul_assoc]
@@ -893,7 +880,8 @@ lemma fromSnd_toSnd : (fromSnd F K ∘ (H2Iso (galAct F K)).hom) ∘ toSnd = id 
   ext : 1
   conv_rhs => rw [← A.quot_eq]
   simp only [CategoryTheory.ShortComplex.moduleCatLeftHomologyData_H, GoodRep.toH2]
-  simp [H2π]
+  simp only [H2π, ModuleCat.hom_comp, LinearMap.coe_comp, Function.comp_apply,
+    π_comp_H2Iso_hom_apply, CategoryTheory.Iso.inv_hom_id_apply]
   rw [Submodule.Quotient.mk, fromSnd_wd]
   rw [Quotient.eq'']
   apply IsBrauerEquivalent.iso_to_eqv
