@@ -92,7 +92,7 @@ instance (n : ℕ) [NeZero n] : Functor.Additive (moritaEquivalentToMatrix A (Fi
 instance (n : ℕ) [NeZero n] : Functor.Linear R (moritaEquivalentToMatrix A (Fin n)).functor where
   map_smul {M N} f r := by
     ext m
-    simp
+    simp only [moritaEquivalentToMatrix_functor_obj_carrier, hom_smul]
     ext i
     rw [moritaEquivalentToMatrix_functor_map_hom_apply]
     simp only [hom_smul, LinearMap.smul_apply, moritaEquivalentToMatrix,
@@ -180,12 +180,12 @@ def mopToEnd : Aᵐᵒᵖ →ₐ[R] End (ModuleCat.of A A) where
     simp only [ModuleCat.hom_comp]; ext; simp
   commutes' := fun r ↦ by
     apply hom_ext
-    simp
+    simp only [MulOpposite.algebraMap_apply, MulOpposite.unop_op, hom_ofHom]
     ext
-    simp
+    simp only [LinearMap.coe_mk, AddHom.coe_mk, one_mul]
     change _ = (ModuleCat.ofHom _).hom 1
     rw [ModuleCat.hom_ofHom]
-    simp
+    simp only [End.one_def, hom_id, LinearMap.smul_apply, LinearMap.id_coe, id_eq]
     change _ = algebraMap R A r * 1
     rw [mul_one]
 
@@ -319,9 +319,10 @@ def aux2 (M N : ModuleCat B) (f : M ≅ N) : End M ≃ₐ[R] End N where
   commutes' r := by
     apply hom_ext
     ext n
-    simp
+    simp only [hom_comp, LinearMap.coe_comp, Function.comp_apply]
     change f.hom.hom ((ModuleCat.ofHom _).hom (f.inv.hom n)) = (ModuleCat.ofHom _).hom n
-    simp [ModuleCat.hom_ofHom]
+    simp only [of_coe, End.one_def, hom_id, hom_ofHom, LinearMap.smul_apply, LinearMap.id_coe,
+      id_eq]
     erw [map_smul f.hom.hom]
     simp
     rfl

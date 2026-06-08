@@ -20,9 +20,9 @@ abbrev φH :
     ModuleCat.of R (LinearMap.ker (ModuleCat.Hom.hom S₁.g) ⧸ LinearMap.range S₁.moduleCatToCycles) ⟶
       .of R (↥(LinearMap.ker (ModuleCat.Hom.hom S₂.g)) ⧸ LinearMap.range S₂.moduleCatToCycles) :=
   ModuleCat.ofHom <| Submodule.mapQ _ _ (φK _ _ _ f) fun ⟨x, hx1⟩ ⟨y, hy⟩ ↦ by
-    simp [φK]
+    simp only [φK, Submodule.mem_comap, LinearMap.mem_range]
     simp_rw [Subtype.ext_iff] at hy ⊢
-    simp at hy⊢
+    simp only [LinearMap.codRestrict_apply, LinearMap.restrict_coe_apply] at hy ⊢
     rw [← hy]
     change ∃ y', _ = ModuleCat.Hom.hom _ (ModuleCat.Hom.hom S₁.f _)
     simp_rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp]
@@ -38,7 +38,9 @@ def LeftHomologyMapData.ofModuleCat :
   φH := φH R S₁ S₂ f
   commi := ModuleCat.hom_ext <| LinearMap.ext fun ⟨x, hx⟩ ↦ by simp
   commf' := ModuleCat.hom_ext <| LinearMap.ext fun x ↦ by
-    simp
+    simp only [ShortComplex.moduleCatLeftHomologyData_K, ModuleCat.hom_comp, ModuleCat.hom_ofHom,
+      ShortComplex.moduleCatLeftHomologyData_f'_hom, LinearMap.coe_comp, Function.comp_apply,
+      LinearMap.comp_codRestrict]
     rw [Subtype.ext_iff]
     simp only [LinearMap.restrict_coe_apply, LinearMap.codRestrict_apply, LinearMap.coe_comp,
       Function.comp_apply]

@@ -178,7 +178,8 @@ lemma comm_square4 :
   simp only [LinearMap.comp_apply]
   apply tensor_inclusion2_inj
   rw [← comm_square2_apply, LinearEquiv.coe_toLinearMap, comm_square3_apply]
-  simp [LinearMap.comp_assoc]
+  simp only [LinearMap.coe_mk, AddHom.coe_mk, LinearEquiv.coe_coe, LinearEquiv.apply_symm_apply,
+    LinearMap.comp_assoc, LinearMap.id_coe, id_eq]
   apply LinearMap.ext
   simp [projection2_inclusion2_apply]
 
