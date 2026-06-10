@@ -5,6 +5,8 @@ import Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
 
 suppress_compilation
 
+seal Finsupp.onFinset_support
+
 open FiniteDimensional BrauerGroup Module groupCohomology
 
 variable {F K : Type} [Field K] [Field F] [Algebra F K]
