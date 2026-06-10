@@ -923,7 +923,6 @@ def baseChange_idem.Aux' (F K E : Type u) [Field F] [Field K] [Field E]
   | add => simp only [mul_add, TensorProduct.tmul_add, g.map_add, f.map_add, *]
   | tmul k2 a2 =>
   simp only [Algebra.TensorProduct.tmul_mul_tmul, *]
-  -- rw [mul_comm]
   simp only [TensorProduct.AlgebraTensorModule.assoc_symm_tmul,
     TensorProduct.AlgebraTensorModule.congr_tmul, TensorProduct.AlgebraTensorModule.rid_tmul,
     LinearEquiv.refl_apply, Algebra.TensorProduct.tmul_mul_tmul, Algebra.mul_smul_comm,

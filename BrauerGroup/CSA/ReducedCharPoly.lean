@@ -52,7 +52,7 @@ def φ_m (φ : F →ₐ[K] E) : Matrix (Fin n) (Fin n) F →ₐ[K] Matrix (Fin n
 omit [NeZero n] in
 variable {K F E} in
 lemma φ_m_inj (φ : F →ₐ[K] E) : Function.Injective (φ_m n φ) := fun M N h ↦ funext fun i ↦
-  funext fun j ↦ by simp [← Matrix.ext_iff] at h; exact φ.injective (h i j)
+  funext fun j ↦ by rw [← Matrix.ext_iff] at h; exact φ.injective (h i j)
 
 variable {K F E} in
 abbrev e1Aux (φ : F →ₐ[K] E) : Matrix (Fin n) (Fin n) φ.range ≃ₐ[K] (φ_m n φ).range where
@@ -219,9 +219,8 @@ include F_bar in
 lemma eq_polys (f1 f2 : F ⊗[K] A ≃ₐ[F] Matrix (Fin n) (Fin n) F) (a : A) :
     ReducedCharPoly f1 a = ReducedCharPoly f2 a := by
   obtain ⟨r, _, hr1, hr2⟩ := eq_pow_reducedCharpoly K F F_bar A n n f1 f2 a
-  have : r = 1 := by simpa [mul_left_eq_self₀, NeZero.ne n] using hr1.symm
-  subst this
-  simp at hr2
+  obtain rfl : r = 1 := by simpa [mul_left_eq_self₀, NeZero.ne n] using hr1.symm
+  simp only [AlgHom.coe_coe, pow_one] at hr2
   rw [← hr2]
   rfl
 
@@ -259,7 +258,7 @@ lemma mem_Kx (a : A) : ∃ f : K[X], ReducedCharPoly e a = f.mapAlgHom (Algebra.
   rw [ReducedCharPoly]
   use ⟨(⟨(e (1 ⊗ₜ[K] a)).charpoly.support, fun m ↦ fixed2 m|>.choose, ?_⟩ : ℕ →₀ K)⟩
   pick_goal 2
-  · simp
+  · simp only [mem_support_iff, ne_eq, AlgHom.toRingHom_eq_coe, Algebra.toRingHom_ofId]
     intro k
     constructor
     · by_contra! h
@@ -337,7 +336,7 @@ lemma unique_onver_split (L L_bar : Type u) [Field L] [Field L_bar] [Algebra K L
       convert Module.Finite.quotient F (Ideal.exists_maximal (F ⊗[K] L)).choose
       ext r m
       change φ r * m = r • m
-      simp [φ]
+      simp only [AlgHom.coe_mk, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, φ]
       induction m using Submodule.Quotient.induction_on with
       | H m =>
       induction m using TensorProduct.induction_on with
