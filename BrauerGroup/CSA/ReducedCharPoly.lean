@@ -74,27 +74,32 @@ abbrev e1 (φ : F →ₐ[K] E) : Matrix (Fin n) (Fin n) F ≃ₐ[K] φ_m n φ|>.
 abbrev e1' (φ : F →ₐ[K] E) : φ.range ⊗[K] A ≃ₐ[K] Matrix (Fin n) (Fin n) φ.range :=
   Algebra.TensorProduct.congr (AlgEquiv.ofInjectiveField φ).symm AlgEquiv.refl|>.trans <| ({
     __ := e
-    commutes' r := by simpa using (e.commutes (algebraMap K F r))}
+    commutes' r := by
+      show e ((algebraMap K (F ⊗[K] A)) r) = (algebraMap K (Matrix (Fin n) (Fin n) F)) r
+      rw [IsScalarTower.algebraMap_apply K F (F ⊗[K] A),
+        IsScalarTower.algebraMap_apply K F (Matrix (Fin n) (Fin n) F)]
+      exact e.commutes (algebraMap K F r)}
     : _ ≃ₐ[K] Matrix (Fin n) (Fin n) F).trans <| e1 _ _ _ _ φ|>.trans (e1Aux n φ).symm
 
 variable {K F E} in
 abbrev e1'' (φ : F →ₐ[K] E) : φ.range ⊗[K] A ≃ₐ[φ.range] Matrix (Fin n) (Fin n) φ.range where
   __ := e1' K F E A n e φ
   commutes' := fun ⟨x, ⟨y, eq⟩⟩ ↦ Matrix.ext_iff.1 fun i j ↦ by
-    dsimp [AlgEquiv.ofInjectiveField]
+    simp [AlgEquiv.ofInjectiveField]
     rw [← mul_one ((AlgEquiv.ofInjective φ _).symm ⟨x, _⟩), ← smul_eq_mul,
       ← TensorProduct.smul_tmul', map_smul, ← Algebra.TensorProduct.one_def, map_one]
-    dsimp [Matrix.algebraMap_matrix_apply]
+    simp [Matrix.algebraMap_matrix_apply]
     split_ifs with h
     · subst h
       simp only [AlgEquiv.ofInjective, AlgEquiv.ofLeftInverse_symm_apply, Matrix.one_apply_eq,
-        mul_one, Subtype.mk.injEq]
+        map_one, mul_one, Subtype.mk.injEq]
       set ψ := Classical.choose _ with ψ_eq
       let hψ := Classical.choose_spec φ.injective.hasLeftInverse
       simp only [Function.LeftInverse, ← ψ_eq] at hψ
-      rw [← eq, hψ y]
+      rw [← eq, show ψ (φ.toRingHom y) = y from hψ y]
       rfl
-    · simp [h, Subtype.ext_iff]
+    · simp [h]
+      exact Subtype.ext rfl
 
 set_option maxSynthPendingDepth 2 in
 variable {K F E A n} in
@@ -427,7 +432,9 @@ lemma reducedTrace_algebraMap (k : K) :
 @[simps]
 def reducedNormHom : A →*₀ F where
   toFun := reducedNorm e
-  map_zero' := by simp [reducedNorm]
+  map_zero' := by
+    have : Nonempty (Fin n) := ⟨⟨0, NeZero.pos n⟩⟩
+    simp [reducedNorm, Matrix.det_zero this]
   map_one' := by simp [reducedNorm, ← Algebra.TensorProduct.one_def]
   map_mul' := by simp [reducedNorm_mul]
 

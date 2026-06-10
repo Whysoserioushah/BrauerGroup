@@ -390,7 +390,7 @@ private def quotientBasis (hI : I ≠ ⊤) : Basis Gal(K, F) K I.ringCon.Quotien
   -- Assume that there is some `a : Gal(K, F) → K` such that `∑ τ ∈ J, a_τ • ϕ(x_τ) = ϕ(x_σ)`.
   -- We want to prove `∀ τ ∈ J, a_τ = 0`.
   rw [Finset.coe_cons, linearIndepOn_insert <| Finset.mem_coe.not.2 hσ,
-    Submodule.mem_span_image_finset_iff_exists_fun]
+    Submodule.mem_span_image_finset_iff_exists_fun']
   simp only [ih, comp_apply, not_exists, true_and, basis_eq_of]
   rintro a ha
   have key (c : K) : ∀ τ ∈ J, a τ * τ c = σ c * a τ := by

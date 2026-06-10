@@ -267,11 +267,11 @@ instance FathfulSMul.tensor [Module.Projective R A] [Module.Projective R B]
 open Algebra.TensorProduct (assoc congr opAlgEquiv) in
 variable {R A B} in
 abbrev e : (A ⊗[R] Aᵐᵒᵖ) ⊗[R] (B ⊗[R] Bᵐᵒᵖ) ≃ₐ[R] (A ⊗[R] B) ⊗[R] (A ⊗[R] B)ᵐᵒᵖ :=
-  (assoc R R A B (Aᵐᵒᵖ ⊗[R] Bᵐᵒᵖ)|>.trans <|
-  (congr .refl (assoc R R B Aᵐᵒᵖ Bᵐᵒᵖ)).symm.trans <|
+  (assoc R R R A B (Aᵐᵒᵖ ⊗[R] Bᵐᵒᵖ)|>.trans <|
+  (congr .refl (assoc R R R B Aᵐᵒᵖ Bᵐᵒᵖ)).symm.trans <|
   congr .refl (congr (Algebra.TensorProduct.comm R _ _) .refl) |>.trans
-  <| congr .refl (assoc R R Aᵐᵒᵖ B Bᵐᵒᵖ) |>.trans
-  <| assoc R R A Aᵐᵒᵖ (B ⊗[R] Bᵐᵒᵖ)|>.symm).symm.trans
+  <| congr .refl (assoc R R R Aᵐᵒᵖ B Bᵐᵒᵖ) |>.trans
+  <| assoc R R R A Aᵐᵒᵖ (B ⊗[R] Bᵐᵒᵖ)|>.symm).symm.trans
   <| Algebra.TensorProduct.congr .refl <| opAlgEquiv R R A B
 
 lemma e_apply (a : A) (b : B) (a' : Aᵐᵒᵖ) (b' : Bᵐᵒᵖ) :
@@ -294,7 +294,8 @@ lemma top_square_comm'' (A B : Azumaya R) :
     (e (R := R) (A := A) (B := B)).toLinearEquiv.toLinearMap := by
   ext a b c d a' b'
   dsimp
-  simp only [AlgHom.mulLeftRight_apply, Algebra.TensorProduct.tmul_mul_tmul, unop_op]
+  simp [AlgHom.mulLeftRight_apply, Algebra.TensorProduct.tmul_mul_tmul,
+    TensorProduct.homTensorHomMap_apply, unop_op]
 
 lemma top_square_comm (A B : Azumaya R) :
     (TensorProduct.homTensorHomMap _ A B A B) ∘ (Algebra.TensorProduct.congr
@@ -504,7 +505,8 @@ End R Rⁿ ⊗ (End R Rⁿ)ᵐᵒᵖ ----------> End R (End R Rⁿ)
 -/
 lemma comm_square_endend :
     inclusion2' R M ∘ₗ (AlgHom.mulLeftRight R (Module.End R M)).toLinearMap =
-    (AlgHom.mulLeftRight R _).toLinearMap ∘ₗ (tensor_inclusion1' R M) := by
+    (AlgHom.mulLeftRight R (Module.End R (Fin (nn R M) → R))).toLinearMap ∘ₗ
+      (tensor_inclusion1' R M) := by
   ext f1 g1 : 3
   apply LinearMap.ext
   intro f2

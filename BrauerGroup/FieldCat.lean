@@ -112,11 +112,9 @@ lemma hom_inv_apply {R S : FieldCat} (e : R ≅ S) (s : S) : e.hom (e.inv s) = s
 -- instance : Inhabited FieldCat :=
 --   ⟨of PUnit⟩
 
-instance : HasForget.{u} FieldCat where
-  forget :=
-    { obj R := R
-      map f := f.hom }
-  forget_faithful := ⟨fun h => by ext x; simpa using congrFun h x⟩
+instance : ConcreteCategory.{u} FieldCat (fun R S ↦ R →+* S) where
+  hom := Hom.hom
+  ofHom := ofHom
 
 /-- This unification hint helps with problems of the form `(forget ?C).obj R =?= carrier R'`.
 
@@ -130,7 +128,7 @@ unif_hint forget_obj_eq_coe (R R' : FieldCat) where
 lemma forget_obj {R : FieldCat} : (forget FieldCat).obj R = R := rfl
 
 lemma forget_map {R S : FieldCat} (f : R ⟶ S) :
-    (forget FieldCat).map f = f :=
+    (forget FieldCat).map f = (f.hom : R → S) :=
   rfl
 
 instance {R : FieldCat} : Field ((forget FieldCat).obj R) :=

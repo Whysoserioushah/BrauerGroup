@@ -520,10 +520,7 @@ noncomputable def φ0 :
       rw [_root_.mul_one, ← Algebra.commutes, ← Algebra.smul_def, ← smul_tmul',
         Submodule.Quotient.mk_smul]
     | add x y hx hy =>
-      simp only at hx hy ⊢
-      have := congr($hx + $hy)
-      rw [← smul_add, ← smul_add] at this
-      exact this
+      simpa using congr($hx + $hy)
     | zero =>
       erw [smul_zero]
 

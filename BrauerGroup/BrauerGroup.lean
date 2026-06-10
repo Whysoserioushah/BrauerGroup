@@ -213,6 +213,7 @@ end IsBrauerEquivalent
 
 namespace BrauerGroup
 
+@[implicit_reducible]
 def CSA_Setoid : Setoid (CSA K) where
   r := IsBrauerEquivalent
   iseqv := IsBrauerEquivalent.Braur_is_eqv
@@ -227,7 +228,7 @@ def is_fin_dim_of_mop (A : Type*) [Ring A] [Algebra K A] [FiniteDimensional K A]
   exact Module.Finite.equiv f
     -- Module.Finite.of_surjective f (LinearEquiv.surjective _)
 
-instance inv (A : CSA K) : CSA K := {
+def inv (A : CSA K) : CSA K := {
   __ := AlgCat.of K Aᵐᵒᵖ
   fin_dim := is_fin_dim_of_mop A }
 
@@ -378,14 +379,17 @@ theorem eqv_tensor_eqv
     IsBrauerEquivalent (mul A C) (mul B D) := by
   obtain ⟨n, m, hn, hm, ⟨e1⟩⟩ := hAB
   obtain ⟨p, q, hp, hq, ⟨e2⟩⟩ := hCD
-  exact ⟨n * p, m * q, by simp_all, by simp_all, ⟨kroneckerMatrixTensor' .. |>.symm.trans <|
-    Algebra.TensorProduct.congr e1 e2|>.trans <| kroneckerMatrixTensor' ..⟩⟩
+  exact ⟨n * p, m * q, by simp_all, by simp_all, ⟨
+    (kroneckerMatrixTensor' (K := K) A C n p).symm.trans <|
+      (Algebra.TensorProduct.congr e1 e2).trans <|
+        kroneckerMatrixTensor' (K := K) B D m q⟩⟩
 
 instance Mul : Mul <| BrauerGroup (K := K) :=
   ⟨Quotient.lift₂ (fun A B ↦ Quotient.mk (CSA_Setoid) <| BrauerGroup.mul A B)
   (by
     simp only [Quotient.eq]
     intro A B C D hAB hCD
+    change IsBrauerEquivalent (mul A B) (mul C D)
     exact eqv_tensor_eqv A C B D hAB hCD)⟩
 
 instance One : One (BrauerGroup (K := K)) := ⟨Quotient.mk (CSA_Setoid) one_in'⟩
@@ -448,8 +452,7 @@ lemma inv_eqv (A B : CSA K) (hAB : IsBrauerEquivalent A B) :
 instance Inv : Inv (BrauerGroup (K := K)) where
   inv := Quotient.lift (fun A ↦ Quotient.mk (CSA_Setoid) <| inv A) fun A B hAB ↦ by
     change IsBrauerEquivalent _ _ at hAB
-    simp only [Quotient.eq]; change IsBrauerEquivalent _ _
-    exact inv_eqv (K := K) A B hAB
+    exact Quotient.sound (inv_eqv (K := K) A B hAB)
 
 theorem mul_left_inv' (A : BrauerGroup (K := K)) : A⁻¹ * A = 1 := by
   induction A using Quotient.inductionOn' with | h A
@@ -459,14 +462,12 @@ theorem mul_left_inv' (A : BrauerGroup (K := K)) : A⁻¹ * A = 1 := by
 theorem one_mul' (A : BrauerGroup (K := K)) : 1 * A = A := by
   induction A using Quotient.inductionOn' with | h A
   change Quotient.mk'' one_in' * _ = _; apply Quotient.sound
-  exact (mul_one 1 A).trans (iso_to_eqv _ _ (Algebra.TensorProduct.congr
-    (dim_one_iso _) AlgEquiv.refl))|>.symm
+  exact iso_to_eqv _ _ (Algebra.TensorProduct.lid K A)
 
 theorem mul_one' (A : BrauerGroup (K := K)) : A * 1 = A := by
   induction A using Quotient.inductionOn' with | h A
   change _ * Quotient.mk'' one_in' = _; apply Quotient.sound
-  exact (one_mul 1 A).trans (iso_to_eqv _ _ (Algebra.TensorProduct.congr
-    AlgEquiv.refl (dim_one_iso _)))|>.symm
+  exact iso_to_eqv _ _ (Algebra.TensorProduct.rid K K A)
 
 instance Bruaer_Group : Group (BrauerGroup (K := K)) where
   mul_assoc := mul_assoc'
@@ -545,7 +546,7 @@ def e2 :
 
 def e3Aux0 : E ⊗[K] A →ₐ[E] E ⊗[K] (A ⊗[K] Matrix (Fin m) (Fin m) K) :=
   AlgHom.comp
-    { (Algebra.TensorProduct.assoc K K E A (Matrix (Fin m) (Fin m) K)).toAlgHom with
+    { (Algebra.TensorProduct.assoc K K E E A (Matrix (Fin m) (Fin m) K)).toAlgHom with
       commutes' e := by
         simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.toRingHom_eq_coe, AlgEquiv.toAlgHom_toRingHom,
           RingHom.toMonoidHom_eq_coe, Algebra.TensorProduct.algebraMap_apply,
@@ -556,7 +557,7 @@ def e3Aux0 : E ⊗[K] A →ₐ[E] E ⊗[K] (A ⊗[K] Matrix (Fin m) (Fin m) K) :
 
 def e3Aux10 : (E ⊗[K] Matrix (Fin m) (Fin m) K) ⊗[K] A ≃ₐ[K]
     E ⊗[K] (A ⊗[K] Matrix (Fin m) (Fin m) K) :=
-  (Algebra.TensorProduct.assoc K K E (Matrix (Fin m) (Fin m) K) A).trans <|
+  (Algebra.TensorProduct.assoc K K K E (Matrix (Fin m) (Fin m) K) A).trans <|
     Algebra.TensorProduct.congr AlgEquiv.refl <| Algebra.TensorProduct.comm _ _ _
 
 def e3Aux1 : E ⊗[K] Matrix (Fin m) (Fin m) K →ₐ[E] E ⊗[K] (A ⊗[K] Matrix (Fin m) (Fin m) K) :=
@@ -655,7 +656,9 @@ def e3Aux4 :
     simp only [Algebra.TensorProduct.assoc_tmul, Algebra.TensorProduct.map_tmul,
     AlgHom.coe_id, id_eq, AlgHom.coe_coe, Algebra.TensorProduct.comm_tmul,
     Algebra.TensorProduct.tmul_mul_tmul, _root_.mul_one, _root_.one_mul]
-    rw [mul_comm]
+    erw [Algebra.TensorProduct.comm_tmul]
+    rw [Algebra.TensorProduct.tmul_mul_tmul, Algebra.TensorProduct.tmul_mul_tmul,
+      _root_.mul_one, _root_.one_mul, _root_.mul_one, _root_.one_mul, mul_comm e x]
 
 set_option maxHeartbeats 800000 in
 -- FIXME: Get rid of the raised heartbeats
@@ -693,6 +696,8 @@ lemma e3Aux5 : Function.Surjective (e3Aux4 (K := K) (E := E) A m) := by
       Algebra.TensorProduct.congr_apply, AlgEquiv.refl_toAlgHom, Algebra.TensorProduct.map_tmul,
       map_one, AlgHom.coe_coe, Algebra.TensorProduct.comm_tmul,
       Algebra.TensorProduct.tmul_mul_tmul, _root_.mul_one, _root_.one_mul]
+    erw [Algebra.TensorProduct.comm_tmul]
+    rw [Algebra.TensorProduct.tmul_mul_tmul, _root_.mul_one, _root_.one_mul]
 
 def e3 [Algebra.IsCentral K A] [csa_A : IsSimpleRing A] :
     (E ⊗[K] A) ⊗[E] (E ⊗[K] Matrix (Fin m) (Fin m) K) ≃ₐ[E]
@@ -832,10 +837,10 @@ abbrev BaseChange : BrauerGroup (K := K) →* BrauerGroup (K := E) where
             (someEquivs.e3 B n).trans <| (someEquivs.e4 B n).trans <| someEquivs.e5 _ _ e.symm⟩⟩
   map_one' := by
     erw [Quotient.eq'']
-    letI : Field one_in'.carrier := inferInstanceAs <| Field K
-    letI : Algebra one_in'.carrier E := inferInstanceAs <| Algebra K E
     exact ⟨1, 1, one_ne_zero, one_ne_zero,
-      ⟨(dim_one_iso _).trans <| .symm <| (dim_one_iso _).trans <| someEquivs.e7⟩⟩
+      ⟨(dim_one_iso (K := E) (E ⊗[K] K)).trans <|
+        (someEquivs.e7 (K := K) (E := E)).symm.trans <|
+          (dim_one_iso (K := E) E).symm⟩⟩
   map_mul' := by
     intro x y
     induction x using Quotient.inductionOn' with | h A

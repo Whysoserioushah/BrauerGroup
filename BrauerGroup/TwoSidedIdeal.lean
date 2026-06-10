@@ -135,7 +135,6 @@ lemma _root_.IsSimpleRing.iff_eq_zero_or_injective'
     { algebraMap := I.ringCon.mk'.comp (algebraMap k A)
       smul a := Quotient.map' (fun b => a • b) fun x y (h : I.ringCon x y) =>
         show I.ringCon _ _ by
-        simp only
         rw [Algebra.smul_def, Algebra.smul_def]
         exact I.ringCon.mul (I.ringCon.refl (algebraMap k A a)) h
       commutes' := by
