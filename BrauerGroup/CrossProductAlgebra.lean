@@ -122,12 +122,16 @@ def mulLinearMap : (Gal(K, F) →₀ K) →ₗ[F] (Gal(K, F) →₀ K) →ₗ[F]
       Finsupp.lsingle_apply, LinearMap.smul_apply, Finsupp.coe_lsum, map_zero, mul_zero, zero_mul,
       Finsupp.single_zero, Finsupp.sum_single_index, Finsupp.smul_single] }
 
+set_option synthInstance.maxHeartbeats 30000 in
+-- This was on the brink of timing out
 variable (f) in
 @[simp]
 lemma mulLinearMap_single_single (c d : K) (σ τ : Gal(K, F)) :
     mulLinearMap f (.single σ c) (.single τ d) = .single (σ * τ) (c * σ d * f (σ, τ)) := by
   simp [mulLinearMap]
 
+set_option synthInstance.maxHeartbeats 30000 in
+-- This was on the brink of timing out
 variable (f) in
 @[simp]
 lemma mulLinearMap_single_left_apply (c : K) (σ : Gal(K, F)) (x : Gal(K, F) →₀ K) (τ : Gal(K, F)) :
