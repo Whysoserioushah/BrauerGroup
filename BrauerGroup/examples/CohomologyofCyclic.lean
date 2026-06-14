@@ -509,12 +509,12 @@ abbrev CyclicCoh.groupCohEven (hn : Even n) [h : NeZero n] [CommGroup G] [Decida
       cases n
       · aesop
       · simp only [Acomplex, HomologicalComplex.shortComplexFunctor_obj_X₂,
-        Functor.mapHomologicalComplex_obj_X, forget₂_obj_coe, map_sum,
-        Representation.asAlgebraHom_single, one_smul, ModuleCat.hom_ofHom,
-        Submodule.map_comap_subtype, HomologicalComplex.shortComplexFunctor_obj_X₁,
-        HomologicalComplex.shortComplexFunctor_obj_f, Functor.mapHomologicalComplex_obj_d,
-        CochainComplex.prev_nat_succ, ↓reduceIte, hn, forget₂_map_hom,
-        inf_eq_right]
+          Functor.mapHomologicalComplex_obj_X, forget₂_obj_coe, map_sum,
+          Representation.asAlgebraHom_single, one_smul, ModuleCat.hom_ofHom,
+          Submodule.map_comap_subtype, HomologicalComplex.shortComplexFunctor_obj_X₁,
+          HomologicalComplex.shortComplexFunctor_obj_f, Functor.mapHomologicalComplex_obj_d,
+          CochainComplex.prev_nat_succ, ↓reduceIte, hn, forget₂_map_hom,
+          inf_eq_right]
         rintro x ⟨y, rfl⟩
         simp only [LinearMap.coe_sum, Finset.sum_apply, Representation.mem_invariants, map_sum]
         intro g
@@ -571,11 +571,7 @@ abbrev BrauerOverCyclicAux :
 abbrev BrauerOverCyclic' : Additive (RelativeBrGroup K F) ≃ₗ[ℤ] (↥(galAct F K).ρ.invariants ⧸
       Submodule.comap (galAct F K).ρ.invariants.subtype
         (LinearMap.range (ModuleCat.Hom.hom (N' (K ≃ₐ[F] K) ℤ (galAct F K)).hom))) :=
-  (RelativeBrGroup.isoSnd K F).toIntLinearEquiv ≪≫ₗ (by
-  convert (BrauerOverCyclicAux F K τ hτ).toLinearEquiv
-  ext z σ
-  rw [int_smul_eq_zsmul]
-  conv_rhs => erw [int_smul_eq_zsmul])
+  (RelativeBrGroup.isoSnd K F).toIntLinearEquiv ≪≫ₗ (BrauerOverCyclicAux F K τ hτ).toLinearEquiv
 
 abbrev invariants_eq : ((galAct F K).ρ.invariants : Submodule ℤ
   (Rep.ofMulDistribMulAction Gal(K, F) Kˣ).V) = sorry := sorry
