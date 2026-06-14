@@ -824,7 +824,7 @@ variable [IsGalois F K]
 lemma fromSnd_wd (a : cocycles₂ (galAct F K)) :
     haveI : Fact (IsMulCocycle₂ (M := Kˣ) (Additive.toMul ∘ a)) :=
       ⟨isMulCocycle₂_of_mem_cocycles₂ _ a.2⟩
-    (fromSnd F K <| Quotient.mk'' a) =
+    (fromSnd F K <| Submodule.mkQ _ a) =
     ⟨Quotient.mk'' (CrossProductAlgebra.asCSA (Additive.toMul ∘ a)),
       mem_relativeBrGroup_iff_nonempty_goodRep.2
         ⟨_, rfl, CrossProductAlgebra.incl _, CrossProductAlgebra.dim_eq_sq⟩⟩ := rfl
@@ -848,9 +848,9 @@ lemma toSnd_fromSnd : toSnd ∘ fromSnd F K ∘ (H2Iso (galAct F K)).hom = id :=
   let y_ σ : A.conjFactor σ :=
     ⟨CrossProductAlgebra.of am σ, fun c ↦ by erw [CrossProductAlgebra.of_conj]; rfl⟩
   simp only [CategoryTheory.ShortComplex.moduleCatLeftHomologyData_H, H2π, ModuleCat.hom_comp,
-    LinearMap.coe_comp, Function.comp_apply, π_comp_H2Iso_hom_apply, Submodule.Quotient.mk,
+    LinearMap.coe_comp, Function.comp_apply, π_comp_H2Iso_hom_apply,
     CategoryTheory.Iso.inv_hom_id_apply]
-  rw [fromSnd_wd]
+  erw [fromSnd_wd]
   rw [toSnd_wd _ _ y_]
   let b : Gal(K, F) × Gal(K, F) → Kˣ := A.toCocycles₂ y_
   change H2π _ _ = H2π _ _
@@ -884,7 +884,7 @@ lemma fromSnd_toSnd : (fromSnd F K ∘ (H2Iso (galAct F K)).hom) ∘ toSnd = id 
   simp only [CategoryTheory.ShortComplex.moduleCatLeftHomologyData_H, GoodRep.toH2]
   simp only [H2π, ModuleCat.hom_comp, LinearMap.coe_comp, Function.comp_apply,
     π_comp_H2Iso_hom_apply, CategoryTheory.Iso.inv_hom_id_apply]
-  rw [Submodule.Quotient.mk, fromSnd_wd]
+  erw [fromSnd_wd]
   rw [Quotient.eq'']
   apply IsBrauerEquivalent.iso_to_eqv
   set lhs := _
