@@ -188,19 +188,6 @@ lemma im_sigmainus1_eq_ker_π [CommGroup G] (hσ : Submonoid.powers σ = ⊤) :
   let r' : ℕ → k := fun m ↦ - (∑ i : Fin (m + 1), x.2 (σ^i.1))
   use ∑ i ∈ Finset.range (Fintype.card G), .single (σ^i) (r' i)
   erw [map_sum]
-  simp only [LinearMap.sub_apply, Representation.ofMulAction_single, smul_eq_mul, ← pow_succ',
-    End.one_apply, Finset.sum_sub_distrib]
-  change (∑ i ∈ _, _ - ∑ i ∈ _, _ : MonoidAlgebra k G) = _
-  ext g
-  simp
-  -- have := Equiv.mulLeft σ
-  -- rw [← Finset.sum_equiv (Equiv.mulLeft σ) _ (fun _ _ ↦ rfl)]
-  -- calc _
-  -- _ = _ := sorry
-
-  -- use (Finsupp.equivFunOnFinite.symm _)
-  -- erw [Finsupp.lsum_apply] at hx
-  -- simp [Representation.ofMulAction] at hx ⊢
   sorry
 
 lemma N_ker_eq_im_sigmainus1 [CommGroup G] : LinearMap.ker (N G k).1.hom =
