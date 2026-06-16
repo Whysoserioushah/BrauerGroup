@@ -1,6 +1,10 @@
-import BrauerGroup.Mathlib.Algebra.Algebra.Subalgebra.Lattice
-import BrauerGroup.Subfield.Splitting
-import Mathlib.FieldTheory.JacobsonNoether
+module
+
+public import BrauerGroup.Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import BrauerGroup.Subfield.Splitting
+public import Mathlib.FieldTheory.JacobsonNoether
+
+@[expose] public section
 
 -- section
 -- variable {ι R A : Type*} (B : ι → Type*) [Preorder ι] [CommRing R]

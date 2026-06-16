@@ -1,5 +1,9 @@
-import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
-import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
+module
+
+public import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
+public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
+
+@[expose] public section
 
 variable {F : Type*} [Field F]
 

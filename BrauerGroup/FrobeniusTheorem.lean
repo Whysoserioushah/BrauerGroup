@@ -1,8 +1,12 @@
-import BrauerGroup.Subfield.FiniteDimensional
-import BrauerGroup.Subfield.Subfield
-import Mathlib.Algebra.QuaternionBasis
-import Mathlib.Analysis.Quaternion
-import Mathlib.LinearAlgebra.Complex.FiniteDimensional
+module
+
+public import BrauerGroup.Subfield.FiniteDimensional
+public import BrauerGroup.Subfield.Subfield
+public import Mathlib.Algebra.QuaternionBasis
+public import Mathlib.Analysis.Quaternion
+public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
+
+@[expose] public section
 
 suppress_compilation
 

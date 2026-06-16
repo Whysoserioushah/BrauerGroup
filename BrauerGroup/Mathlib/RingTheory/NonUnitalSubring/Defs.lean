@@ -1,4 +1,8 @@
-import Mathlib.RingTheory.NonUnitalSubring.Defs
+module
+
+public import Mathlib.RingTheory.NonUnitalSubring.Defs
+
+@[expose] public section
 
 variable {R : Type*} [NonUnitalRing R]
 

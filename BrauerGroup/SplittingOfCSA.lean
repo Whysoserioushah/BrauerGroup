@@ -1,11 +1,15 @@
-import BrauerGroup.AlgClosedUnion
-import BrauerGroup.ExtendScalar
-import BrauerGroup.LemmasAboutSimpleRing
-import Mathlib.Algebra.BrauerGroup.Defs
-import Mathlib.Algebra.Central.Matrix
-import Mathlib.Analysis.Normed.Ring.Lemmas
-import Mathlib.LinearAlgebra.FreeModule.PID
-import Mathlib.RingTheory.SimpleRing.Matrix
+module
+
+public import BrauerGroup.AlgClosedUnion
+public import BrauerGroup.ExtendScalar
+public import BrauerGroup.LemmasAboutSimpleRing
+public import Mathlib.Algebra.BrauerGroup.Defs
+public import Mathlib.Algebra.Central.Matrix
+public import Mathlib.Analysis.Normed.Ring.Lemmas
+public import Mathlib.LinearAlgebra.FreeModule.PID
+public import Mathlib.RingTheory.SimpleRing.Matrix
+
+@[expose] public section
 
 suppress_compilation
 

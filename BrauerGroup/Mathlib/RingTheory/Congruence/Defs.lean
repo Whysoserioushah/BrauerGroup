@@ -1,4 +1,8 @@
-import Mathlib.RingTheory.Congruence.Defs
+module
+
+public import Mathlib.RingTheory.Congruence.Defs
+
+@[expose] public section
 
 variable {R : Type*} [Ring R]
 

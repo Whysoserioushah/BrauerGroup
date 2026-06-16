@@ -1,53 +1,55 @@
-import BrauerGroup.AbsoluteIsoH2
-import BrauerGroup.AlgClosedUnion
-import BrauerGroup.Azumaya.Basic
-import BrauerGroup.Azumaya.Group
-import BrauerGroup.Azumaya.Mul
-import BrauerGroup.BrauerGroup
-import BrauerGroup.BrauerOverR
-import BrauerGroup.CSA.ReducedCharPoly
-import BrauerGroup.CentralSimple
-import BrauerGroup.Centralizer
-import BrauerGroup.CrossProductAlgebra
-import BrauerGroup.DoubleCentralizer
-import BrauerGroup.ExtendScalar
-import BrauerGroup.FieldCat
-import BrauerGroup.FiniteField
-import BrauerGroup.FrobeniusTheorem
-import BrauerGroup.IsoSecond
-import BrauerGroup.LemmasAboutSimpleRing
-import BrauerGroup.Mathlib.Algebra.Algebra.Equiv
-import BrauerGroup.Mathlib.Algebra.Algebra.Subalgebra.Basic
-import BrauerGroup.Mathlib.Algebra.Algebra.Subalgebra.Directed
-import BrauerGroup.Mathlib.Algebra.Algebra.Subalgebra.Lattice
-import BrauerGroup.Mathlib.Data.DFinsupp.Submonoid
-import BrauerGroup.Mathlib.LinearAlgebra.LinearIndependent.Defs
-import BrauerGroup.Mathlib.LinearAlgebra.Span.Basic
-import BrauerGroup.Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
-import BrauerGroup.Mathlib.RingTheory.Congruence.Basic
-import BrauerGroup.Mathlib.RingTheory.Congruence.Defs
-import BrauerGroup.Mathlib.RingTheory.NonUnitalSubring.Defs
-import BrauerGroup.Mathlib.RingTheory.NonUnitalSubsemiring.Basic
-import BrauerGroup.Mathlib.RingTheory.NonUnitalSubsemiring.Defs
-import BrauerGroup.Mathlib.RingTheory.TwoSidedIdeal.Basic
-import BrauerGroup.Mathlib.RingTheory.TwoSidedIdeal.Kernel
-import BrauerGroup.Mathlib.RingTheory.TwoSidedIdeal.Lattice
-import BrauerGroup.Mathlib.RingTheory.TwoSidedIdeal.Operations
-import BrauerGroup.MatrixCenterEquiv
-import BrauerGroup.MatrixEquivTensor
-import BrauerGroup.Morita.ChangeOfRings
-import BrauerGroup.Morita.TensorProduct
-import BrauerGroup.MoritaEquivalence
-import BrauerGroup.RelativeBrauer
-import BrauerGroup.SkolemNoether
-import BrauerGroup.SplittingOfCSA
-import BrauerGroup.Subfield.Defs
-import BrauerGroup.Subfield.FiniteDimensional
-import BrauerGroup.Subfield.Splitting
-import BrauerGroup.Subfield.Subfield
-import BrauerGroup.ToSecond
-import BrauerGroup.TwoSidedIdeal
-import BrauerGroup.Wedderburn
-import BrauerGroup.ZeroSevenFourE
-import BrauerGroup.examples.CohomologyofCyclic
-import BrauerGroup.examples.ShortComplex.LeftHomologyMapData
+module
+
+public import BrauerGroup.AbsoluteIsoH2
+public import BrauerGroup.AlgClosedUnion
+public import BrauerGroup.Azumaya.Basic
+public import BrauerGroup.Azumaya.Group
+public import BrauerGroup.Azumaya.Mul
+public import BrauerGroup.BrauerGroup
+public import BrauerGroup.BrauerOverR
+public import BrauerGroup.CSA.ReducedCharPoly
+public import BrauerGroup.CentralSimple
+public import BrauerGroup.Centralizer
+public import BrauerGroup.CrossProductAlgebra
+public import BrauerGroup.DoubleCentralizer
+public import BrauerGroup.ExtendScalar
+public import BrauerGroup.FieldCat
+public import BrauerGroup.FiniteField
+public import BrauerGroup.FrobeniusTheorem
+public import BrauerGroup.IsoSecond
+public import BrauerGroup.LemmasAboutSimpleRing
+public import BrauerGroup.Mathlib.Algebra.Algebra.Equiv
+public import BrauerGroup.Mathlib.Algebra.Algebra.Subalgebra.Basic
+public import BrauerGroup.Mathlib.Algebra.Algebra.Subalgebra.Directed
+public import BrauerGroup.Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import BrauerGroup.Mathlib.Data.DFinsupp.Submonoid
+public import BrauerGroup.Mathlib.LinearAlgebra.LinearIndependent.Defs
+public import BrauerGroup.Mathlib.LinearAlgebra.Span.Basic
+public import BrauerGroup.Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
+public import BrauerGroup.Mathlib.RingTheory.Congruence.Basic
+public import BrauerGroup.Mathlib.RingTheory.Congruence.Defs
+public import BrauerGroup.Mathlib.RingTheory.NonUnitalSubring.Defs
+public import BrauerGroup.Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+public import BrauerGroup.Mathlib.RingTheory.NonUnitalSubsemiring.Defs
+public import BrauerGroup.Mathlib.RingTheory.TwoSidedIdeal.Basic
+public import BrauerGroup.Mathlib.RingTheory.TwoSidedIdeal.Kernel
+public import BrauerGroup.Mathlib.RingTheory.TwoSidedIdeal.Lattice
+public import BrauerGroup.Mathlib.RingTheory.TwoSidedIdeal.Operations
+public import BrauerGroup.MatrixCenterEquiv
+public import BrauerGroup.MatrixEquivTensor
+public import BrauerGroup.Morita.ChangeOfRings
+public import BrauerGroup.Morita.TensorProduct
+public import BrauerGroup.MoritaEquivalence
+public import BrauerGroup.RelativeBrauer
+public import BrauerGroup.SkolemNoether
+public import BrauerGroup.SplittingOfCSA
+public import BrauerGroup.Subfield.Defs
+public import BrauerGroup.Subfield.FiniteDimensional
+public import BrauerGroup.Subfield.Splitting
+public import BrauerGroup.Subfield.Subfield
+public import BrauerGroup.ToSecond
+public import BrauerGroup.TwoSidedIdeal
+public import BrauerGroup.Wedderburn
+public import BrauerGroup.ZeroSevenFourE
+public import BrauerGroup.examples.CohomologyofCyclic
+public import BrauerGroup.examples.ShortComplex.LeftHomologyMapData

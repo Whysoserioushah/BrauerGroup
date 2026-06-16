@@ -3,14 +3,18 @@ Copyright (c) 2024 Yunzhou Xie. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yunzhou Xie
 -/
-import Mathlib.Algebra.Category.Ring.Basic
-import Mathlib.Algebra.EuclideanDomain.Field
-import Mathlib.Algebra.Ring.CompTypeclasses
-import Mathlib.Combinatorics.Quiver.ReflQuiver
+module
+
+public import Mathlib.Algebra.Category.Ring.Basic
+public import Mathlib.Algebra.EuclideanDomain.Field
+public import Mathlib.Algebra.Ring.CompTypeclasses
+public import Mathlib.Combinatorics.Quiver.ReflQuiver
 
 /-!
 # Category instances for `Field`.
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -18,7 +22,8 @@ open CategoryTheory
 
 /-- The category of fields. -/
 structure FieldCat where
-  private mk ::
+  /-- Turn a field into an object in the category of fields. -/
+  of ::
   /-- The underlying type. -/
   carrier : Type u
   [field : Field carrier]
@@ -34,10 +39,6 @@ instance : CoeSort (FieldCat) (Type u) :=
 
 attribute [coe] FieldCat.carrier
 
-/-- The object in the category of R-algebras associated to a type equipped with the appropriate
-typeclasses. This is the preferred way to construct a term of `FieldCat`. -/
-abbrev of (R : Type u) [Field R] : FieldCat := ⟨R⟩
-
 lemma coe_of (R : Type u) [Field R] : (of R : Type u) = R := rfl
 
 lemma of_carrier (R : FieldCat.{u}) : of R = R := rfl
@@ -46,7 +47,7 @@ variable {R} in
 /-- The type of morphisms in `FieldCat`. -/
 @[ext]
 structure Hom (R S : FieldCat) where
-  private mk ::
+  mk ::
   /-- The underlying ring hom. -/
   hom : R →+* S
 

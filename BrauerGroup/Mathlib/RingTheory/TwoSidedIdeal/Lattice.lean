@@ -1,4 +1,8 @@
-import Mathlib.RingTheory.TwoSidedIdeal.Lattice
+module
+
+public import Mathlib.RingTheory.TwoSidedIdeal.Lattice
+
+@[expose] public section
 
 namespace TwoSidedIdeal
 variable {R : Type*} [NonUnitalNonAssocRing R] {I J : TwoSidedIdeal R} {x : R}

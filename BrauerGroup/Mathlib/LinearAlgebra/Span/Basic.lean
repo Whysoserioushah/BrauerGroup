@@ -1,6 +1,10 @@
-import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-import Mathlib.Algebra.Module.Submodule.Basic
-import Mathlib.LinearAlgebra.Span.Defs
+module
+
+public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
+public import Mathlib.Algebra.Module.Submodule.Basic
+public import Mathlib.LinearAlgebra.Span.Defs
+
+@[expose] public section
 
 variable {α R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] {v : α → M} {x : M}
 

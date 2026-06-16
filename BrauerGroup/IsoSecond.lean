@@ -1,5 +1,9 @@
-import BrauerGroup.Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
-import BrauerGroup.ToSecond
+module
+
+public import BrauerGroup.Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
+public import BrauerGroup.ToSecond
+
+@[expose] public section
 
 suppress_compilation
 
@@ -1074,7 +1078,5 @@ def isoSnd : Additive (RelativeBrGroup K F) ≃+ H2 (galAct F K) :=
     rw [Quotient.eq'']
     change IsBrauerEquivalent _ _
     exact @map_mul_proof.isBrauerEquivalent _ _ _ _ _ _ _ ⟨hx⟩ ⟨hy⟩ _ _ |>.symm
-
-#print axioms isoSnd
 
 end RelativeBrGroup

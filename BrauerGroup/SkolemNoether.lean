@@ -1,5 +1,9 @@
-import BrauerGroup.BrauerGroup
-import BrauerGroup.ZeroSevenFourE
+module
+
+public import BrauerGroup.BrauerGroup
+public import BrauerGroup.ZeroSevenFourE
+
+@[expose] public section
 
 suppress_compilation
 

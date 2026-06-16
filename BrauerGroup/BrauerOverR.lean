@@ -1,4 +1,8 @@
-import BrauerGroup.FrobeniusTheorem
+module
+
+public import BrauerGroup.FrobeniusTheorem
+
+@[expose] public section
 
 suppress_compilation
 

@@ -1,6 +1,10 @@
-import BrauerGroup.DoubleCentralizer
-import BrauerGroup.Mathlib.Algebra.Algebra.Subalgebra.Basic
-import BrauerGroup.Subfield.Defs
+module
+
+public import BrauerGroup.DoubleCentralizer
+public import BrauerGroup.Mathlib.Algebra.Algebra.Subalgebra.Basic
+public import BrauerGroup.Subfield.Defs
+
+@[expose] public section
 
 universe u
 

@@ -1,9 +1,13 @@
-import BrauerGroup.MatrixCenterEquiv
-import BrauerGroup.TwoSidedIdeal
-import Mathlib.Algebra.Azumaya.Basic
-import Mathlib.Algebra.Central.Defs
-import Mathlib.FieldTheory.IsAlgClosed.Basic
-import Mathlib.RingTheory.HopkinsLevitzki
+module
+
+public import BrauerGroup.MatrixCenterEquiv
+public import BrauerGroup.TwoSidedIdeal
+public import Mathlib.Algebra.Azumaya.Basic
+public import Mathlib.Algebra.Central.Defs
+public import Mathlib.FieldTheory.IsAlgClosed.Basic
+public import Mathlib.RingTheory.HopkinsLevitzki
+
+@[expose] public section
 
 variable (A : Type*) [Ring A]
 

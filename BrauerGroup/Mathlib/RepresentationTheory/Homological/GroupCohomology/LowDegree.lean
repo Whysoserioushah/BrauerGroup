@@ -1,4 +1,8 @@
-import Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
+module
+
+public import Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
+
+@[expose] public section
 
 namespace groupCohomology
 variable {G M : Type*} [Group G] [CommGroup M] [MulDistribMulAction G M] {f g : G × G → M}

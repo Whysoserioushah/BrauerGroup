@@ -1,5 +1,9 @@
-import Mathlib.Data.DFinsupp.Submonoid
-import Mathlib.Data.Finsupp.Basic
+module
+
+public import Mathlib.Data.DFinsupp.Submonoid
+public import Mathlib.Data.Finsupp.Basic
+
+@[expose] public section
 
 variable {ι γ β : Type*}
 

@@ -3,11 +3,15 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
-import BrauerGroup.MoritaEquivalence
-import Mathlib.Algebra.Category.ModuleCat.Abelian
-import Mathlib.RingTheory.HopkinsLevitzki
-import Mathlib.RingTheory.Morita.Basic
-import Mathlib.RingTheory.SimpleModule.Rank
+module
+
+public import BrauerGroup.MoritaEquivalence
+public import Mathlib.Algebra.Category.ModuleCat.Abelian
+public import Mathlib.RingTheory.HopkinsLevitzki
+public import Mathlib.RingTheory.Morita.Basic
+public import Mathlib.RingTheory.SimpleModule.Rank
+
+@[expose] public section
 
 open CategoryTheory Limits
 

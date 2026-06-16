@@ -3,10 +3,12 @@ Copyright (c) 2024 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yunzhou Xie, Jujian Zhang, Kevin Buzzard
 -/
-import BrauerGroup.Centralizer
-import BrauerGroup.Wedderburn
-import Mathlib.Algebra.Central.Basic
-import Mathlib.RingTheory.Flat.Basic
+module
+
+public import BrauerGroup.Centralizer
+public import BrauerGroup.Wedderburn
+public import Mathlib.Algebra.Central.Basic
+public import Mathlib.RingTheory.Flat.Basic
 
 /-!
 # Characteristic predicate for central simple algebras
@@ -21,6 +23,8 @@ immediately give rise to nontrivial quotients of `D` so there are no central sim
 algebras in this case according to our definition.
 
 -/
+
+@[expose] public section
 
 universe u v w
 

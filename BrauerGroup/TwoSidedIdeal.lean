@@ -1,13 +1,19 @@
-import BrauerGroup.Mathlib.RingTheory.TwoSidedIdeal.Kernel
-import Mathlib.Algebra.Algebra.Hom
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.RingTheory.SimpleRing.Defs
-import Mathlib.RingTheory.TwoSidedIdeal.BigOperators
-import Mathlib.RingTheory.TwoSidedIdeal.Operations
+module
+
+public import BrauerGroup.Mathlib.RingTheory.TwoSidedIdeal.Kernel
+public import Mathlib.Algebra.Algebra.Hom
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.RingTheory.SimpleRing.Defs
+public import Mathlib.RingTheory.TwoSidedIdeal.BigOperators
+public import Mathlib.RingTheory.TwoSidedIdeal.Operations
+
+import Mathlib.RingTheory.Ideal.Maps
 
 variable {M : Type*} [AddCommMonoid M] (r : AddCon M) {ι : Type*} (s : Finset ι)
 variable {R : Type*} [Ring R] (t : TwoSidedIdeal R)
+
+@[expose] public section
 
 open MulOpposite
 

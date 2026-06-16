@@ -1,5 +1,9 @@
-import BrauerGroup.Azumaya.Mul
-import BrauerGroup.Morita.TensorProduct
+module
+
+public import BrauerGroup.Azumaya.Mul
+public import BrauerGroup.Morita.TensorProduct
+
+@[expose] public section
 
 universe u v
 

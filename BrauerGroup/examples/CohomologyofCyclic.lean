@@ -1,5 +1,9 @@
-import BrauerGroup.IsoSecond
-import BrauerGroup.examples.ShortComplex.LeftHomologyMapData
+module
+
+public import BrauerGroup.IsoSecond
+public import BrauerGroup.examples.ShortComplex.LeftHomologyMapData
+
+@[expose] public section
 
 suppress_compilation
 

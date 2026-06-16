@@ -1,4 +1,8 @@
-import Mathlib.RingTheory.TwoSidedIdeal.Kernel
+module
+
+public import Mathlib.RingTheory.TwoSidedIdeal.Kernel
+
+@[expose] public section
 
 variable {R S : Type*} [Ring R] [Ring S]
 

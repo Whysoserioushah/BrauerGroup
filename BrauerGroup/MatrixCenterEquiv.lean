@@ -1,7 +1,11 @@
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.LinearAlgebra.Matrix.IsDiag
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Basic
+public import Mathlib.LinearAlgebra.Matrix.IsDiag
 
 local notation "M[" ι "," R "]" => Matrix ι ι R
+
+@[expose] public section
 
 universe u v w
 

@@ -1,6 +1,10 @@
-import BrauerGroup.BrauerGroup
-import BrauerGroup.LemmasAboutSimpleRing
-import BrauerGroup.Morita.ChangeOfRings
+module
+
+public import BrauerGroup.BrauerGroup
+public import BrauerGroup.LemmasAboutSimpleRing
+public import BrauerGroup.Morita.ChangeOfRings
+
+@[expose] public section
 
 universe u v
 

@@ -3,9 +3,11 @@ Copyright (c) 2024 Yunzhou Xie. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yunzhou Xie, Jujian Zhang
 -/
-import BrauerGroup.BrauerGroup
-import BrauerGroup.SplittingOfCSA
-import BrauerGroup.ZeroSevenFourE
+module
+
+public import BrauerGroup.BrauerGroup
+public import BrauerGroup.SplittingOfCSA
+public import BrauerGroup.ZeroSevenFourE
 
 /-!
 # Relative Brauer Group
@@ -17,6 +19,8 @@ import BrauerGroup.ZeroSevenFourE
   another `F`-CSA `B` such that `⟦A⟧ = ⟦B⟧` (i.e. `A` and `B` are Brauer-equivalent) and `K ⊆ B` and
   `dim_F B = (dim_F K)²`
 -/
+
+@[expose] public section
 
 suppress_compilation
 

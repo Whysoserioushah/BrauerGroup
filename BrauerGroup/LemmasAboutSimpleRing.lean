@@ -1,6 +1,10 @@
-import BrauerGroup.CentralSimple
-import BrauerGroup.Mathlib.RingTheory.TwoSidedIdeal.Operations
-import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
+module
+
+public import BrauerGroup.CentralSimple
+public import BrauerGroup.Mathlib.RingTheory.TwoSidedIdeal.Operations
+public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
+
+@[expose] public section
 
 universe u
 

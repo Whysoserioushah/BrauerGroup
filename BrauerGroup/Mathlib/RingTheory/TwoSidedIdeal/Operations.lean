@@ -1,4 +1,8 @@
-import Mathlib.RingTheory.TwoSidedIdeal.Operations
+module
+
+public import Mathlib.RingTheory.TwoSidedIdeal.Operations
+
+@[expose] public section
 
 open Function
 

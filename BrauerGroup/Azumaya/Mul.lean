@@ -1,8 +1,12 @@
-import BrauerGroup.Azumaya.Basic
-import Mathlib.Algebra.Azumaya.Matrix
-import Mathlib.Algebra.Module.CharacterModule
-import Mathlib.LinearAlgebra.Contraction
-import Mathlib.LinearAlgebra.TensorProduct.Opposite
+module
+
+public import BrauerGroup.Azumaya.Basic
+public import Mathlib.Algebra.Azumaya.Matrix
+public import Mathlib.Algebra.Module.CharacterModule
+public import Mathlib.LinearAlgebra.Contraction
+public import Mathlib.LinearAlgebra.TensorProduct.Opposite
+
+@[expose] public section
 
 suppress_compilation
 

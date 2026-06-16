@@ -1,11 +1,13 @@
-import BrauerGroup.CrossProductAlgebra
-import BrauerGroup.Mathlib.RingTheory.Congruence.Defs
-import BrauerGroup.Subfield.Splitting
-import Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
+module
+
+public import BrauerGroup.CrossProductAlgebra
+public import BrauerGroup.Mathlib.RingTheory.Congruence.Defs
+public import BrauerGroup.Subfield.Splitting
+public import Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
+
+@[expose] public section
 
 suppress_compilation
-
-seal Finsupp.onFinset_support
 
 open FiniteDimensional BrauerGroup Module groupCohomology
 

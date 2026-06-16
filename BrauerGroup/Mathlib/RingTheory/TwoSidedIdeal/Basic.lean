@@ -1,5 +1,9 @@
-import Mathlib.Algebra.Ring.Opposite
-import Mathlib.RingTheory.TwoSidedIdeal.Basic
+module
+
+public import Mathlib.Algebra.Ring.Opposite
+public import Mathlib.RingTheory.TwoSidedIdeal.Basic
+
+@[expose] public section
 
 namespace TwoSidedIdeal
 variable {R : Type*}

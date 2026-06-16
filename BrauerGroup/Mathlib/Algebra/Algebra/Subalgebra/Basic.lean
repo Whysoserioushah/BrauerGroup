@@ -1,4 +1,8 @@
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Basic
+
+@[expose] public section
 
 namespace Subalgebra
 variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] {L S T U : Subalgebra R A}

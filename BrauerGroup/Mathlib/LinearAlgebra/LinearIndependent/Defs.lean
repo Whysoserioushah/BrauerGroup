@@ -1,4 +1,8 @@
-import Mathlib.LinearAlgebra.LinearIndependent.Defs
+module
+
+public import Mathlib.LinearAlgebra.LinearIndependent.Defs
+
+@[expose] public section
 
 variable {ι R M : Type*} {v : ι → M} [Semiring R] [AddCommMonoid M] [Module R M]
 

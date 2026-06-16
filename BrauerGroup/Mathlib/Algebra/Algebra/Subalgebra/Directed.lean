@@ -1,4 +1,8 @@
-import Mathlib.Algebra.Algebra.Subalgebra.Directed
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Directed
+
+@[expose] public section
 
 namespace Subalgebra
 variable {R A ι : Type*} [CommSemiring R] [Semiring A] [Algebra R A] {K : ι → Subalgebra R A}

@@ -1,11 +1,13 @@
-import BrauerGroup.Mathlib.Algebra.Algebra.Equiv
-import BrauerGroup.Mathlib.Data.DFinsupp.Submonoid
-import BrauerGroup.Mathlib.LinearAlgebra.LinearIndependent.Defs
-import BrauerGroup.Mathlib.LinearAlgebra.Span.Basic
-import BrauerGroup.Mathlib.RingTheory.Congruence.Basic
-import BrauerGroup.Mathlib.RingTheory.TwoSidedIdeal.Lattice
-import BrauerGroup.Subfield.Splitting
-import Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
+module
+
+public import BrauerGroup.Mathlib.Algebra.Algebra.Equiv
+public import BrauerGroup.Mathlib.Data.DFinsupp.Submonoid
+public import BrauerGroup.Mathlib.LinearAlgebra.LinearIndependent.Defs
+public import BrauerGroup.Mathlib.LinearAlgebra.Span.Basic
+public import BrauerGroup.Mathlib.RingTheory.Congruence.Basic
+public import BrauerGroup.Mathlib.RingTheory.TwoSidedIdeal.Lattice
+public import BrauerGroup.Subfield.Splitting
+public import Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
 
 /-!
 # Cross product algebra
@@ -17,6 +19,8 @@ This file constructs the cross product algebra associated to a 2-cocycle of a fi
 
 * [*Advanced Algebra*]
 -/
+
+@[expose] public section
 
 open groupCohomology Function Module
 

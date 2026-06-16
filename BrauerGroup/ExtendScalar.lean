@@ -1,4 +1,8 @@
-import Mathlib.RingTheory.TensorProduct.Basic
+module
+
+public import Mathlib.RingTheory.TensorProduct.Basic
+
+@[expose] public section
 
 suppress_compilation
 

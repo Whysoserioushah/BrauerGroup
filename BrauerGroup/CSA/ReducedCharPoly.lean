@@ -1,11 +1,15 @@
-import BrauerGroup.SplittingOfCSA
-import BrauerGroup.DoubleCentralizer
-import BrauerGroup.Mathlib.RingTheory.TensorProduct.Basic
-import BrauerGroup.Mathlib.RingTheory.MatrixAlgebra
-import BrauerGroup.Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
-import BrauerGroup.Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
-import Mathlib.Algebra.Central.TensorProduct
-import Mathlib.RingTheory.SimpleRing.Congr
+module
+
+public import BrauerGroup.SplittingOfCSA
+public import BrauerGroup.DoubleCentralizer
+public import BrauerGroup.Mathlib.RingTheory.TensorProduct.Basic
+public import BrauerGroup.Mathlib.RingTheory.MatrixAlgebra
+public import BrauerGroup.Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
+public import BrauerGroup.Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
+public import Mathlib.Algebra.Central.TensorProduct
+public import Mathlib.RingTheory.SimpleRing.Congr
+
+@[expose] public section
 
 universe u v w
 

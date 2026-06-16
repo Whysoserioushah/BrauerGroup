@@ -1,4 +1,8 @@
-import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
+
+@[expose] public section
 
 universe v u
 

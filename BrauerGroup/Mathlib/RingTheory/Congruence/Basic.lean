@@ -1,5 +1,9 @@
-import Mathlib.Algebra.Algebra.Hom
-import Mathlib.RingTheory.Congruence.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Hom
+public import Mathlib.RingTheory.Congruence.Basic
+
+@[expose] public section
 
 open Function
 

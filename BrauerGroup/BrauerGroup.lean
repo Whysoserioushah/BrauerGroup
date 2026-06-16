@@ -1,12 +1,16 @@
-import BrauerGroup.CentralSimple
-import BrauerGroup.FieldCat
-import BrauerGroup.Mathlib.RingTheory.TwoSidedIdeal.Operations
-import Mathlib.Algebra.BrauerGroup.Defs
-import Mathlib.Algebra.Central.Matrix
-import Mathlib.Analysis.Complex.Polynomial.Basic
-import Mathlib.LinearAlgebra.FreeModule.PID
-import Mathlib.LinearAlgebra.Matrix.FiniteDimensional
-import Mathlib.RingTheory.SimpleRing.Matrix
+module
+
+public import BrauerGroup.CentralSimple
+public import BrauerGroup.FieldCat
+public import BrauerGroup.Mathlib.RingTheory.TwoSidedIdeal.Operations
+public import Mathlib.Algebra.BrauerGroup.Defs
+public import Mathlib.Algebra.Central.Matrix
+public import Mathlib.Analysis.Complex.Polynomial.Basic
+public import Mathlib.LinearAlgebra.FreeModule.PID
+public import Mathlib.LinearAlgebra.Matrix.FiniteDimensional
+public import Mathlib.RingTheory.SimpleRing.Matrix
+
+@[expose] public section
 
 suppress_compilation
 universe u v v₁ v₂ w

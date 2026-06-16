@@ -1,4 +1,8 @@
-import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
+module
+
+public import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
+
+@[expose] public section
 
 variable {F : Type*} [Field F]
 

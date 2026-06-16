@@ -1,7 +1,11 @@
-import BrauerGroup.MatrixEquivTensor
-import BrauerGroup.RelativeBrauer
-import BrauerGroup.Subfield.FiniteDimensional
-import BrauerGroup.Subfield.Subfield
+module
+
+public import BrauerGroup.MatrixEquivTensor
+public import BrauerGroup.RelativeBrauer
+public import BrauerGroup.Subfield.FiniteDimensional
+public import BrauerGroup.Subfield.Subfield
+
+@[expose] public section
 
 universe u
 

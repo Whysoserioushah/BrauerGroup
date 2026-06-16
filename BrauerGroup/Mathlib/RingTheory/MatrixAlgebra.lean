@@ -1,4 +1,8 @@
-import Mathlib.RingTheory.MatrixAlgebra
+module
+
+public import Mathlib.RingTheory.MatrixAlgebra
+
+@[expose] public section
 
 open scoped TensorProduct
 

@@ -1,4 +1,8 @@
-import BrauerGroup.Morita.ChangeOfRings
+module
+
+public import BrauerGroup.Morita.ChangeOfRings
+
+@[expose] public section
 
 universe u v w
 

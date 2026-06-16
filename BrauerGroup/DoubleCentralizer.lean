@@ -3,9 +3,13 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
-import BrauerGroup.LemmasAboutSimpleRing
-import BrauerGroup.SkolemNoether
-import Mathlib.RingTheory.SimpleRing.Field
+module
+
+public import BrauerGroup.LemmasAboutSimpleRing
+public import BrauerGroup.SkolemNoether
+public import Mathlib.RingTheory.SimpleRing.Field
+
+@[expose] public section
 
 universe u v
 

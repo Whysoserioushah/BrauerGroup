@@ -1,7 +1,11 @@
-import BrauerGroup.BrauerGroup
-import Mathlib.RingTheory.LittleWedderburn
+module
+
+public import BrauerGroup.BrauerGroup
+public import Mathlib.RingTheory.LittleWedderburn
 
 variable (K : Type*) [Field K] [Finite K]
+
+@[expose] public section
 
 suppress_compilation
 
