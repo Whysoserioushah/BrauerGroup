@@ -10,7 +10,7 @@ variable (K F : Type*) [CommSemiring K] [CommSemiring F] [Algebra F K]
 
 open Matrix
 
-def toTensorMartrix_toFun_bilinear : K →ₗ[F] Matrix n n A →ₗ[F] Matrix n n (K ⊗[F] A) where
+def toTensorMatrix_toFun_bilinear : K →ₗ[F] Matrix n n A →ₗ[F] Matrix n n (K ⊗[F] A) where
   toFun k := {
     toFun M := k • Algebra.TensorProduct.includeRight.mapMatrix M
     map_add' _ _ := by simp [← smul_add, map_add]
@@ -20,12 +20,12 @@ def toTensorMartrix_toFun_bilinear : K →ₗ[F] Matrix n n A →ₗ[F] Matrix n
   map_smul' r k := by ext; simp
 
 @[simp]
-lemma toTensorMartrix_toFun_bilinear_apply (k : K) (M : Matrix n n A) :
-  toTensorMartrix_toFun_bilinear K F A n k M =
-  k • Algebra.TensorProduct.includeRight.mapMatrix M := rfl
+lemma toTensorMatrix_toFun_bilinear_apply (k : K) (M : Matrix n n A) :
+    toTensorMatrix_toFun_bilinear K F A n k M =
+      k • Algebra.TensorProduct.includeRight.mapMatrix M := rfl
 
 abbrev toTensorMatrix_toFun_Flinear : K ⊗[F] Matrix n n A →ₗ[F] Matrix n n (K ⊗[F] A) :=
-  TensorProduct.lift <| toTensorMartrix_toFun_bilinear K F A n
+  TensorProduct.lift <| toTensorMatrix_toFun_bilinear K F A n
 
 abbrev toTensorMatrix_toFun_Klinear : K ⊗[F] Matrix n n A →ₗ[K] Matrix n n (K ⊗[F] A) :=
   {__ := toTensorMatrix_toFun_Flinear K F A n,
@@ -35,21 +35,18 @@ abbrev toTensorMatrix_toFun_Klinear : K ⊗[F] Matrix n n A →ₗ[K] Matrix n n
     | tmul k0 M => simp [TensorProduct.smul_tmul', SemigroupAction.mul_smul]
     | add _ _ h1 h2 => simp_all}
 
-abbrev toTensorMatrix : K ⊗[F] Matrix n n A →ₐ[K] Matrix n n (K ⊗[F] A) :=
-  .ofLinearMap (toTensorMatrix_toFun_Klinear K F A n) (by simp [Algebra.TensorProduct.one_def])
-    fun t1 t2 ↦ by
+abbrev toTensorMatrix : K ⊗[F] Matrix n n A →ₐ[K] Matrix n n (K ⊗[F] A) := by
+  refine .ofLinearMap (toTensorMatrix_toFun_Klinear K F A n)
+    (by simp [Algebra.TensorProduct.one_def]) fun t1 t2 ↦ ?_
   induction t1 with
   | zero => simp
-  | tmul x y =>
-    induction t2 with
-    | zero => simp
-    | tmul x0 y0 =>
-        simp only [Algebra.TensorProduct.tmul_mul_tmul, mul_comm x x0, LinearMap.coe_mk,
-          TensorProduct.lift.tmul', toTensorMartrix_toFun_bilinear_apply, AlgHom.mapMatrix_apply,
-          SemigroupAction.mul_smul, Algebra.mul_smul_comm, Algebra.smul_mul_assoc]
-        erw [Matrix.map_mul]; rfl
-    | add _ _ h1 h2 => simp_all [mul_add]
   | add _ _ h1 h2 => simp_all [add_mul]
+  | tmul x y =>
+  induction t2 with
+  | zero => simp
+  | add _ _ h1 h2 => simp_all [mul_add]
+  | tmul x0 y0 =>
+  simp [Algebra.TensorProduct.tmul_mul_tmul, mul_comm x x0, SemigroupAction.mul_smul]
 
 open TensorProduct
 
