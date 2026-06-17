@@ -33,6 +33,9 @@ instance : SetLike (SubField R A) A where
 @[simp] lemma mem_carrier : a ∈ L.carrier ↔ a ∈ L := .rfl
 @[simp] lemma mem_toSubalgebra : a ∈ L.toSubalgebra ↔ a ∈ L := .rfl
 
+@[simp] lemma mem_mk (S : Subalgebra R A) (mul_comm exists_inverse) :
+    a ∈ mk S mul_comm exists_inverse ↔ a ∈ S := .rfl
+
 @[simp] lemma coe_toSubalgebra (L : SubField R A) : (L.toSubalgebra : Set A) = L := rfl
 
 @[ext] lemma ext (h : ∀ x, x ∈ L₁ ↔ x ∈ L₂) : L₁ = L₂ := SetLike.ext h
