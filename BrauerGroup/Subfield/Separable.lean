@@ -226,10 +226,12 @@ noncomputable instance (L : SubField K D) : Algebra L (Subalgebra.centralizer K 
   commutes' l x := Subtype.ext_iff.2 <| Subalgebra.mem_centralizer_iff K|>.1 x.2 l.1 l.2
   smul_def' _ _ := rfl
 
-set_option maxSynthPendingDepth 3 in
+set_option synthInstance.maxHeartbeats 30000 in
+-- This is really slow!
 instance (L : SubField K D) : IsScalarTower K L (Subalgebra.centralizer K (A := D) L) where
-  smul_assoc k l x := Subtype.ext_iff.2 <| by
-    simp [show ↑((k • l) • x) = (k • l.1) * _ from rfl,
+  smul_assoc k l x := by
+    ext
+    simp [-smul_assoc, show ↑((k • l) • x) = (k • l.1) * _ from rfl,
       show k • ↑(l • x) = k • (l.1 * x.1) from rfl]
 
 instance (L : SubField K D) : FiniteDimensional L (Subalgebra.centralizer K (A := D) L) :=
