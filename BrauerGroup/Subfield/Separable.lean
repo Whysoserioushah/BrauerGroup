@@ -432,8 +432,7 @@ theorem exists_finite_galois_split :
   have : L' ≤ separableClosure K K_bar := by
     change IntermediateField.normalClosure K L K_bar ≤ _
     rw [normalClosure_def, iSup_le_iff]
-    intro f
-    intro x hx
+    intro f x hx
     have : Algebra.IsSeparable K f.fieldRange := Algebra.IsSeparable.of_equiv_equiv (B₁ := L)
       (B₂ := f.fieldRange) (RingEquiv.refl K) (AlgEquiv.ofInjectiveField f).toRingEquiv <| by
       ext; erw [AlgEquiv.ofInjective_apply _ f.injective]; simp
