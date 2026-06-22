@@ -314,7 +314,7 @@ theorem SkolemNoether (K A B M : Type u)
   ext m
   simp only [toEndEndAlgHom, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, AlgHom.coe_mk,
     RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, toEndEnd_apply,
-    DistribMulAction.toLinearMap_apply, Module.End.mul_apply, LinearMap.coe_mk, AddHom.coe_mk]
+    DistribSMul.toLinearMap_apply, Module.End.mul_apply, LinearMap.coe_mk, AddHom.coe_mk]
   have := φ.map_smul (x ⊗ₜ LinearMap.id) (φ.symm m)
   change φ (smul1 K A B M _ _ (x ⊗ₜ LinearMap.id)) = _ at this
   simp only [smul1, smul1AddHom, smul1AddHom', ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe,

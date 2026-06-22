@@ -646,7 +646,7 @@ lemma gen_spec (M : Type v) [AddCommGroup M]
 @[simps]
 def toEndEnd (M : Type v) [AddCommGroup M] [Module A M] :
     A →ₗ[A] Module.End (Module.End A M) M where
-  toFun a := DistribMulAction.toLinearMap _ _ a
+  toFun a := DistribSMul.toLinearMap _ _ a
   map_add' := by intros; ext; simp [add_smul]
   map_smul' := by intros; ext; simp [mul_smul]
 
@@ -657,7 +657,7 @@ def toEndEndAlgHom (M : Type v) [AddCommGroup M] [Module A M] [Module k M] [IsSc
   map_mul' a b := by ext; simp [mul_smul]
   map_zero' := by ext; simp
   commutes' a := by ext; simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, toEndEnd_apply,
-    DistribMulAction.toLinearMap_apply, algebraMap_smul]; rfl
+    DistribSMul.toLinearMap_apply, algebraMap_smul]; rfl
 
 instance (M : Type v) [AddCommGroup M] [Module A M] [IsSimpleModule A M] :
     Nontrivial (Module.End (Module.End A M) M) where
@@ -677,7 +677,7 @@ instance : IsBalanced A A where
   surj f := by
     refine ⟨f 1, ?_⟩
     ext x
-    simp only [toEndEnd_apply, DistribMulAction.toLinearMap_apply, smul_eq_mul]
+    simp only [toEndEnd_apply, DistribSMul.toLinearMap_apply, smul_eq_mul]
     let X : Module.End A A := LinearMap.mulRight _ x
     simpa [Module.End.smul_def, LinearMap.coe_mk, AddHom.coe_mk, one_mul, X]
       using (f.map_smul X 1).symm
@@ -699,9 +699,9 @@ lemma IsBalanced.congr_aux (M N : Type v) [AddCommGroup M] [AddCommGroup N] [Mod
   obtain ⟨b, hb⟩ := h.1 a'
   refine ⟨b, ?_⟩
   ext n
-  simp only [toEndEnd_apply, DistribMulAction.toLinearMap_apply]
+  simp only [toEndEnd_apply, DistribSMul.toLinearMap_apply]
   have := congr($hb <| l.symm n)
-  simp only [toEndEnd_apply, DistribMulAction.toLinearMap_apply] at this
+  simp only [toEndEnd_apply, DistribSMul.toLinearMap_apply] at this
   apply_fun l at this
   aesop
 
@@ -766,7 +766,7 @@ lemma isBalanced_of_simpleMod (M : Type v) [AddCommGroup M] [Module A M] [IsSimp
     exact one_ne_zero eq1
   obtain ⟨j⟩ := this
   have := congr($ha (Finsupp.single j m))
-  simp only [toEndEnd_apply, DistribMulAction.toLinearMap_apply, Finsupp.smul_single,
+  simp only [toEndEnd_apply, DistribSMul.toLinearMap_apply, Finsupp.smul_single,
     LinearMap.coe_mk, AddHom.coe_mk, Finsupp.mapRange_single, G] at this ⊢
   have := congr($this j)
   simp only [Finsupp.single_eq_same] at this
