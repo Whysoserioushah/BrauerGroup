@@ -20,6 +20,7 @@ variable {R K A : Type*}
 section CommSemiring
 variable [CommSemiring R] [Semiring A] [Algebra R A] {L L₁ L₂ : SubField R A} {a : A}
 
+
 lemma toSubalgebra_injective : Injective (toSubalgebra : SubField R A → Subalgebra R A) := by
   rintro ⟨L⟩; congr!
 
@@ -39,6 +40,8 @@ instance : SetLike (SubField R A) A where
 @[simp] lemma coe_toSubalgebra (L : SubField R A) : (L.toSubalgebra : Set A) = L := rfl
 
 @[ext] lemma ext (h : ∀ x, x ∈ L₁ ↔ x ∈ L₂) : L₁ = L₂ := SetLike.ext h
+
+instance : PartialOrder (SubField R A) := .ofSetLike ..
 
 @[simp] lemma toSubalgebra_le_toSubalgebra : L₁.toSubalgebra ≤ L₂.toSubalgebra ↔ L₁ ≤ L₂ := .rfl
 @[simp] lemma toSubalgebra_lt_toSubalgebra : L₁.toSubalgebra < L₂.toSubalgebra ↔ L₁ < L₂ := .rfl

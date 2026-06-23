@@ -4,8 +4,6 @@ public import Mathlib.RingTheory.TensorProduct.Basic
 
 @[expose] public section
 
-suppress_compilation
-
 open scoped TensorProduct
 
 universe u

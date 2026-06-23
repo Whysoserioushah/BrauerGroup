@@ -5,8 +5,6 @@ public import Mathlib.RingTheory.TensorProduct.Basic
 
 @[expose] public section
 
-suppress_compilation
-
 open scoped TensorProduct
 
 variable (K F : Type*) [CommSemiring K] [CommSemiring F] [Algebra F K]
