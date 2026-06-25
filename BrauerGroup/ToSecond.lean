@@ -802,11 +802,11 @@ def fromSnd :
             rw [val_smul, val_mul]
             unfold basis
             erw [Basis.unitsSMul_apply, Basis.unitsSMul_apply, Basis.unitsSMul_apply]
-            erw [val_smul, val_smul, val_smul, val_smul, val_smul]
+            erw [CrossProductAlgebra.val_smul, CrossProductAlgebra.val_smul,
+              CrossProductAlgebra.val_smul]
             simp only [CrossProductAlgebra.basis, Basis.coe_ofRepr, valLinearEquiv_symm_apply,
               AddEquiv.toEquiv_eq_coe, Equiv.invFun_as_coe, AddEquiv.coe_toEquiv_symm,
-              valAddEquiv_symm_apply_val, Finsupp.smul_single, smul_eq_mul, _root_.mul_one,
-              mulLinearMap_single_single, map_mul]
+              valAddEquiv_symm_apply_val, Finsupp.smul_single, smul_eq_mul, _root_.mul_one]
             congr 1
             specialize hc σ τ
             simp only [AlgEquiv.smul_units_def, Pi.div_apply, Units.ext_iff, Units.val_mul,

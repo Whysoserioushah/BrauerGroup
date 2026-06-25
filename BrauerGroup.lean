@@ -1,4 +1,4 @@
-module
+module  -- shake: keep-all
 
 public import BrauerGroup.AbsoluteIsoH2
 public import BrauerGroup.AlgClosedUnion
