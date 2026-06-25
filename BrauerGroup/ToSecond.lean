@@ -807,17 +807,24 @@ def fromSnd :
             simp only [CrossProductAlgebra.basis, Basis.coe_ofRepr, valLinearEquiv_symm_apply,
               AddEquiv.toEquiv_eq_coe, Equiv.invFun_as_coe, AddEquiv.coe_toEquiv_symm,
               valAddEquiv_symm_apply_val, Finsupp.smul_single, smul_eq_mul, _root_.mul_one]
-            congr 1
+            -- congr 1
             specialize hc σ τ
             simp only [AlgEquiv.smul_units_def, Pi.div_apply, Units.ext_iff, Units.val_mul,
               Units.val_div_eq_div_val, Units.coe_map, MonoidHom.coe_coe] at hc
             simp only [_root_.mul_assoc]
-            congr 1
-            rw [mul_comm (c σ).1, _root_.mul_assoc]
-            congr 1
+            -- congr 1
+            change _ = ((mulLinearMap b) (Finsupp.single _ _)) (k2 • c τ •
+              (valLinearEquiv (R := K)).symm (Finsupp.single τ (1 : K))).val
+            rw [Units.smul_def, ← map_smul, ← map_smul, valLinearEquiv_symm_apply]
+            change _ = ((mulLinearMap b) _) (valAddEquiv.symm _).val
+            rw [CrossProductAlgebra.valAddEquiv_symm_apply_val,
+              Finsupp.smul_single, Finsupp.smul_single, mulLinearMap_single_single,
+              smul_eq_mul, smul_eq_mul, _root_.mul_one, _root_.mul_assoc, _root_.mul_assoc,
+              map_mul σ]
+            congr 2
             field_simp at hc
-            field_simp [hc, mul_comm]
-            convert hc.symm using 1 <;> ring)
+            rw [mul_comm (a (σ, τ)).1, ← hc]
+            ring)
     apply IsBrauerEquivalent.iso_to_eqv (h := φ2)
 
 end from_two

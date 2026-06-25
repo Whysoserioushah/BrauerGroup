@@ -126,7 +126,7 @@ def mulLinearMap : (Gal(K, F) →₀ K) →ₗ[F] (Gal(K, F) →₀ K) →ₗ[F]
       Finsupp.lsingle_apply, LinearMap.smul_apply, Finsupp.coe_lsum, map_zero, mul_zero, zero_mul,
       Finsupp.single_zero, Finsupp.sum_single_index, Finsupp.smul_single] }
 
-set_option synthInstance.maxHeartbeats 30000 in
+-- set_option synthInstance.maxHeartbeats 30000 in
 -- This was on the brink of timing out
 variable (f) in
 @[simp]
