@@ -524,7 +524,6 @@ noncomputable def φ0 :
       rw [_root_.mul_one, ← Algebra.commutes, ← Algebra.smul_def, ← smul_tmul',
         Submodule.Quotient.mk_smul]
     | add x y hx hy =>
-      simp only at hx hy ⊢
       have := congr($hx + $hy)
       rw [← smul_add, ← smul_add] at this
       exact this
@@ -1062,13 +1061,11 @@ def isoSnd : Additive (RelativeBrGroup K F) ≃+ H2 (galAct F K) :=
     have hx := isMulCocycle₂_of_mem_cocycles₂ _ hx'
     rcases y with ⟨y, hy'⟩
     have hy := isMulCocycle₂_of_mem_cocycles₂ _ hy'
-    simp only [Additive.ofMul_symm_eq, equivSnd,
-      CategoryTheory.ShortComplex.moduleCatLeftHomologyData_H, H2π, ModuleCat.hom_comp,
+    simp only [Additive.ofMul_symm_eq, equivSnd, H2π, ModuleCat.hom_comp,
       LinearMap.coe_comp, Function.comp_apply, Equiv.symm_trans_apply, Additive.toMul_symm_eq,
       Equiv.coe_fn_symm_mk, π_comp_H2Iso_hom_apply, CategoryTheory.Iso.inv_hom_id_apply]
     erw [map_add]
-    simp only [CategoryTheory.ShortComplex.moduleCatLeftHomologyData_H, π_comp_H2Iso_hom_apply,
-      CategoryTheory.Iso.inv_hom_id_apply]
+    simp only [π_comp_H2Iso_hom_apply, CategoryTheory.Iso.inv_hom_id_apply]
     change fromSnd F K (Quotient.mk'' _) =
       fromSnd F K (Quotient.mk'' _) * fromSnd F K (Quotient.mk'' _)
     erw [fromSnd_wd, fromSnd_wd]

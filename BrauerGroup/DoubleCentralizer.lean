@@ -773,6 +773,8 @@ lemma finrank_mop (B : Type*) [Ring B] [Algebra F B] : Module.finrank F Bᵐᵒ�
 
 end centralizer_isSimple.aux
 
+set_option maxHeartbeats 400000 in
+-- Unclear
 open centralizer_isSimple.aux in
 lemma centralizer_isSimple {ι : Type*} (ℬ : Basis ι F <| Module.End F B) :
     IsSimpleRing (Subalgebra.centralizer F (B : Set A)) := by
@@ -780,7 +782,7 @@ lemma centralizer_isSimple {ι : Type*} (ℬ : Basis ι F <| Module.End F B) :
       Subalgebra.toRing (R := F) (A := A ⊗[F] Module.End F B) X
   obtain ⟨x, ⟨eqv⟩⟩ := step1 B ℬ
   have : IsSimpleRing (Subalgebra.centralizer F (B : Set A) ⊗[F] Module.End F B) := by
-    have := TwoSidedIdeal.orderIsoOfRingEquiv eqv
+    have := TwoSidedIdeal.orderIsoOfRingEquiv eqv.toRingEquiv
     constructor
     rw [OrderIso.isSimpleOrder_iff this]
     rw [Subalgebra.conj_simple_iff]
@@ -836,11 +838,8 @@ lemma double_centralizer :
       suffices 0 < Module.finrank F (Subalgebra.centralizer F (B : Set A)) by omega
       apply Module.finrank_pos) |>.1 eq3
 
-/-
-074U
--/
-noncomputable def writeAsTensorProduct
-    [Algebra.IsCentral F B] [IsSimpleRing B] :
+@[stacks 074U]
+noncomputable def writeAsTensorProduct [Algebra.IsCentral F B] :
     A ≃ₐ[F] B ⊗[F] Subalgebra.centralizer F (B : Set A) :=
   haveI s1 : IsSimpleRing (Subalgebra.centralizer F (B : Set A)) :=
     centralizer_isSimple B (Module.Free.chooseBasis _ _)

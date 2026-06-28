@@ -441,6 +441,6 @@ instance : IsSimpleRing (CrossProductAlgebra f) := by
 
 variable (f) in
 /-- The cross product algebra as a central simple algebra. -/
-def asCSA [IsGalois F K] : CSA F := ⟨.of F (CrossProductAlgebra f)⟩
+def asCSA : CSA F := ⟨.of F (CrossProductAlgebra f)⟩
 
 end CrossProductAlgebra

@@ -738,7 +738,8 @@ abbrev SmulCA (A : Type) [DivisionRing A] [Algebra ℝ A] [FiniteDimensional ℝ
   map_zero' := by simp
   map_add' z1 z2 := by simp
 
-instance AlgCA (A : Type) [DivisionRing A] [Algebra ℝ A] [FiniteDimensional ℝ A]
+@[implicit_reducible]
+def AlgCA (A : Type) [DivisionRing A] [Algebra ℝ A] [FiniteDimensional ℝ A]
     (e : ℂ ≃ₐ[ℝ] (Subalgebra.center ℝ A)) : Algebra ℂ A where
   __ := SmulCA A e
   smul z a := (SmulCA A e z) * a
@@ -763,7 +764,6 @@ theorem centereqvCisoC (A : Type) [DivisionRing A] [Algebra ℝ A] [FiniteDimens
   letI : Algebra ℂ A := AlgCA A e
   have : IsScalarTower ℝ ℂ A := { smul_assoc := smulCRassoc A e }
   rename_i _ _ _ fin
-  unfold FiniteDimensional at fin
   haveI : IsNoetherian ℝ A := IsNoetherian.iff_fg.2 ‹FiniteDimensional ℝ A›
   haveI : FiniteDimensional ℂ A := .right ℝ ℂ A
   have bij := IsAlgClosed.algebraMap_bijective_of_isIntegral (k := ℂ) (K := A)

@@ -256,7 +256,11 @@ abbrev e01 (M : TensorModule R A C) :
         simp
     · exact id
     · exact congrFun rfl
-    · exact congrFun rfl)) fun c ↦ by ext; simp; rfl
+    · exact congrFun rfl)) fun c ↦ by
+      ext m
+      change moduleAux R A C M ((1 : A) ⊗ₜ[R] c) m = (M.morphism c) m
+      rw [moduleAux_apply]
+      simp
 
 abbrev e01_naturality {X Y : TensorModule R A C} (f : X ⟶ Y) :
     (𝟭 (TensorModule R A C)).map f ≫ (e01 R A C Y).hom =
@@ -354,10 +358,32 @@ abbrev MoritaTensorAux0 (e : ModuleCat A ≌ ModuleCat B) [e.functor.Additive] [
     TensorModule R A C ≌ TensorModule R B C where
   functor := toBCfunctor R A B C e.functor
   inverse := toBCfunctor R B A C e.inverse
-  unitIso := NatIso.ofComponents (fun M ↦ TensorModule.Iso_mk _ _ _
-    (e.unitIso.app M.1) fun c ↦ by ext; simp) fun {M N} f ↦ by ext; simp
-  counitIso := NatIso.ofComponents (fun M ↦ TensorModule.Iso_mk _ _ _
-    (e.counitIso.app M.1) fun c ↦ by ext; simp) fun {M N} f ↦ by ext; simp
+  unitIso := NatIso.ofComponents
+    (fun M ↦ TensorModule.Iso_mk _ _ _
+      (e.unitIso.app M.1) fun c ↦ by
+        change (e.unitIso.app M.carrier).hom ≫
+            e.inverse.map (e.functor.map (ModuleCat.ofHom (M.morphism c))) =
+          ModuleCat.ofHom (M.morphism c) ≫ (e.unitIso.app M.carrier).hom
+        exact (e.unitIso.hom.naturality (ModuleCat.ofHom (M.morphism c))).symm)
+    (fun {M N} f ↦ by
+      ext x
+      change (ModuleCat.Hom.hom (f.hom ≫ e.unitIso.hom.app N.carrier)) x =
+        (ModuleCat.Hom.hom
+          (e.unitIso.hom.app M.carrier ≫ e.inverse.map (e.functor.map f.hom))) x
+      exact LinearMap.ext_iff.mp (ModuleCat.hom_ext_iff.mp
+        (e.unitIso.hom.naturality f.hom)) x)
+  counitIso := NatIso.ofComponents
+    (fun M ↦ TensorModule.Iso_mk _ _ _
+      (e.counitIso.app M.1) fun c ↦ by
+        change (e.counitIso.app M.carrier).hom ≫ ModuleCat.ofHom (M.morphism c) =
+          e.functor.map (e.inverse.map (ModuleCat.ofHom (M.morphism c))) ≫
+            (e.counitIso.app M.carrier).hom
+        exact (e.counitIso.hom.naturality (ModuleCat.ofHom (M.morphism c))).symm)
+    (fun {M N} f ↦ by
+      ext x
+      change (e.functor.map (e.inverse.map f.hom) ≫ e.counitIso.hom.app N.carrier).hom x =
+        (e.counitIso.hom.app M.carrier ≫ f.hom).hom x
+      exact LinearMap.ext_iff.mp (ModuleCat.hom_ext_iff.mp (e.counitIso.hom.naturality f.hom)) x)
   functor_unitIso_comp M := by ext; simp
 
 instance (e : ModuleCat A ≌ ModuleCat B) [e.functor.Additive] [e.functor.Linear R] :

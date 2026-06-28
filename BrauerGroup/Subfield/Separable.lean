@@ -47,7 +47,8 @@ lemma SubField.adjoin_centralizer_mul_comm (L : SubField K D) (a : D)
     · rintro x y z - - - hxy hxz
       rw [← mul_assoc, hxy, mul_assoc, hxz, ← mul_assoc]
 
-instance SubField.adjoin_commRing (L : SubField K D) (a : D) (ha : a ∈ Subalgebra.centralizer K L) :
+@[implicit_reducible]
+def SubField.adjoin_commRing (L : SubField K D) (a : D) (ha : a ∈ Subalgebra.centralizer K L) :
     CommRing (Algebra.adjoin K (L ∪ {a})) where
   mul_comm := fun ⟨x, hx⟩ ⟨y, hy⟩ ↦ by
     ext
@@ -328,7 +329,7 @@ theorem exists_sep_masSubfield' : ∃ (a : D), IsMax (SubField.bot_adjoin K D a)
     symm
     contrapose! h
     apply Subalgebra.toSubring_injective
-    convert congr(Subring.map CL.val.toRingHom $h)
+    convert! congr(Subring.map CL.val.toRingHom $h)
     ext
     simp
   obtain ⟨a, ha1, ha2⟩ := @JacobsonNoether.exists_separable_and_not_isCentral

@@ -296,9 +296,7 @@ lemma top_square_comm'' (A B : Azumaya R) :
     (AlgEquiv.ofBijective (AlgHom.mulLeftRight R B) B.isAzumaya.bij)).toLinearMap
     = (AlgHom.mulLeftRight R (A ⊗[R] B)).toLinearMap ∘ₗ
     (e (R := R) (A := A) (B := B)).toLinearEquiv.toLinearMap := by
-  ext a b c d a' b'
-  dsimp
-  simp only [AlgHom.mulLeftRight_apply, Algebra.TensorProduct.tmul_mul_tmul, unop_op]
+  ext; simp
 
 lemma top_square_comm (A B : Azumaya R) :
     (TensorProduct.homTensorHomMap _ A B A B) ∘ (Algebra.TensorProduct.congr

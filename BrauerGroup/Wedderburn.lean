@@ -24,24 +24,20 @@ If `I` is a two-sided-ideal of `A`, then `Mₙ(I) := {(xᵢⱼ) | ∀ i j, xᵢ�
 `Mₙ(A)`.
 -/
 @[simps]
-def TwoSidedIdeal.mapMatrix (I : TwoSidedIdeal A) : TwoSidedIdeal M[ι, A] := .mk
-{
-  r := fun X Y => ∀ i j, I.ringCon (X i j) (Y i j)
-  iseqv :=
-  { refl := fun X i j ↦ I.ringCon.refl (X i j)
-    symm := fun h i j ↦ I.ringCon.symm (h i j)
-    trans := fun h1 h2 i j ↦ I.ringCon.trans (h1 i j) (h2 i j) }
-  mul' := by
-    intro _ _ _ _ h h' i j
+def TwoSidedIdeal.mapMatrix (I : TwoSidedIdeal A) : TwoSidedIdeal M[ι, A] where
+  ringCon.r X Y := ∀ i j, I.ringCon (X i j) (Y i j)
+  ringCon.iseqv.refl X i j := I.ringCon.refl (X i j)
+  ringCon.iseqv.symm h i j := I.ringCon.symm (h i j)
+  ringCon.iseqv.trans h1 h2 i j := I.ringCon.trans (h1 i j) (h2 i j)
+  ringCon.mul' {_ _ _ _} h h' i j := by
     rw [Matrix.mul_apply, Matrix.mul_apply]
     rw [TwoSidedIdeal.rel_iff, ← Finset.sum_sub_distrib]
     apply I.finsetSum_mem
     rintro k -
     rw [← TwoSidedIdeal.rel_iff]
     apply I.ringCon.mul (h _ _) (h' _ _)
-  add' := fun {X X' Y Y'} h h' i j ↦ by
+  ringCon.add' {X X' Y Y'} h h' i j := by
     simpa only [Matrix.add_apply] using I.ringCon.add (h _ _) (h' _ _)
-}
 
 @[simp] lemma TwoSidedIdeal.mem_mapMatrix (I : TwoSidedIdeal A) (x) : x ∈ I.mapMatrix A ι ↔
     ∀ i j, x i j ∈ I :=
@@ -590,7 +586,7 @@ theorem is_central_of_wdb [hctr : Algebra.IsCentral K B]
     exact fun b ↦ Wdb.injective <| by simpa using hx' (Wdb b)
   obtain ⟨s, (hs : algebraMap _ _ s = _)⟩ := hctr.out hx''
   exact ⟨s, show algebraMap _ _ _ = _ by
-    simpa using Matrix.ext_iff.2 congr(Wdb $hs) 0 0⟩
+    simpa [Matrix.algebraMap_eq_diagonal] using Matrix.ext_iff.2 congr(Wdb $hs) 0 0⟩
 
 theorem is_fin_dim_of_wdb {n : ℕ} (hn : n ≠ 0) (S : Type*) [h : DivisionRing S] [Algebra K S]
     (Wdb : B ≃ₐ[K] M[Fin n, S]) : FiniteDimensional K S := by

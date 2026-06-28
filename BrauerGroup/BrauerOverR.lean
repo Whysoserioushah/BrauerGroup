@@ -238,7 +238,7 @@ lemma toC2.left_inv : Function.LeftInverse C2toBrauerOverR toC2 := fun A ↦ by
     simp only [AddMonoidHom.coe_mk, dite_eq_ite, ZeroHom.coe_mk, Quotient.lift_mk, h1, ↓reduceIte]
     rw [Quotient.sound']; exact h1.symm
   · have : ¬ (IsBrauerEquivalent A one_in') := fun h ↦ QuaternionNotEquivR <| h2.symm.trans h
-    simpa [this] using Quotient.sound' h2.symm
+    simpa [this] using! Quotient.sound' h2.symm
 
 set_option backward.isDefEq.respectTransparency false in
 lemma toC2.right_inv : Function.RightInverse C2toBrauerOverR toC2 := fun x ↦ by

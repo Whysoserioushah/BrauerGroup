@@ -229,6 +229,7 @@ lemma Mat.inv_toFun1' (n : ℕ) :
     simp [stdBasis_eq_single, AlgHom.mulLeftRight_apply,
       single, ite_and, mul_apply, Fintype.sum_prod_type]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Mat.inv_toFun2' (n : ℕ) :
     (AlgHom.mulLeftRight R (Matrix (Fin n) (Fin n) R)).toLinearMap.comp (Mat.inv R n) = .id := by
   ext f : 1
@@ -239,7 +240,7 @@ lemma Mat.inv_toFun2' (n : ℕ) :
     LinearMap.smul_apply, AlgHom.mulLeftRight_apply, unop_op, single_mul_mul_single, one_mul,
     mul_one, smul_single, smul_eq_mul, LinearMap.id_coe, id_eq]
   ext k l
-  simp [sum_apply, single, Fintype.sum_prod_type, ite_and]
+  simp [Matrix.sum_apply, single, Fintype.sum_prod_type, ite_and, apply_ite]
 
 lemma Mat.bij (n : ℕ) : Function.Bijective (AlgHom.mulLeftRight R (Matrix (Fin n) (Fin n) R)) :=
   ⟨Function.HasLeftInverse.injective ⟨Mat.inv R n, DFunLike.congr_fun (Mat.inv_toFun1' R n)⟩,

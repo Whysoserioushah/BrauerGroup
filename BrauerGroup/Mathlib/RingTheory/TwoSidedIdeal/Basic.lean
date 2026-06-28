@@ -1,6 +1,5 @@
 module
 
-public import Mathlib.Algebra.Ring.Opposite
 public import Mathlib.RingTheory.TwoSidedIdeal.Basic
 
 @[expose] public section
@@ -12,7 +11,7 @@ section NonUnitalNonAssocRing
 variable [NonUnitalNonAssocRing R] {I : TwoSidedIdeal R} {x : R}
 
 lemma smul_mem (r : R) (hx : x ∈ I) : r • x ∈ I := by
-  simpa using I.ringCon.mul (I.ringCon.refl r) hx
+  simpa [mem_iff] using I.ringCon.mul (I.ringCon.refl r) hx
 
 end NonUnitalNonAssocRing
 
@@ -26,7 +25,7 @@ instance : Module Rᵐᵒᵖ I where
   smul_zero x := by ext; simp
   zero_smul x := by ext; simp
   add_smul x y z := by ext; simp [left_distrib]
-  smul_add x y z := by ext; simp [right_distrib]
+  smul_add x y z := by ext; simp
 
 end Ring
 end TwoSidedIdeal

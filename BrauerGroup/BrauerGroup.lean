@@ -641,8 +641,9 @@ def e3Aux4 :
   | zero =>
     simp only [TensorProduct.zero_tmul]
     trans 0
-    · convert mul_zero (M₀ := E ⊗[K] (A ⊗[K] Matrix (Fin m) (Fin m) K)) _
-    · symm; convert zero_mul (M₀ := E ⊗[K] (A ⊗[K] Matrix (Fin m) (Fin m) K)) _
+    · exact mul_zero (M₀ := E ⊗[K] (A ⊗[K] Matrix (Fin m) (Fin m) K)) _
+    · symm
+      exact zero_mul (M₀ := E ⊗[K] (A ⊗[K] Matrix (Fin m) (Fin m) K)) _
   | add x y hx hy =>
     haveI := Distrib.leftDistribClass (E ⊗[K] (A ⊗[K] Matrix (Fin m) (Fin m) K))
     haveI := Distrib.rightDistribClass (E ⊗[K] (A ⊗[K] Matrix (Fin m) (Fin m) K))
@@ -736,9 +737,8 @@ def e6Aux0 : (E ⊗[K] A) ⊗[E] (E ⊗[K] B) →ₐ[E] E ⊗[K] (A ⊗[K] B) :=
             rw [Algebra.algebraMap_eq_smul_one]
             rw [← TensorProduct.smul_tmul']
             rfl]
-          rw [TensorProduct.tmul_smul]
-          rw [Algebra.smul_def (A := E ⊗[K] (A ⊗[K] B))]
-          convert _root_.mul_one _ } fun e a =>
+          simp [TensorProduct.tmul_smul, Algebra.smul_def (A := E ⊗[K] (A ⊗[K] B))]
+      } fun e a =>
             show (_ ⊗ₜ[K] _) * (_ ⊗ₜ[K] _) = (_ ⊗ₜ[K] _) * (_ ⊗ₜ[K] _) by simp)
     (Algebra.TensorProduct.lift
       { toFun e := e ⊗ₜ[K] (1 ⊗ₜ 1)
@@ -759,9 +759,8 @@ def e6Aux0 : (E ⊗[K] A) ⊗[E] (E ⊗[K] B) →ₐ[E] E ⊗[K] (A ⊗[K] B) :=
             rw [Algebra.algebraMap_eq_smul_one]
             rw [TensorProduct.tmul_smul]
             rfl]
-          rw [TensorProduct.tmul_smul]
-          rw [Algebra.smul_def (A := E ⊗[K] (A ⊗[K] B))]
-          convert _root_.mul_one _ }
+          simp [TensorProduct.tmul_smul, Algebra.smul_def (A := E ⊗[K] (A ⊗[K] B))]
+      }
     fun e b => show (_ ⊗ₜ _) * (_ ⊗ₜ _) = (_ ⊗ₜ _) * (_ ⊗ₜ _) by simp)
       fun x y => show _ = _ by
         induction x using TensorProduct.induction_on with
@@ -948,7 +947,7 @@ def Br : FieldCat ⥤ CommGrpCat where
   map_comp {F K E} f g := by
     simp only [← CommGrpCat.ofHom_comp]
     congr 1
-    apply (config := { allowSynthFailures := true }) baseChange_idem
+    apply +allowSynthFailures baseChange_idem
     letI : Algebra F E := RingHom.toAlgebra (f ≫ g).hom
     letI : Algebra F K := RingHom.toAlgebra f.hom
     letI : Algebra K E := RingHom.toAlgebra g.hom

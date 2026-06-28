@@ -492,16 +492,8 @@ lemma compare_toCocycles₂ (x_ : Π σ, A.conjFactor σ) (y_ : Π σ, B.conjFac
     A.pushConjFactorCoeffAsUnit B (x_ σ) (y_ σ) *
     Units.map σ (A.pushConjFactorCoeffAsUnit B (x_ τ) (y_ τ)) *
     A.toCocycles₂ x_ (σ, τ) := by
-  delta toCocycles₂
-  dsimp only
-  have := A.compare_conjFactorCompCoeff B
-    (x_ σ) (y_ σ)
-    (x_ τ) (y_ τ)
-    (x_ _) (y_ _)
-  simp only at this
   ext : 1
-  dsimp
-  rw [this]
+  exact A.compare_conjFactorCompCoeff B (x_ σ) (y_ σ) (x_ τ) (y_ τ) (x_ _) (y_ _)
 
 lemma compare_toCocycles₂' (x_ : Π σ, A.conjFactor σ) (y_ : Π σ, B.conjFactor σ) :
     IsMulCoboundary₂ (B.toCocycles₂ y_ / A.toCocycles₂ x_) := by
@@ -606,7 +598,7 @@ lemma conjFactor_linearIndependent (x_ : Π σ, A.conjFactor σ) :
   rw [← mul_smul, inv_mul_cancel₀ c_ne_zero, one_smul] at hc
   clear c c_ne_zero
   have mem1 : (x_ σ).1.1 ∈ Submodule.span K (Set.range fun (σ : J) ↦ (x_ σ.1).1.1) := by
-    convert hc; aesop
+    convert! hc; aesop
   have eq0 : (⟨(x_ σ).1.1, mem1⟩ : Submodule.span K (Set.range fun (σ : J) ↦ (x_ σ.1).1.1)) =
       ∑ τ ∈ (B.repr ⟨_, mem1⟩).support, B.repr ⟨_, mem1⟩ τ • (x_ τ).1.1 := by
     conv_lhs => rw [← B.linearCombination_repr ⟨(x_ σ).1.1, mem1⟩, Finsupp.linearCombination_apply,
@@ -851,16 +843,15 @@ lemma toSnd_fromSnd : toSnd ∘ fromSnd F K ∘ (H2Iso (galAct F K)).hom = id :=
   induction a using H2_induction_on with | h a =>
   let am := Additive.toMul ∘ Amelia.toAdditive _ _ ∘ a
   have ha : IsMulCocycle₂ am :=
-    isMulCocycle₂_of_mem_cocycles₂ _ (by simpa using a.2)
+    isMulCocycle₂_of_mem_cocycles₂ _ (by simpa using! a.2)
   haveI : Fact (IsMulCocycle₂ am) := ⟨ha⟩
   simp only [Function.comp_apply, id_eq]
   let A : GoodRep K (Quotient.mk'' <| CrossProductAlgebra.asCSA am) :=
     ⟨CrossProductAlgebra.asCSA am, rfl, CrossProductAlgebra.incl am, CrossProductAlgebra.dim_eq_sq⟩
   let y_ σ : A.conjFactor σ :=
     ⟨CrossProductAlgebra.of am σ, fun c ↦ by erw [CrossProductAlgebra.of_conj]; rfl⟩
-  simp only [CategoryTheory.ShortComplex.moduleCatLeftHomologyData_H, H2π, ModuleCat.hom_comp,
-    LinearMap.coe_comp, Function.comp_apply, π_comp_H2Iso_hom_apply,
-    CategoryTheory.Iso.inv_hom_id_apply]
+  simp only [H2π, ModuleCat.hom_comp, LinearMap.coe_comp, Function.comp_apply,
+    π_comp_H2Iso_hom_apply, CategoryTheory.Iso.inv_hom_id_apply]
   erw [fromSnd_wd]
   rw [toSnd_wd _ _ y_]
   let b : Gal(K, F) × Gal(K, F) → Kˣ := A.toCocycles₂ y_
@@ -893,8 +884,7 @@ lemma fromSnd_toSnd : (fromSnd F K ∘ (H2Iso (galAct F K)).hom) ∘ toSnd = id 
   rw [toSnd_wd (A := A) (x_ := A.arbitraryConjFactor)]
   ext : 1
   conv_rhs => rw [← A.quot_eq]
-  simp only [CategoryTheory.ShortComplex.moduleCatLeftHomologyData_H, GoodRep.toH2]
-  simp only [H2π, ModuleCat.hom_comp, LinearMap.coe_comp, Function.comp_apply,
+  simp only [GoodRep.toH2, H2π, ModuleCat.hom_comp, LinearMap.coe_comp, Function.comp_apply,
     π_comp_H2Iso_hom_apply, CategoryTheory.Iso.inv_hom_id_apply]
   erw [fromSnd_wd]
   rw [Quotient.eq'']

@@ -79,7 +79,7 @@ abbrev e1 (φ : F →ₐ[K] E) : Matrix (Fin n) (Fin n) F ≃ₐ[K] φ_m n φ|>.
 abbrev e1' (φ : F →ₐ[K] E) : φ.range ⊗[K] A ≃ₐ[K] Matrix (Fin n) (Fin n) φ.range :=
   Algebra.TensorProduct.congr (AlgEquiv.ofInjectiveField φ).symm AlgEquiv.refl|>.trans <| ({
     __ := e
-    commutes' r := by simpa using (e.commutes (algebraMap K F r))}
+    commutes' r := by simpa using! e.commutes (algebraMap K F r)}
     : _ ≃ₐ[K] Matrix (Fin n) (Fin n) F).trans <| e1 _ _ _ _ φ|>.trans (e1Aux n φ).symm
 
 set_option backward.isDefEq.respectTransparency false in
@@ -93,13 +93,12 @@ abbrev e1'' (φ : F →ₐ[K] E) : φ.range ⊗[K] A ≃ₐ[φ.range] Matrix (Fi
     dsimp [Matrix.algebraMap_matrix_apply]
     split_ifs with h
     · subst h
-      simp only [AlgEquiv.ofInjective, AlgEquiv.ofLeftInverse_symm_apply, Matrix.one_apply_eq,
-        mul_one, Subtype.mk.injEq]
+      simp only [AlgEquiv.ofInjective, AlgEquiv.ofLeftInverse_symm_apply, Subtype.mk.injEq]
       set ψ := Classical.choose _ with ψ_eq
       let hψ := Classical.choose_spec φ.injective.hasLeftInverse
       simp only [Function.LeftInverse, ← ψ_eq] at hψ
       rw [← eq, hψ y]
-      rfl
+      simp
     · simp [h, Subtype.ext_iff]
 
 set_option maxSynthPendingDepth 2 in
@@ -187,7 +186,7 @@ lemma eq_pow_reducedCharpoly (g : F ⊗[K] A →ₐ[F] Matrix (Fin m) (Fin m) F)
       simp only [map_one, Matrix.blockDiagonalRingHom_apply]
       erw [Matrix.blockDiagonal_one (m := Fin n) (o := Fin _) (α := F)]
       exact map_one _
-    map_mul' := by simp
+    map_mul' := by simp [← Matrix.submatrix_submatrix]
     map_zero' := by
       simp only [Matrix.blockDiagonalRingHom_apply, map_zero]
       change Matrix.reindexAlgEquiv _ _ _ (Matrix.blockDiagonal 0) = _
@@ -204,7 +203,7 @@ lemma eq_pow_reducedCharpoly (g : F ⊗[K] A →ₐ[F] Matrix (Fin m) (Fin m) F)
       change Matrix.reindexAlgEquiv _ _ _ (Matrix.blockDiagonal (k • _)) = _
       rw [Matrix.blockDiagonal_smul, map_smul, ← Algebra.TensorProduct.one_def, map_one]
       change k • (Matrix.reindexAlgEquiv _ _ _ (Matrix.blockDiagonal 1)) = _
-      simp [Algebra.algebraMap_eq_smul_one] }
+      simp [Algebra.algebraMap_eq_smul_one, ← Matrix.submatrix_submatrix] }
   ⟨r, deg_pos _ _ _, eq.symm,
   by
     obtain ⟨u, hu⟩ := SkolemNoether' F _ _ h g
@@ -272,7 +271,7 @@ lemma mem_Kx (a : A) : ∃ f : K[X], ReducedCharPoly e a = f.mapAlgHom (Algebra.
       simp only [h2] at this
       change algebraMap _ _ _ = 0 at this
       rw [FaithfulSMul.algebraMap_eq_zero_iff] at this
-      exact h1 <| by convert this
+      exact h1 <| by convert! this
   ext k
   simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, coe_mapAlgHom, coeff_map, coeff_ofFinsupp,
     Finsupp.coe_mk]

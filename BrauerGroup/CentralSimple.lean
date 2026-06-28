@@ -308,7 +308,7 @@ instance TensorProduct.nontrivial
     Algebra.TensorProduct.map (Algebra.ofId _ _) (.id _ _)
   have hf : Function.Injective f := Module.Flat.rTensor_preserves_injective_linearMap _
     (algebraMap K A).injective
-  have r' : f 0 = f 1 := by convert r; simp [f]
+  have r' : f 0 = f 1 := by simpa [f]
   specialize hf r'
   apply_fun Algebra.TensorProduct.lid K B at hf
   simp only [map_zero, map_one] at hf
@@ -505,7 +505,6 @@ lemma TensorProduct.map_comap_eq_of_isSimple_isCentralSimple
         specialize LI s (fun i =>
           if i = i₀ then 1
           else if h : i ∈ s.erase i₀ then k i h else 0) (by
-          dsimp only
           simp_rw [ite_smul, one_smul, dite_smul, zero_smul]
           rw [Finset.sum_ite,
             show ∑ x ∈ Finset.filter (fun x ↦ x = i₀) s, 𝒜 x = ∑ x ∈ {i₀}, 𝒜 x by
@@ -647,8 +646,6 @@ theorem CSA_implies_CSA (K : Type*) (B : Type*) [Field K] [Ring B] [Algebra K B]
       · change _ = d • (1 : D)
         simp only [smul_eq_mul, mul_one]
       · rfl)
-  refine ⟨k, ?_⟩
-  apply_fun (· 0 0) at hk
-  simpa using hk
+  exact ⟨k, by simpa [Matrix.algebraMap_eq_diagonal] using congr($hk 0 0)⟩
 
 end CSA_implies_CSA

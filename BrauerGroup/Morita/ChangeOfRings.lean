@@ -97,14 +97,14 @@ set_option backward.isDefEq.respectTransparency false in
 instance (n : ℕ) [NeZero n] : Functor.Linear R (moritaEquivalentToMatrix A (Fin n)).functor where
   map_smul {M N} f r := by
     ext m
-    simp only [moritaEquivalentToMatrix_functor_obj_carrier, hom_smul]
-    ext i
-    rw [moritaEquivalentToMatrix_functor_map_hom_apply]
+    apply funext
+    intro i
     simp only [hom_smul, LinearMap.smul_apply, moritaEquivalentToMatrix,
-      toModuleCatOverMatrix_map, hom_ofHom, LinearMap.coe_mk, AddHom.coe_mk]
+      toModuleCatOverMatrix_map, hom_ofHom]
     change (algebraMap R A r) • (f.hom _) =
       ∑ j : Fin n, (algebraMap R (Matrix (Fin n) (Fin n) A) r) _ _ • _
     simp [Matrix.algebraMap_matrix_apply]
+    rfl
 
 -- attribute [-instance] Linear.preadditiveIntLinear Linear.preadditiveNatLinear in
 def matrix (n : ℕ) : MoritaEquivalence R A (Matrix (Fin (n+1)) (Fin (n + 1)) A) :=
@@ -258,13 +258,13 @@ def aux1 : End (ModuleCat.of A A) ≃ₐ[R] End (e.eqv.functor.obj <| .of A A) w
   invFun g := e.eqv.unit.app _ ≫ e.eqv.inverse.map g ≫ e.eqv.unitInv.app _
   left_inv := by
     intro f
-    simp only [Functor.comp_obj, Equivalence.inv_fun_map, Functor.id_obj, Category.assoc]
+    simp only [Equivalence.inv_fun_map, Functor.id_obj, Category.assoc]
     rw [← Category.assoc]
     change (e.eqv.unit ≫ e.eqv.unitInv).app _ ≫ _ = _
     simp
   right_inv := by
     intro g
-    simp only [Functor.comp_obj, Functor.map_comp, Equivalence.fun_inv_map, Functor.id_obj,
+    simp only [Functor.map_comp, Equivalence.fun_inv_map, Functor.id_obj,
       Category.assoc, Equivalence.counitInv_functor_comp, Category.comp_id]
     exact e.eqv.functor_unit_comp_assoc (ModuleCat.of A A) g
   map_mul' x y := by simp
