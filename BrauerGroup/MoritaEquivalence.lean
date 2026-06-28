@@ -160,6 +160,7 @@ def fromModuleCatOverMatrix : ModuleCat M[ι, R] ⥤ ModuleCat R where
   map_id _ := by ext; rfl
   map_comp _ _ := by ext; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps]
 def matrix.unitIsoHom :
     toModuleCatOverMatrix R ι ⋙ fromModuleCatOverMatrix R ι ⟶ 𝟭 (ModuleCat R) where
@@ -184,9 +185,7 @@ def matrix.unitIsoHom :
     ext ⟨_, x, rfl⟩
     change ∑ _, _ = f _
     rw [fromModuleCatOverMatrix_map]
-    simp only [toModuleCatOverMatrix_obj_isAddCommGroup, toModuleCatOverMatrix_obj_isModule,
-      fromModuleCatOverMatrix_obj_carrier, toModuleCatOverMatrix_obj_carrier,
-      fromModuleCatOverMatrix_obj_isAddCommGroup, fromModuleCatOverMatrix_obj_isModule,
+    simp only [fromModuleCatOverMatrix_obj_carrier, toModuleCatOverMatrix_obj_carrier,
       toModuleCatOverMatrix_map, ModuleCat.hom_ofHom, LinearMap.coe_mk, AddHom.coe_mk]
     change ∑ _, (ModuleCat.Hom.hom _ _) = (ConcreteCategory.hom f) (ModuleCat.Hom.hom _ _)
     rw [ModuleCat.hom_ofHom]
@@ -199,6 +198,7 @@ def matrix.unitIsoHom :
     refine Finset.sum_congr rfl fun i _ => ?_
     simp only [_root_.map_smul]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps]
 def matrix.unitIsoInv :
     𝟭 (ModuleCat R) ⟶ toModuleCatOverMatrix R ι ⋙ fromModuleCatOverMatrix R ι where
@@ -251,10 +251,10 @@ def matrix.unitIsoInv :
     · rfl
     · rw [map_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps]
 def matrix.unitIso :
-    toModuleCatOverMatrix R ι ⋙ fromModuleCatOverMatrix R ι ≅
-    𝟭 (ModuleCat R) where
+    toModuleCatOverMatrix R ι ⋙ fromModuleCatOverMatrix R ι ≅ 𝟭 (ModuleCat R) where
   hom := matrix.unitIsoHom R ι
   inv := matrix.unitIsoInv R ι
   hom_inv_id := by
@@ -262,15 +262,13 @@ def matrix.unitIso :
     simp only [Functor.comp_obj, toModuleCatOverMatrix_obj_carrier, NatTrans.comp_app,
       Functor.id_obj, NatTrans.id_app, ModuleCat.id_apply]
     refine Subtype.ext <| funext fun i ↦ ?_
-    simp only [toModuleCatOverMatrix_obj_isAddCommGroup, toModuleCatOverMatrix_obj_isModule,
-      fromModuleCatOverMatrix_obj_isAddCommGroup, toModuleCatOverMatrix_obj_carrier,
-      fromModuleCatOverMatrix_obj_isModule, ModuleCat.hom_comp, fromModuleCatOverMatrix_obj_carrier,
-      LinearMap.coe_comp, Function.comp_apply]
+    simp only [toModuleCatOverMatrix_obj_carrier, fromModuleCatOverMatrix_obj_carrier,
+      ModuleCat.hom_comp, fromModuleCatOverMatrix_obj_isModule, LinearMap.coe_comp,
+      Function.comp_apply]
     erw [matrix.unitIsoInv_app, ModuleCat.hom_ofHom]
     change _ = ∑ _, _
     erw [matrix.unitIsoHom_app, ModuleCat.hom_ofHom]
-    simp only [toModuleCatOverMatrix_obj_carrier, toModuleCatOverMatrix_obj_isAddCommGroup,
-      toModuleCatOverMatrix_obj_isModule, LinearMap.coe_mk, AddHom.coe_mk, map_sum,
+    simp only [toModuleCatOverMatrix_obj_carrier, LinearMap.coe_mk, AddHom.coe_mk, map_sum,
       AddSubgroup.val_finset_sum, Finset.sum_apply]
     simp only [Function.update, eq_rec_constant, Pi.zero_apply, dite_eq_ite]
     split_ifs with h
@@ -385,6 +383,7 @@ noncomputable def matrix.counitIsoHomMap (M : ModuleCat M[ι, R]) :
         rw [single_apply_of_ne, single_zero, zero_smul]
         tauto⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps]
 noncomputable def matrix.counitIsoHom :
     fromModuleCatOverMatrix R ι ⋙ toModuleCatOverMatrix R ι ⟶ 𝟭 (ModuleCat M[ι, R]) where
@@ -394,15 +393,15 @@ noncomputable def matrix.counitIsoHom :
     rw [Iso.eq_inv_comp, ← Category.assoc, Iso.comp_inv_eq]
     ext x
     simp only [toModuleCatOverMatrix_obj_carrier, fromModuleCatOverMatrix_obj_carrier,
-      toModuleCatOverMatrix_obj_isAddCommGroup, fromModuleCatOverMatrix_obj_isAddCommGroup,
-      toModuleCatOverMatrix_obj_isModule, fromModuleCatOverMatrix_obj_isModule, ModuleCat.hom_comp,
-      LinearMap.coe_comp, Function.comp_apply]
+      ModuleCat.hom_comp, toModuleCatOverMatrix_obj_isModule, LinearMap.coe_comp,
+      Function.comp_apply]
     refine funext fun i ↦ ?_
     erw [toModuleCatOverMatrix_map, ModuleCat.hom_ofHom]
     refine Subtype.ext ?_
     erw [counitIsoHomMap_hom_hom_apply_coe]
     simp [counitIsoHomMap]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps]
 noncomputable def matrix.counitIsoInv :
     𝟭 (ModuleCat M[ι, R]) ⟶
@@ -427,6 +426,7 @@ noncomputable def matrix.counitIso :
   hom_inv_id := by ext X x; simp
   inv_hom_id := by ext; simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps!]
 noncomputable def moritaEquivalentToMatrix : ModuleCat R ≌ ModuleCat M[ι, R] where
   functor := toModuleCatOverMatrix R ι
@@ -434,8 +434,7 @@ noncomputable def moritaEquivalentToMatrix : ModuleCat R ≌ ModuleCat M[ι, R] 
   unitIso := matrix.unitIso R ι |>.symm
   counitIso := matrix.counitIso R ι
   functor_unitIso_comp X := by
-    simp only [Functor.id_obj, Functor.comp_obj, Iso.symm_hom, matrix.unitIso_inv,
-      matrix.counitIso_hom]
+    simp only [Iso.symm_hom, matrix.unitIso_inv, matrix.counitIso_hom]
     ext (x : ι → X)
     simp only [matrix.counitIsoHom_app, Functor.comp_obj,
       toModuleCatOverMatrix_obj_carrier]
@@ -448,12 +447,10 @@ noncomputable def moritaEquivalentToMatrix : ModuleCat R ≌ ModuleCat M[ι, R] 
     erw [Iso.inv_hom_id_apply (matrix.counitIsoHomMap R ι _)]
     change ModuleCat.Hom.hom _ _ = _
     simp only [Functor.comp_obj, toModuleCatOverMatrix_obj_carrier,
-      fromModuleCatOverMatrix_obj_carrier, toModuleCatOverMatrix_obj_isAddCommGroup,
-      toModuleCatOverMatrix_obj_isModule, Functor.id_obj,
-      fromModuleCatOverMatrix_obj_isAddCommGroup, fromModuleCatOverMatrix_obj_isModule,
-      matrix.unitIsoInv_app, toModuleCatOverMatrix_map, ModuleCat.hom_ofHom, LinearMap.coe_mk,
-      AddHom.coe_mk, matrix.counitIsoHomMap, LinearEquiv.toModuleIso_hom, LinearEquiv.coe_coe,
-      LinearEquiv.ofBijective_apply]
+      fromModuleCatOverMatrix_obj_carrier, Functor.id_obj, matrix.unitIsoInv_app,
+      toModuleCatOverMatrix_map, ModuleCat.hom_ofHom, LinearMap.coe_mk, AddHom.coe_mk,
+      matrix.counitIsoHomMap, toModuleCatOverMatrix_obj_isModule, LinearEquiv.toModuleIso_hom,
+      LinearEquiv.coe_coe, LinearEquiv.ofBijective_apply]
     ext i : 1
     simp only [Subtype.mk.injEq]
     change _ = fun k ↦ ∑ j, _
@@ -576,6 +573,7 @@ instance _root_.CategoryTheory.Equivalence.nontrivial
 
 variable (K : Type u) [Field K]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsSimpleModule.functor
     (R S : Type u) [Ring R] [Ring S] (e : ModuleCat.{v} R ≌ ModuleCat.{v} S)
     (M : ModuleCat.{v} R) [simple_module : IsSimpleModule R M] :

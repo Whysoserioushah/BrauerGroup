@@ -93,6 +93,7 @@ instance (n : ℕ) [NeZero n] : Functor.Additive (moritaEquivalentToMatrix A (Fi
 
 -- instance (N : ModuleCat A) : SMulCommClass A R N := sorry
 
+set_option backward.isDefEq.respectTransparency false in
 instance (n : ℕ) [NeZero n] : Functor.Linear R (moritaEquivalentToMatrix A (Fin n)).functor where
   map_smul {M N} f r := by
     ext m
@@ -100,7 +101,6 @@ instance (n : ℕ) [NeZero n] : Functor.Linear R (moritaEquivalentToMatrix A (Fi
     ext i
     rw [moritaEquivalentToMatrix_functor_map_hom_apply]
     simp only [hom_smul, LinearMap.smul_apply, moritaEquivalentToMatrix,
-      toModuleCatOverMatrix_obj_isAddCommGroup, toModuleCatOverMatrix_obj_isModule,
       toModuleCatOverMatrix_map, hom_ofHom, LinearMap.coe_mk, AddHom.coe_mk]
     change (algebraMap R A r) • (f.hom _) =
       ∑ j : Fin n, (algebraMap R (Matrix (Fin n) (Fin n) A) r) _ _ • _
@@ -213,6 +213,7 @@ def mopToEnd : Aᵐᵒᵖ →ₐ[R] End (ModuleCat.of A A) where
 --     rw [ModuleCat.hom_ofHom]
 --     simp [Module.algebraMap_end_apply, Algebra.algebraMap_eq_smul_one]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma moptoend_bij : Function.Bijective (mopToEnd R A) :=
   ⟨RingHom.injective_iff_ker_eq_bot _ |>.mpr <|
     SetLike.ext fun (α : Aᵐᵒᵖ) => ⟨fun (h : _ = _) => by
@@ -250,14 +251,14 @@ example : End (ModuleCat.of A A) ≃ₐ[R] Module.End A A :=
 
 variable (e : MoritaEquivalence R A B)
 
+set_option backward.isDefEq.respectTransparency false in
 variable {R S} in
 def aux1 : End (ModuleCat.of A A) ≃ₐ[R] End (e.eqv.functor.obj <| .of A A) where
   toFun (f : _ ⟶ _) := e.eqv.functor.map f
   invFun g := e.eqv.unit.app _ ≫ e.eqv.inverse.map g ≫ e.eqv.unitInv.app _
   left_inv := by
     intro f
-    simp only [Functor.comp_obj, Equivalence.inv_fun_map, Functor.id_obj, Category.assoc,
-      Iso.hom_inv_id_app, Category.comp_id]
+    simp only [Functor.comp_obj, Equivalence.inv_fun_map, Functor.id_obj, Category.assoc]
     rw [← Category.assoc]
     change (e.eqv.unit ≫ e.eqv.unitInv).app _ ≫ _ = _
     simp
@@ -308,6 +309,7 @@ noncomputable def aux20 : (e.eqv.functor.obj (ModuleCat.of A A)) ≅ ModuleCat.o
     (e.eqv.functor.obj <| .of A A)
   exact this.some.toModuleIso
 
+set_option backward.isDefEq.respectTransparency false in
 def aux2 (M N : ModuleCat B) (f : M ≅ N) : End M ≃ₐ[R] End N where
   toFun x := f.inv ≫ x ≫ f.hom
   invFun x := f.hom ≫ x ≫ f.inv

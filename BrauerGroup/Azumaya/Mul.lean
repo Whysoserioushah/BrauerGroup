@@ -498,6 +498,7 @@ lemma projection2'_inclusion2' : projection2' R M ∘ₗ inclusion2' R M = Linea
 lemma projection2'_surj : Function.Surjective (projection2' R M) := by
   exact Function.RightInverse.surjective <| DFunLike.congr_fun <| projection2'_inclusion2' R M
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 End R M ⊗ (End R M)ᵐᵒᵖ ------------> End R (End R M)
     |         |                        |      |

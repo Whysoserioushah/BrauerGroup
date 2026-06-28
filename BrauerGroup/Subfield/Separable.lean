@@ -90,10 +90,11 @@ noncomputable local instance IsLAlg (L : SubField K D) (a : D) (ha) :
     Subtype.ext_iff|>.2 <| SubField.adjoin_centralizer_mul_comm K D L a ha _ y
       (Subalgebra.inclusion _ (⟨x, hx⟩ : L)).2 hy
 
+set_option backward.isDefEq.respectTransparency false in
 local instance SubField.adjoin_scalarTower (L : SubField K D) (a : D)
     (ha : a ∈ Subalgebra.centralizer K L) :
     IsScalarTower K L (SubField.adjoin K D L a ha) where
-  smul_assoc k l x := Subtype.ext_iff.2 <| by simp
+  smul_assoc k l x := by ext; simp
 
 omit [Algebra.IsCentral K D] [FiniteDimensional K D] in
 lemma SubField.le_centralizer (L : SubField K D) : L.toSubalgebra ≤ Subalgebra.centralizer _ L :=
@@ -184,7 +185,6 @@ theorem Set.centralizer.qsmul_mem (K D : Type u) [Field K] [DivisionRing D] [Alg
 
 @[simps!]
 instance (L : SubField K D) : DivInvMonoid (Subalgebra.centralizer K (A := D) L) where
-  __ := inferInstanceAs (Ring (Subalgebra.centralizer K (A := D) L))
   inv a := ⟨a⁻¹, Set.inv_mem_centralizer₀ a.2⟩
   div x y := ⟨(x / y : D), Set.div_mem_centralizer₀ x.2 y.2⟩
   div_eq_mul_inv x y := by ext; simp [← div_eq_mul_inv]; rfl
@@ -211,7 +211,7 @@ instance centralizerSubfieldDiv (L : SubField K D) :
   inv_zero := by ext; simp
   ratCast_def q := by ext; simp [Rat.cast_def]
   nnratCast q := ⟨q, Subalgebra.mem_centralizer_iff _|>.2 fun x _ ↦ NNRat.cast_commute _ _|>.symm⟩
-  nnratCast_def q := by ext; simp only [NNRat.cast_def]; rfl
+  nnratCast_def q := by ext; simp [NNRat.cast_def]
   qsmul q a := ⟨q • a.1, Set.centralizer.qsmul_mem K D (L.1.1) q a.1 a.2⟩
   qsmul_def q x := by ext; simp [Rat.smul_def q x.1]
   nnqsmul q a := ⟨q.1 • a.1, Set.centralizer.qsmul_mem K D L.1.1 q a.1 a.2⟩
@@ -306,7 +306,7 @@ theorem exists_sep_masSubfield' : ∃ (a : D), IsMax (SubField.bot_adjoin K D a)
   change CCL = L.1.1 at eq1
   have eq2 : CCL = ZCL.map (Subalgebra.val _) := by
     dsimp [CCL, ZCL, CL] at *
-    clear CCL ZCL CL
+    clear CCL ZCL
     refine le_antisymm ?_ ?_
     · rw [eq1]
       intro x hx

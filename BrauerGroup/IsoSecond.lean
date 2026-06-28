@@ -1053,6 +1053,7 @@ variable [FiniteDimensional F K] [IsGalois F K] [DecidableEq Gal(K, F)]
 --       show ∀ x, fromSnd F K (toSnd x) = x by intro x; exact congr_fun fromSnd_toSnd x, ofMul_mul,
 --       ofMul_toMul]
 
+set_option backward.isDefEq.respectTransparency false in
 open groupCohomology in
 def isoSnd : Additive (RelativeBrGroup K F) ≃+ H2 (galAct F K) :=
   .symm <| .mk' (Additive.ofMul.symm.trans <| equivSnd (F := F) (K := K)).symm fun x y ↦ by
@@ -1065,7 +1066,10 @@ def isoSnd : Additive (RelativeBrGroup K F) ≃+ H2 (galAct F K) :=
     simp only [Additive.ofMul_symm_eq, equivSnd,
       CategoryTheory.ShortComplex.moduleCatLeftHomologyData_H, H2π, ModuleCat.hom_comp,
       LinearMap.coe_comp, Function.comp_apply, Equiv.symm_trans_apply, Additive.toMul_symm_eq,
-      Equiv.coe_fn_symm_mk, map_add, π_comp_H2Iso_hom_apply, CategoryTheory.Iso.inv_hom_id_apply]
+      Equiv.coe_fn_symm_mk, π_comp_H2Iso_hom_apply, CategoryTheory.Iso.inv_hom_id_apply]
+    erw [map_add]
+    simp only [CategoryTheory.ShortComplex.moduleCatLeftHomologyData_H, π_comp_H2Iso_hom_apply,
+      CategoryTheory.Iso.inv_hom_id_apply]
     change fromSnd F K (Quotient.mk'' _) =
       fromSnd F K (Quotient.mk'' _) * fromSnd F K (Quotient.mk'' _)
     erw [fromSnd_wd, fromSnd_wd]

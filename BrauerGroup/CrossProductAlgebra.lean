@@ -3,7 +3,6 @@ module
 public import BrauerGroup.Mathlib.Algebra.Algebra.Equiv
 public import BrauerGroup.Mathlib.Data.DFinsupp.Submonoid
 public import BrauerGroup.Mathlib.LinearAlgebra.LinearIndependent.Defs
-public import BrauerGroup.Mathlib.LinearAlgebra.Span.Basic
 public import BrauerGroup.Mathlib.RingTheory.Congruence.Basic
 public import BrauerGroup.Mathlib.RingTheory.TwoSidedIdeal.Lattice
 public import BrauerGroup.Subfield.Splitting
@@ -126,16 +125,12 @@ def mulLinearMap : (Gal(K, F) →₀ K) →ₗ[F] (Gal(K, F) →₀ K) →ₗ[F]
       Finsupp.lsingle_apply, LinearMap.smul_apply, Finsupp.coe_lsum, map_zero, mul_zero, zero_mul,
       Finsupp.single_zero, Finsupp.sum_single_index, Finsupp.smul_single] }
 
--- set_option synthInstance.maxHeartbeats 30000 in
--- This was on the brink of timing out
 variable (f) in
 @[simp]
 lemma mulLinearMap_single_single (c d : K) (σ τ : Gal(K, F)) :
     mulLinearMap f (.single σ c) (.single τ d) = .single (σ * τ) (c * σ d * f (σ, τ)) := by
   simp [mulLinearMap]
 
-set_option synthInstance.maxHeartbeats 30000 in
--- This was on the brink of timing out
 variable (f) in
 @[simp]
 lemma mulLinearMap_single_left_apply (c : K) (σ : Gal(K, F)) (x : Gal(K, F) →₀ K) (τ : Gal(K, F)) :
@@ -375,6 +370,7 @@ instance : Algebra.IsCentral F (CrossProductAlgebra f) := by
 
 variable {I : TwoSidedIdeal (CrossProductAlgebra f)}
 
+set_option backward.isDefEq.respectTransparency false in
 variable (I) in
 /-- The standard basis for `CrossProductAlgebra f` descends to a basis for any of its non-trivial
 quotients. -/
@@ -398,7 +394,7 @@ private def quotientBasis (hI : I ≠ ⊤) : Basis Gal(K, F) K I.ringCon.Quotien
   -- Assume that there is some `a : Gal(K, F) → K` such that `∑ τ ∈ J, a_τ • ϕ(x_τ) = ϕ(x_σ)`.
   -- We want to prove `∀ τ ∈ J, a_τ = 0`.
   rw [Finset.coe_cons, linearIndepOn_insert <| Finset.mem_coe.not.2 hσ,
-    Submodule.mem_span_image_finset_iff_exists_fun]
+    Submodule.mem_span_image_finset_iff_exists_fun']
   simp only [ih, comp_apply, not_exists, true_and, basis_eq_of]
   rintro a ha
   have key (c : K) : ∀ τ ∈ J, a τ * τ c = σ c * a τ := by

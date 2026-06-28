@@ -15,6 +15,7 @@ open FiniteDimensional MulOpposite BrauerGroup TensorProduct
 
 section CSA
 
+set_option backward.isDefEq.respectTransparency false in
 set_option maxHeartbeats 1200000 in
 -- FIXME: Get rid of the raised heartbeats
 set_option maxSynthPendingDepth 2 in

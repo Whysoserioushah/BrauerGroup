@@ -139,6 +139,7 @@ lemma BrauerOverR (A : CSA.{0, 0} ℝ) :
     tauto
   · exact ⟨1, n, one_ne_zero, hn, ⟨dim_one_iso A |>.trans <| e.trans hD3.some.mapMatrix⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 abbrev toC2 : Additive (BrauerGroup ℝ) →+ ZMod 2 where
   toFun := Quotient.lift (fun A ↦ if h1 : IsBrauerEquivalent A (one_in')
@@ -216,6 +217,7 @@ abbrev toC2 : Additive (BrauerGroup ℝ) →+ ZMod 2 where
       IsBrauerEquivalent.matrix_eqv' _ _ _ ⟩⟩
     simp [this]
 
+set_option backward.isDefEq.respectTransparency false in
 set_option linter.flexible false in
 abbrev C2toBrauerOverR : ZMod 2 →+ Additive (BrauerGroup ℝ) where
   toFun x := if hx : x = 0 then Quotient.mk'' one_in' else Quotient.mk'' ⟨.of ℝ ℍ[ℝ]⟩
@@ -238,6 +240,7 @@ lemma toC2.left_inv : Function.LeftInverse C2toBrauerOverR toC2 := fun A ↦ by
   · have : ¬ (IsBrauerEquivalent A one_in') := fun h ↦ QuaternionNotEquivR <| h2.symm.trans h
     simpa [this] using Quotient.sound' h2.symm
 
+set_option backward.isDefEq.respectTransparency false in
 lemma toC2.right_inv : Function.RightInverse C2toBrauerOverR toC2 := fun x ↦ by
   fin_cases x
   · simp [IsBrauerEquivalent.refl]

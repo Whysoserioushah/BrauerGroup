@@ -16,16 +16,14 @@ variable {D : Type} [DivisionRing D]
 
 section prerequisites
 
-set_option synthInstance.maxHeartbeats 80000 in
--- FIXME: Get rid of the raised heartbeats
-theorem rank_1_D_iso_R [Algebra ℝ D] : Module.finrank ℝ D = 1 →
-    Nonempty (D ≃ₐ[ℝ] ℝ) := fun h ↦ by
+theorem rank_1_D_iso_R [Algebra ℝ D] (h : Module.finrank ℝ D = 1) : Nonempty (D ≃ₐ[ℝ] ℝ) := by
   have h' := Subalgebra.finrank_eq_one_iff (F := ℝ) (S := (⊤ : Subalgebra ℝ D))
   have : Module.finrank ℝ (⊤ : Subalgebra ℝ D) = 1 := by
     simp_all only [Subalgebra.finrank_eq_one_iff, Subalgebra.bot_eq_top_of_finrank_eq_one]
   exact ⟨Subalgebra.topEquiv.symm.trans <| Subalgebra.equivOfEq _ _
     (h'.1 this)|>.trans <| Algebra.botEquiv ℝ D⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma RealExtension_is_RorC (K : Type) [Field K] [Algebra ℝ K] [FiniteDimensional ℝ K] :
     Nonempty (K ≃ₐ[ℝ] ℝ) ∨ Nonempty (K ≃ₐ[ℝ] ℂ) := by
   let CC := AlgebraicClosure K
@@ -161,6 +159,7 @@ lemma i_ne_zero : (e.symm ⟨0, 1⟩ : D) ≠ 0 := by
   obtain ⟨_, h⟩ := h
   simp only [Complex.zero_im, one_ne_zero] at h
 
+set_option backward.isDefEq.respectTransparency false in
 lemma linindep1i :
     LinearIndependent ℝ ![(1 : D), ↑(e.symm { re := 0, im := 1 })] := by
   rw [LinearIndependent.pair_iff']
@@ -192,6 +191,7 @@ lemma f_is_conjugation : ∃ (x : Dˣ), ∀ z, x.1⁻¹ * f k e z * x = k.val z 
     IsUnit.inv_mul_cancel, mul_one, IsUnit.inv_mul_cancel_left] at hx
   exact hx
 
+set_option backward.isDefEq.respectTransparency false in
 lemma xsq_ink (x : Dˣ) (hx : ∀ z, x.1⁻¹ * f k e z * x = k.val z)
     (hDD : Module.finrank ℝ D = 4) : x.1^2 ∈ k := by
   have := cor_two_1to2 ℝ D k|>.2 (by simp [hDD, e.toLinearEquiv.finrank_eq])
@@ -507,6 +507,7 @@ abbrev basisijk (x : Dˣ) (hx : ∀ z, x.1⁻¹ * f k e z * x = k.val z) (hDD : 
   (Fin.cons ((algebraMap ℝ D (Real.sqrt (x_corre_R k e x hx hDD).choose)⁻¹) * x.1)
     ![(1 : D), e.symm ⟨0, 1⟩])
 
+set_option backward.isDefEq.respectTransparency false in
 lemma linindep1ij (x : Dˣ) (hx : ∀ z, x.1⁻¹ * f k e z * x = k.val z)
     (hDD : Module.finrank ℝ D = 4) :
     LinearIndependent ℝ
@@ -667,6 +668,7 @@ abbrev linEquivH (x : Dˣ) (hx : ∀ z, x.1⁻¹ * f k e z * x = k.val z)
     right_inv i := by fin_cases i <;> simp
   }
 
+set_option backward.isDefEq.respectTransparency false in
 lemma toFun_i_eq (x : Dˣ) (hx : ∀ z, x.1⁻¹ * f k e z * x = k.val z)
     (h : Module.finrank ℝ D = 4) :
     toFun _ _ _ hx h ((QuaternionAlgebra.basisOneIJK (-1 : ℝ) 0 (-1 : ℝ)) 1) = e.symm ⟨0, 1⟩ := by
@@ -679,6 +681,7 @@ lemma toFun_i_eq (x : Dˣ) (hx : ∀ z, x.1⁻¹ * f k e z * x = k.val z)
 
 @[simp] theorem succ_two_eq_three (n : ℕ) : Fin.succ (2 : Fin (n + 3)) = 3 := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma linEquivH_eq_toFun (x : Dˣ) (hx : ∀ z, x.1⁻¹ * f k e z * x = k.val z)
     (h : Module.finrank ℝ D = 4) : (linEquivH _ _ _ hx h).toLinearMap = toFun _ _ _ hx h := by
   apply Basis.ext (QuaternionAlgebra.basisOneIJK (-1 : ℝ) 0 (-1 : ℝ))
@@ -744,6 +747,7 @@ instance AlgCA (A : Type) [DivisionRing A] [Algebra ℝ A] [FiniteDimensional �
     simp [Subalgebra.mem_center_iff.1 (e z).2]
   smul_def' _ _ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma smulCRassoc (A : Type) [DivisionRing A] [Algebra ℝ A] [FiniteDimensional ℝ A]
     (e : ℂ ≃ₐ[ℝ] (Subalgebra.center ℝ A)) (r : ℝ) (z : ℂ) (a : A) : e (r • z) * a =
     r • (e z * a) := by
@@ -752,6 +756,7 @@ lemma smulCRassoc (A : Type) [DivisionRing A] [Algebra ℝ A] [FiniteDimensional
 
 attribute [-instance] Module.complexToReal
 
+set_option backward.isDefEq.respectTransparency false in
 theorem centereqvCisoC (A : Type) [DivisionRing A] [Algebra ℝ A] [FiniteDimensional ℝ A]
     (hA : Nonempty (Subalgebra.center ℝ A ≃ₐ[ℝ] ℂ)) : Nonempty (A ≃ₐ[ℝ] ℂ) := by
   have e := hA.some.symm
@@ -772,9 +777,9 @@ theorem centereqvCisoC (A : Type) [DivisionRing A] [Algebra ℝ A] [FiniteDimens
       rw [Algebra.algebraMap_eq_smul_one, Algebra.algebraMap_eq_smul_one,
         Algebra.algebraMap_eq_smul_one, smul_assoc, one_smul]} bij⟩
 
-set_option synthInstance.maxHeartbeats 80000 in
--- FIXME: Get rid of the raised heartbeats
+set_option backward.isDefEq.respectTransparency false in
 set_option maxHeartbeats 600000 in
+-- FIXME: Get rid of the raised heartbeats
 theorem FrobeniusTheorem (A : Type) [DivisionRing A] [Algebra ℝ A] [FiniteDimensional ℝ A] :
     Nonempty (A ≃ₐ[ℝ] ℂ) ∨ Nonempty (A ≃ₐ[ℝ] ℝ) ∨ Nonempty (A ≃ₐ[ℝ] ℍ[ℝ]) := by
   obtain ⟨⟨hR⟩⟩ | hC := RealExtension_is_RorC (Subalgebra.center ℝ A)

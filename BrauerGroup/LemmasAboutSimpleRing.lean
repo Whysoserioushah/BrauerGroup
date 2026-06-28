@@ -46,7 +46,7 @@ lemma IsSimpleRing.left_of_tensor (B C : Type u)
     contradiction
   by_contra h
   rw [IsSimpleRing.iff_eq_zero_or_injective' (k := K) (A := B)] at h
-  push_neg at h
+  push Not at h
   obtain ⟨B', _, _, f, h1, h2⟩ := h
   have : Nontrivial B' := by
     contrapose! h1

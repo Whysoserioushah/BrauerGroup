@@ -361,6 +361,7 @@ def Module.End.rightMul : Subalgebra F (Module.End F B) where
     simp only [LinearMap.mulRight_apply, algebraMap_end_apply]
     rw [Algebra.smul_def, Algebra.commutes c z]
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def Module.End.rightMulEquiv : Module.End.rightMul F B ≃ₐ[F] Bᵐᵒᵖ :=
 AlgEquiv.symm <| AlgEquiv.ofBijective
   { toFun x := ⟨LinearMap.mulRight F x.unop, Set.mem_range_self _⟩
@@ -447,6 +448,7 @@ lemma Subalgebra.mem_conj {B : Subalgebra F A} {x : Aˣ} {y : A} :
   simp only [conj]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps]
 def Subalgebra.toConj (B : Subalgebra F A) (x : Aˣ) : B →ₐ[F] B.conj x where
   toFun b := ⟨x * b * x⁻¹, by simp [Subalgebra.mem_conj]⟩
@@ -658,8 +660,6 @@ noncomputable def auxRight (B : Subalgebra F A) (C : Type u) [Ring C] [Algebra F
       rw [map_mul]
       rfl)
 
-set_option synthInstance.maxHeartbeats 120000 in
--- Reason: Synthesis of Ring on tensor product of coerced subalgebra is complex.
 instance : IsSimpleRing (A ⊗[F] Module.End.rightMul F B) := by
   constructor
   let eqv : (A ⊗[F] Module.End.rightMul F B) ≃ₐ[F] (Bᵐᵒᵖ  ⊗[F] A) :=
@@ -694,7 +694,7 @@ lemma step1 {ι : Type*} (ℬ : Basis ι F <| Module.End F B) :
         simp only [AddMemClass.coe_add, add_tmul]
       commutes' := by
         intro a
-        simp only [SubalgebraClass.coe_algebraMap, Algebra.TensorProduct.algebraMap_apply]
+        simp only [Algebra.TensorProduct.algebraMap_apply]
         rfl }
   let g : B →ₐ[F] A ⊗[F] Module.End F B :=
   { toFun :=fun b => 1 ⊗ₜ LinearMap.mulLeft F b

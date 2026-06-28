@@ -47,6 +47,7 @@ abbrev _root_.Module.End.restrictScalars (R S M R₁ : Type*) [Ring R] [Ring S] 
 
 noncomputable section
 
+set_option backward.isDefEq.respectTransparency false in
 abbrev moduleMapAux : C →ₐ[R] Module.End A ((ModuleCat.restrictScalars
     Algebra.TensorProduct.includeLeftRingHom).obj M) where
   toFun c := {
@@ -89,8 +90,8 @@ variable (R : Type u) [CommRing R] (A B C D : Type v) [Ring A] [Ring B] [Ring C]
   [Algebra R A] [Algebra R B] [Algebra R C] [Algebra R D]
 
 /-- use `Action` instead once it's generalized to enriched categories. -/
-structure TensorModule where
-  carrier : ModuleCat A
+structure TensorModule : Type (v + 1) where
+  carrier : ModuleCat.{v} A
   morphism : C →ₐ[R] Module.End A carrier
 
 instance : CoeSort (TensorModule R A C) (Type v) where
@@ -241,6 +242,7 @@ abbrev fromModuleOverTensor : ModuleCat (A ⊗[R] C) ⥤ TensorModule R A C wher
   map_id M := by ext; simp
   map_comp _ _ := by ext; simp
 
+set_option backward.isDefEq.respectTransparency false in
 abbrev e01 (M : TensorModule R A C) :
     (𝟭 (TensorModule R A C)).obj M ≅ (toModuleOverTensor R A C ⋙
     fromModuleOverTensor R A C).obj M := TensorModule.Iso_mk R A C
@@ -324,6 +326,9 @@ instance : (equivModuleOverTensor R A C).functor.Linear R where
     congr 1
     simp
 
+instance : (equivModuleOverTensor R A C).inverse.Linear R where
+  map_smul {M N} f r := by ext; rfl
+
 abbrev toBCfunctor (F : ModuleCat A ⥤ ModuleCat B) [F.Additive] [F.Linear R] :
     TensorModule R A C ⥤ TensorModule R B C where
   obj M := {
@@ -344,6 +349,7 @@ abbrev toBCfunctor (F : ModuleCat A ⥤ ModuleCat B) [F.Additive] [F.Linear R] :
   map_id M := by ext : 1; exact F.map_id M.1
   map_comp f g := by ext1; exact F.map_comp f.hom g.hom
 
+set_option backward.isDefEq.respectTransparency false in
 abbrev MoritaTensorAux0 (e : ModuleCat A ≌ ModuleCat B) [e.functor.Additive] [e.functor.Linear R] :
     TensorModule R A C ≌ TensorModule R B C where
   functor := toBCfunctor R A B C e.functor
@@ -377,19 +383,9 @@ instance : Functor.Linear R (@ModuleCat.restrictScalars A (A ⊗[R] C) _ _
     ext1; rfl
 
 instance MoritaTensorAux1_linear (e : ModuleCat A ≌ ModuleCat B) [e.functor.Additive]
-    [e.functor.Linear R] : (MoritaTensorAux1 R A B C e).functor.Linear R where
-  map_smul {M N} f r := by
-    ext m
-    simp only [Equivalence.trans_functor, Equivalence.symm_functor, Functor.comp_obj,
-      Functor.comp_map, Functor.map_smul, ModuleCat.hom_smul, ModuleCat.hom_ofHom, LinearMap.coe_mk,
-      LinearMap.coe_toAddHom, LinearMap.smul_apply]
-    congr 1
-    simp only [LinearMap.coe_coe, AlgHom.coe_comp, AlgHom.coe_mk, ModuleCat.of_coe, RingHom.coe_mk,
-      MonoidHom.coe_mk, OneHom.coe_mk, Function.comp_apply, ← Algebra.TensorProduct.one_def,
-      one_smul, AlgHom.ofLinearMap_apply, LinearMap.restrictScalarsₗ_apply,
-      LinearMap.coe_restrictScalars]
-    erw [ModuleCat.ofHom_id, e.functor.map_id,
-      ModuleCat.hom_id, LinearMap.id_apply]
+    [e.functor.Linear R] : (MoritaTensorAux1 R A B C e).functor.Linear R :=
+  inferInstanceAs <| ((equivModuleOverTensor R A C).inverse ⋙
+    ((MoritaTensorAux0 R A B C e).functor ⋙ (equivModuleOverTensor R B C).functor)).Linear R
 
 abbrev MoritaTensorLeft (e : IsMoritaEquivalent R A B) :
     IsMoritaEquivalent R (A ⊗[R] C) (B ⊗[R] C) where

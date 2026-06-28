@@ -275,6 +275,7 @@ abbrev endCatEquiv (n : ℕ)
     commutes' := by intros; ext; simp }
   (by rfl) (by rfl)
 
+set_option backward.isDefEq.respectTransparency false in
 @[stacks 074E "(3) first part"]
 def end_simple_mod_of_wedderburn (n : ℕ) (hn : n ≠ 0) (D : Type v) [DivisionRing D] [Algebra k D]
     (wdb : A ≃ₐ[k] Matrix (Fin n) (Fin n) D) :
@@ -316,8 +317,6 @@ def end_simple_mod_of_wedderburn (n : ℕ) (hn : n ≠ 0) (D : Type v) [Division
         ext i
         simp only [matrix_smul_vec_apply, Pi.smul_apply, smul_eq_mul, Algebra.mul_smul_comm,
           Finset.smul_sum] }
-  simp only [AlgEquiv.toRingEquiv_eq_coe, RingEquiv.toRingHom_eq_coe,
-    AlgEquiv.toRingEquiv_toRingHom]
   have : NeZero n := ⟨hn⟩
   let E := moritaEquivalentToMatrix D (Fin n)
   haveI :  E.functor.Additive := {}
@@ -350,12 +349,10 @@ def end_simple_mod_of_wedderburn (n : ℕ) (hn : n ≠ 0) (D : Type v) [Division
         ext
         simp only [Functor.id_obj, moritaEquivalentToMatrix, Functor.comp_obj,
           Equivalence.Equivalence_mk'_unit, fromModuleCatOverMatrix_map,
-          toModuleCatOverMatrix_obj_carrier, toModuleCatOverMatrix_obj_isAddCommGroup,
-          toModuleCatOverMatrix_obj_isModule, ModuleCat.hom_ofHom, LinearMap.zero_apply,
+          toModuleCatOverMatrix_obj_carrier, ModuleCat.hom_ofHom, LinearMap.zero_apply,
           Equivalence.Equivalence_mk'_unitInv, ModuleCat.hom_comp,
-          fromModuleCatOverMatrix_obj_carrier, fromModuleCatOverMatrix_obj_isAddCommGroup,
-          fromModuleCatOverMatrix_obj_isModule, LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk,
-          Function.comp_apply, E]
+          fromModuleCatOverMatrix_obj_carrier, fromModuleCatOverMatrix_obj_isModule,
+          LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply, E]
         change (ModuleCat.Hom.hom _) 0 = 0
         rw [map_zero]
         -- erw [matrix.unitIsoHom_app, fromModuleCatOverMatrix_map_hom_apply_coe]
@@ -427,10 +424,9 @@ def end_simple_mod_of_wedderburn (n : ℕ) (hn : n ≠ 0) (D : Type v) [Division
       simp only [Functor.id_obj, Functor.comp_obj, ModuleCat.hom_comp, E]
       ext d
       simp only [moritaEquivalentToMatrix, fromModuleCatOverMatrix_obj_carrier,
-        toModuleCatOverMatrix_obj_carrier, toModuleCatOverMatrix_obj_isAddCommGroup,
-        toModuleCatOverMatrix_obj_isModule, fromModuleCatOverMatrix_obj_isAddCommGroup,
-        fromModuleCatOverMatrix_obj_isModule, Equivalence.Equivalence_mk'_unitInv, Iso.symm_inv,
-        matrix.unitIso_hom, matrix.unitIsoHom_app, ModuleCat.hom_ofHom, fromModuleCatOverMatrix_map,
+        toModuleCatOverMatrix_obj_carrier, fromModuleCatOverMatrix_obj_isModule,
+        Equivalence.Equivalence_mk'_unitInv, Iso.symm_inv, matrix.unitIso_hom,
+        matrix.unitIsoHom_app, ModuleCat.hom_ofHom, fromModuleCatOverMatrix_map,
         Equivalence.Equivalence_mk'_unit, Iso.symm_hom, matrix.unitIso_inv, matrix.unitIsoInv_app,
         Fin.default_eq_zero, toModuleCatOverMatrix_map, AlgHom.coe_comp, AlgHom.coe_mk,
         RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, Function.comp_apply, LinearMap.coe_mk,
@@ -457,6 +453,7 @@ def end_simple_mod_of_wedderburn (n : ℕ) (hn : n ≠ 0) (D : Type v) [Division
 
 end wedderburn
 
+set_option backward.isDefEq.respectTransparency false in
 lemma end_simple_mod_of_wedderburn' (n : ℕ) (hn : n ≠ 0) (D : Type v) [DivisionRing D] [Algebra k D]
     (wdb : A ≃ₐ[k] Matrix (Fin n) (Fin n) D) (M : Type v) [AddCommGroup M]
     [Module A M] [IsSimpleModule A M] [Module k M] [IsScalarTower k A M] :
@@ -509,7 +506,7 @@ lemma end_simple_mod_of_wedderburn' (n : ℕ) (hn : n ≠ 0) (D : Type v) [Divis
       AlgEquiv.toRingEquiv_toRingHom, LinearEquiv.ofLinear_apply, LinearMap.coe_mk, AddHom.coe_mk,
       LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, Module.End.one_apply,
       LinearEquiv.apply_symm_apply]
-  · intros f g
+  · intros f gten
     ext
     simp only [AlgEquiv.toRingEquiv_eq_coe, RingEquiv.toRingHom_eq_coe, Function.comp_apply,
       AlgEquiv.toRingEquiv_toRingHom, LinearEquiv.ofLinear_apply, LinearMap.coe_mk, AddHom.coe_mk,

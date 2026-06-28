@@ -33,6 +33,7 @@ abbrev φH :
     rw [← f.4]
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps]
 def LeftHomologyMapData.ofModuleCat :
     ShortComplex.LeftHomologyMapData f
@@ -46,6 +47,7 @@ def LeftHomologyMapData.ofModuleCat :
     simp only [← ModuleCat.comp_apply, ← ModuleCat.comp_apply, f.4]
   commπ := ModuleCat.hom_ext <| LinearMap.ext fun ⟨x, hx⟩ ↦ by simp
 
+set_option backward.isDefEq.respectTransparency false in
 def ShortComplex.IsQuasiIsoAt_iff_moduleCat :
     ShortComplex.QuasiIso f ↔
       (∀ a : S₁.X₂, ModuleCat.Hom.hom S₁.g a = 0 →

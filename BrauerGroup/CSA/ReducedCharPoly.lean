@@ -69,7 +69,7 @@ abbrev e1Aux (φ : F →ₐ[K] E) : Matrix (Fin n) (Fin n) φ.range ≃ₐ[K] (�
   map_add' _ _ := rfl
   commutes' k := by
     ext
-    simp only [Matrix.algebraMap_matrix_apply, SubalgebraClass.coe_algebraMap]
+    simp only [Matrix.algebraMap_matrix_apply]
     exact apply_ite Subtype.val _ ((algebraMap K ↥φ.range) k) 0
 
 abbrev e1 (φ : F →ₐ[K] E) : Matrix (Fin n) (Fin n) F ≃ₐ[K] φ_m n φ|>.range :=
@@ -82,6 +82,7 @@ abbrev e1' (φ : F →ₐ[K] E) : φ.range ⊗[K] A ≃ₐ[K] Matrix (Fin n) (Fi
     commutes' r := by simpa using (e.commutes (algebraMap K F r))}
     : _ ≃ₐ[K] Matrix (Fin n) (Fin n) F).trans <| e1 _ _ _ _ φ|>.trans (e1Aux n φ).symm
 
+set_option backward.isDefEq.respectTransparency false in
 variable {K F E} in
 abbrev e1'' (φ : F →ₐ[K] E) : φ.range ⊗[K] A ≃ₐ[φ.range] Matrix (Fin n) (Fin n) φ.range where
   __ := e1' K F E A n e φ
@@ -282,6 +283,7 @@ lemma mem_Kx (a : A) : ∃ f : K[X], ReducedCharPoly e a = f.mapAlgHom (Algebra.
 
 section field_ext
 
+@[implicit_reducible]
 noncomputable def algClosure_ext (L F F_bar : Type*) [Field F] [Field L] [Field F_bar] [Algebra F L]
     [Algebra F F_bar] [FiniteDimensional F L] [IsAlgClosure F F_bar] : Algebra L F_bar :=
   haveI : IsAlgClosed F_bar := IsAlgClosure.isAlgClosed F

@@ -335,7 +335,7 @@ lemma is_obtainable_by_sum_tmul.exists_minimal_element
       ∀ (m : ℕ) (y : A ⊗[K] B) , is_obtainable_by_sum_tmul y 𝒜 I m → n ≤ m := by
   classical
   have := SetLike.ext_iff.not.mp hI
-  push_neg at this
+  push Not at this
   obtain ⟨x, ⟨hx0, hx1⟩|⟨hx0, hx1⟩⟩ := this
   pick_goal 2
   · change x = 0 at hx1

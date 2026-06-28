@@ -225,13 +225,13 @@ def mul (A B : CSA K) : CSA K where
   toAlgCat := .of K (A ⊗[K] B)
   fin_dim := Module.Finite.tensorProduct K A B
 
-def is_fin_dim_of_mop (A : Type*) [Ring A] [Algebra K A] [FiniteDimensional K A] :
+lemma is_fin_dim_of_mop (A : Type*) [Ring A] [Algebra K A] [FiniteDimensional K A] :
     FiniteDimensional K Aᵐᵒᵖ := by
   have f:= MulOpposite.opLinearEquiv K (M:= A)
   exact Module.Finite.equiv f
     -- Module.Finite.of_surjective f (LinearEquiv.surjective _)
 
-instance inv (A : CSA K) : CSA K := {
+def inv (A : CSA K) : CSA K := {
   __ := AlgCat.of K Aᵐᵒᵖ
   fin_dim := is_fin_dim_of_mop A }
 
@@ -255,6 +255,7 @@ def matrix_A (n : ℕ) [hn : NeZero n] (A : CSA K) : CSA K :=
   eqv_in (one_mul_in n A) (Matrix (Fin n) (Fin n) A) <|
     by unfold one_mul_in; exact matrixEquivTensor _ K A |>.symm
 
+@[implicit_reducible]
 def dim_1 (R : Type*) [Ring R] [Algebra K R] : Algebra K (Matrix (Fin 1) (Fin 1) R) where
   algebraMap.toFun k := Matrix.diagonal fun _ => Algebra.ofId K R k
   algebraMap.map_one' := by simp only [map_one, Matrix.diagonal_one]
@@ -385,6 +386,7 @@ theorem eqv_tensor_eqv
   exact ⟨n * p, m * q, by simp_all, by simp_all, ⟨kroneckerMatrixTensor' .. |>.symm.trans <|
     Algebra.TensorProduct.congr e1 e2|>.trans <| kroneckerMatrixTensor' ..⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance Mul : Mul <| BrauerGroup (K := K) :=
   ⟨Quotient.lift₂ (fun A B ↦ Quotient.mk (CSA_Setoid) <| BrauerGroup.mul A B)
   (by
@@ -449,6 +451,7 @@ lemma inv_eqv (A B : CSA K) (hAB : IsBrauerEquivalent A B) :
   refine ⟨n, m, hn, hm, ⟨(matrixEquivMatrixMop_algebra _ _ _).trans <|
     (AlgEquiv.op iso).trans (matrixEquivMatrixMop_algebra _ _ _).symm⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance Inv : Inv (BrauerGroup (K := K)) where
   inv := Quotient.lift (fun A ↦ Quotient.mk (CSA_Setoid) <| inv A) fun A B hAB ↦ by
     change IsBrauerEquivalent _ _ at hAB
@@ -460,6 +463,7 @@ theorem mul_left_inv' (A : BrauerGroup (K := K)) : A⁻¹ * A = 1 := by
   change _ = Quotient.mk'' one_in'
   apply Quotient.sound; exact inv_mul A
 
+set_option backward.isDefEq.respectTransparency false in
 theorem one_mul' (A : BrauerGroup (K := K)) : 1 * A = A := by
   induction A using Quotient.inductionOn' with | h A
   change Quotient.mk'' one_in' * _ = _; apply Quotient.sound
@@ -612,8 +616,6 @@ lemma e3Aux3 (hm : m = 0) : Subsingleton ((E ⊗[K] A) ⊗[E] (E ⊗[K] Matrix (
   simp
 
 set_option maxHeartbeats 800000 in
--- FIXME: Get rid of the raised heartbeats
-set_option synthInstance.maxHeartbeats 160000 in
 -- FIXME: Get rid of the raised heartbeats
 def e3Aux4 :
     (E ⊗[K] A) ⊗[E] (E ⊗[K] Matrix (Fin m) (Fin m) K) →ₐ[E]
@@ -824,6 +826,7 @@ end someEquivs
 
 section Q_to_C
 
+set_option backward.isDefEq.respectTransparency false in
 abbrev BaseChange : BrauerGroup (K := K) →* BrauerGroup (K := E) where
   toFun :=
     Quotient.map'
@@ -836,10 +839,9 @@ abbrev BaseChange : BrauerGroup (K := K) →* BrauerGroup (K := E) where
             (someEquivs.e3 B n).trans <| (someEquivs.e4 B n).trans <| someEquivs.e5 _ _ e.symm⟩⟩
   map_one' := by
     erw [Quotient.eq'']
-    letI : Field one_in'.carrier := inferInstanceAs <| Field K
-    letI : Algebra one_in'.carrier E := inferInstanceAs <| Algebra K E
     exact ⟨1, 1, one_ne_zero, one_ne_zero,
-      ⟨(dim_one_iso _).trans <| .symm <| (dim_one_iso _).trans <| someEquivs.e7⟩⟩
+      ⟨(dim_one_iso (K := E) (E ⊗[K] K)).trans <| (someEquivs.e7 (K := K) (E := E)).symm.trans <|
+        (dim_one_iso (K := E) E).symm⟩⟩
   map_mul' := by
     intro x y
     induction x using Quotient.inductionOn' with | h A
@@ -948,12 +950,12 @@ def Br : FieldCat ⥤ CommGrpCat where
     ext A
     simp only [CommGrpCat.coe_of]
     induction A using Quotient.inductionOn' with | h A
-    simp only [FieldCat.hom_id, CommGrpCat.hom_ofHom, MonoidHom.coe_mk, OneHom.coe_mk,
+    simp only [CommGrpCat.hom_ofHom, MonoidHom.coe_mk, OneHom.coe_mk,
       Quotient.map'_mk'', CommGrpCat.hom_id, MonoidHom.id_apply, Quotient.eq]
     change IsBrauerEquivalent _ _
     exact ⟨1, 1, one_ne_zero, one_ne_zero, ⟨AlgEquiv.mapMatrix <| Algebra.TensorProduct.lid _ _⟩⟩
   map_comp {F K E} f g := by
-    simp only [FieldCat.hom_comp, ← CommGrpCat.ofHom_comp]
+    simp only [← CommGrpCat.ofHom_comp]
     congr 1
     apply (config := { allowSynthFailures := true }) baseChange_idem
     letI : Algebra F E := RingHom.toAlgebra (f ≫ g).hom

@@ -63,6 +63,7 @@ lemma intermediateTensorEquiv_apply_tmul (L : IntermediateField K K_bar)
   convert LinearEquiv.ofBijective_symm_apply_apply _ _
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 def intermediateTensorEquiv' (L : IntermediateField K K_bar) :
     intermediateTensor' K K_bar A L ≃ₗ[L] L ⊗[K] A where
   toFun := intermediateTensorEquiv K K_bar A L
@@ -252,6 +253,7 @@ def inclusion : ℒ ⊗[k] A →ₐ[ℒ] k⁻ ⊗[k] A :=
 def inclusion' : Matrix (Fin n) (Fin n) ℒ →ₐ[ℒ] Matrix (Fin n) (Fin n) k⁻ :=
   AlgHom.mapMatrix (Algebra.ofId ℒ _)
 
+set_option backward.isDefEq.respectTransparency false in
 omit [NeZero n] [FiniteDimensional k A] in
 lemma inclusion'_injective : Function.Injective (inclusion' n k k_bar A iso) := by
   intro x y h
@@ -262,6 +264,7 @@ lemma inclusion'_injective : Function.Injective (inclusion' n k k_bar A iso) := 
     IntermediateField.algebraMap_apply, SetLike.coe_eq_coe] at h
   rw [h]
 
+set_option backward.isDefEq.respectTransparency false in
 omit [NeZero n] [FiniteDimensional k A] in
 /--
 ℒ ⊗_k A ------>  intermidateTensor
@@ -282,6 +285,7 @@ lemma comm_triangle :
     LinearEquiv.coe_symm_mk]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 intermidateTensor ----> M_n(ℒ)
   | val                 | inclusion'
@@ -325,10 +329,6 @@ lemma comm_square :
     (inclusion n k k_bar A iso).toLinearMap := by
   rw [← comm_triangle n k k_bar A iso, ← LinearMap.comp_assoc, comm_square' n k k_bar A iso]
   rfl
-
--- set_option synthInstance.maxHeartbeats 60000 in
--- lemma map_one'' : (inclusion n k k_bar A iso) 1 = 1 := by
---     erw [_root_.map_one (f := inclusion n k k_bar A iso)]
 
 lemma isoRestrict_map_one : isoRestrict' n k k⁻ A iso 1 = 1 := by
   /-

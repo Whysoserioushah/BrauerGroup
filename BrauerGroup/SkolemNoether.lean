@@ -42,6 +42,7 @@ instance (K A B M : Type u)
     IsScalarTower K A (module_inst K A B M f) :=
   IsScalarTower.of_algebraMap_smul fun _ ↦ congrFun rfl
 
+set_option backward.isDefEq.respectTransparency false in
 def smul1AddHom' (K A B M : Type u)
     [Field K] [Ring A] [Algebra K A] [FiniteDimensional K A] [Ring B] [Algebra K B]
     [AddCommGroup M] [Module K M] [Module A M] (f : B →ₐ[K] A) (m : module_inst K A B M f) :
@@ -94,6 +95,7 @@ lemma one_smul1 (K A B M : Type u)
     ∀ (m : module_inst K A B M f), smul1 K A B M f m 1 = m := fun m ↦ by
   simp [smul1, smul1AddHom, smul1AddHom', Algebra.TensorProduct.one_def]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mul_smul1 (K A B M : Type u)
     [Field K] [Ring A] [Algebra K A] [FiniteDimensional K A] [Ring B] [Algebra K B] [AddCommGroup M]
     [Module K M] [Module A M] [IsScalarTower K A M] (f : B →ₐ[K] A) :
@@ -113,6 +115,7 @@ lemma mul_smul1 (K A B M : Type u)
     · simp_all [mul_add]
   · simp_all [add_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma smul1_add (K A B M : Type u)
     [Field K] [Ring A] [Algebra K A] [FiniteDimensional K A]
     [Ring B] [Algebra K B] [AddCommGroup M] [Module K M] [Module A M] [IsScalarTower K A M]
@@ -137,6 +140,7 @@ lemma add_smul1 (K A B M : Type u)
   simp only [smul1, ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe, map_add, LinearMap.coe_mk,
     AddHom.coe_mk]
 
+set_option backward.isDefEq.respectTransparency false in
 instance IsMod (K A B M : Type u)
     [Field K] [Ring A] [Algebra K A] [FiniteDimensional K A] [Ring B] [Algebra K B]
     [AddCommGroup M] [Module K M] [Module A M] [IsScalarTower K A M] (f : B →ₐ[K] A) :
@@ -249,6 +253,7 @@ lemma iso_fg [hB1 : IsSimpleRing B] :
   rw [linearEquiv_iff_finrank_eq_over_simple_ring K]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 End_End_A
 -/

@@ -28,7 +28,6 @@ public import BrauerGroup.Mathlib.LinearAlgebra.LinearIndependent.Defs
 public import BrauerGroup.Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
 public import BrauerGroup.Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 public import BrauerGroup.Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
-public import BrauerGroup.Mathlib.LinearAlgebra.Span.Basic
 public import BrauerGroup.Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
 public import BrauerGroup.Mathlib.RingTheory.Congruence.Basic
 public import BrauerGroup.Mathlib.RingTheory.Congruence.Defs

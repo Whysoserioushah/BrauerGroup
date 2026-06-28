@@ -33,6 +33,7 @@ lemma Matrix.mem_center_iff (R : Type*) [Ring R] (n : ℕ) (M) :
       simpa [hb] using Matrix.ext_iff.2 (h (Matrix.diagonal fun _ ↦ g)) ⟨0, by omega⟩ ⟨0, by omega⟩
   · rintro ⟨α, ha⟩; rw [Subring.mem_center_iff]; aesop
 
+set_option backward.isDefEq.respectTransparency false in
 def Matrix.centerEquivBase (n : ℕ) (hn : 0 < n) (R : Type*) [Ring R] :
     Subring.center (M[Fin n, R]) ≃+* (Subring.center R) where
   toFun A := ⟨(A.1 ⟨0, by omega⟩ ⟨0, by omega⟩), by
