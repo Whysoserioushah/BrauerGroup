@@ -534,19 +534,19 @@ lemma Wedderburn_Artin_algebra_version' (R : Type u) (A : Type v) [CommRing R] [
   ext i j
   apply MulOpposite.unop_injective
   simp only [endPowEquivMatrix, RingEquiv.coe_trans, Function.comp_apply, equivEndMop_apply,
-    RingEquiv.op_apply_apply, unop_op, RingEquiv.coe_mk, Equiv.coe_fn_mk, AlgEquiv.coe_ringEquiv,
+    RingEquiv.op_apply_apply, unop_op, RingEquiv.coe_mk, Equiv.coe_fn_mk,
     matrixEquivMatrixMop_symm_apply, map_apply, transpose_apply, diagonal, Pi.algebraMap_apply,
-    MulOpposite.algebraMap_apply, of_apply, endEquiv]
+    algebraMap_apply, of_apply, endEquiv]
   split_ifs with h
   · subst h
     ext x : 1
-    simp only [endVecAlgEquivMatrixEnd_apply_apply, LinearMap.coe_comp, LinearEquiv.coe_coe,
-      LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply, unop_op, Module.algebraMap_end_apply]
+    simp only [unop_op, Module.algebraMap_end_apply]
     rw [show r • x = Function.update (0 : Fin n → I) i (r • x) i by simp]
     refine congr_fun (e.injective ?_) i
-    simp only [LinearEquiv.apply_symm_apply]
     rw [show Function.update (0 : Fin n → I) i (r • x) = r • Function.update (0 : Fin n → I) i x
       by ext : 1; simp [Function.update]]
+    simp only [LinearEquiv.invFun_eq_symm, LinearMap.coe_comp, LinearMap.coe_mk,
+      AddHom.coe_mk, LinearEquiv.coe_coe, Function.comp_apply, LinearEquiv.apply_symm_apply]
     rw [← Algebra.commutes, ← smul_eq_mul, ← e.map_smul]
     exact congr_arg e <| by ext; simp [Pi.single]
   · ext x : 1

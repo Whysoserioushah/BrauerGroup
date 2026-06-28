@@ -343,8 +343,5 @@ theorem SkolemNoether' (K A B : Type u)
     ext i
     simp only [Pi.smul_apply]
     change ∑ _, _ = a • ∑ _, _
-    simp only [AlgEquiv.toRingEquiv_eq_coe, RingEquiv.toRingHom_eq_coe,
-      AlgEquiv.toRingEquiv_toRingHom, RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe,
-      MonoidHom.toOneHom_coe, MonoidHom.coe_coe, RingHom.coe_coe, ZeroHom.coe_mk, map_smul,
-      Matrix.smul_apply, smul_eq_mul, Algebra.smul_mul_assoc, Finset.smul_sum]
+    simp [Finset.smul_sum]
   exact SkolemNoether K A B (Fin n → S) f g

@@ -752,9 +752,8 @@ def isoDagger (m : ℕ) [NeZero m] :
   commutes' f := by
     ext i j x
     simp only [endPowEquivMatrix, endVecAlgEquivMatrixEnd, endVecRingEquivMatrixEnd,
-      RingEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe, AlgEquiv.coe_ringEquiv,
-      AlgEquiv.coe_mk, RingEquiv.coe_mk, Equiv.coe_fn_mk,
-      LinearMap.coe_mk, AddHom.coe_mk, Matrix.algebraMap_matrix_apply]
+      RingEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe, RingEquiv.coe_mk,
+      Equiv.coe_fn_mk, LinearMap.coe_mk, AddHom.coe_mk, Matrix.algebraMap_matrix_apply]
     split_ifs with h
     · simp only [h, algebraMap_end_apply, Pi.smul_apply, Pi.single_eq_same]
     · simp only [algebraMap_end_apply, Pi.smul_apply, Pi.single_eq_of_ne h, smul_zero,

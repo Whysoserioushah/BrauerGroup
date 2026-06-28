@@ -26,7 +26,7 @@ abbrev φH :
   ModuleCat.ofHom <| Submodule.mapQ _ _ (φK _ _ _ f) fun ⟨x, hx1⟩ ⟨y, hy⟩ ↦ by
     simp only [φK, Submodule.mem_comap, LinearMap.mem_range]
     simp_rw [Subtype.ext_iff] at hy ⊢
-    simp only [LinearMap.codRestrict_apply, LinearMap.restrict_coe_apply] at hy ⊢
+    simp only [LinearMap.codRestrict_apply, LinearMap.coe_restrict_apply] at hy ⊢
     rw [← hy]
     change ∃ y', _ = ModuleCat.Hom.hom _ (ModuleCat.Hom.hom S₁.f _)
     simp_rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp]

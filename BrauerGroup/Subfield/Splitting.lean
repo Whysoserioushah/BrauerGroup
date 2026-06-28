@@ -16,8 +16,6 @@ open FiniteDimensional MulOpposite BrauerGroup TensorProduct
 section CSA
 
 set_option backward.isDefEq.respectTransparency false in
-set_option maxHeartbeats 1200000 in
--- FIXME: Get rid of the raised heartbeats
 set_option maxSynthPendingDepth 2 in
 lemma exists_embedding_of_isSplit [FiniteDimensional F K] (A : CSA F) (split : isSplit F A K) :
     ∃ (B : CSA F), (Quotient.mk'' A : BrauerGroup F) * (Quotient.mk'' B) = 1 ∧
@@ -84,12 +82,7 @@ lemma exists_embedding_of_isSplit [FiniteDimensional F K] (A : CSA F) (split : i
             simp only [Pi.smul_apply, smul_eq_mul, Algebra.mul_smul_comm, RingHom.id_apply]
         }, by
         rintro _ ⟨x, rfl⟩
-        refine LinearMap.ext fun v ↦ ?_
-        simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.toRingHom_eq_coe, RingHom.coe_coe,
-          AlgHom.coe_comp, AlgHom.coe_mk, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
-          AlgHom.coe_restrictScalars', AlgHom.coe_coe, Function.comp_apply,
-          Algebra.TensorProduct.includeRight_apply, Module.End.mul_apply, LinearMap.coe_mk,
-          AddHom.coe_mk, LinearMap.coe_restrictScalars, map_smul, emb]⟩
+        exact LinearMap.ext fun v ↦ by simp [emb]⟩
       map_one' := by ext; simp only [one_smul, LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk,
         LinearMap.coe_single, Function.comp_apply, OneMemClass.coe_one, Module.End.one_apply]
       map_mul' := by intros; ext; simp only [LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk,

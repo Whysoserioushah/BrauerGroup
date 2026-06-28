@@ -304,15 +304,19 @@ lemma comm_square' :
     basisOfLinearIndependentOfCardEqFinrank,
     Basis.coe_mk, e_hat', LinearMap.coe_comp, LinearMap.coe_restrictScalars, Submodule.coe_subtype,
     Function.comp_apply, AlgEquiv.toLinearMap_apply, LinearEquiv.coe_coe, AlgHom.toLinearMap_apply]
-  simp only [ee_apply, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
-    Basis.equiv_apply, Equiv.refl_apply, AlgHom.toLinearMap_apply]
-  ext a b
-  simp only [inclusion', AlgHom.mapMatrix_apply, Matrix.map_apply]
-  simp only [Algebra.ofId, AlgHom.coe_mk, IntermediateField.algebraMap_apply]
+  simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, Basis.equiv_apply,
+    Equiv.refl_apply, AlgHom.toLinearMap_apply]
+  change iso (e i) = (inclusion' n k k_bar A iso) ((Matrix.stdBasis ℒ (Fin n) (Fin n)) i)
+  rw [ee_apply n k k_bar A iso i]
   rw [Matrix.stdBasis_eq_single]
-  erw [Matrix.stdBasis_eq_single]
-  simp only [Matrix.single]
-  aesop
+  rw [Matrix.stdBasis_eq_single]
+  ext a b
+  simp only [inclusion']
+  simp only [Algebra.ofId]
+  simp only [AlgHom.mapMatrix_apply, Matrix.map_apply, Matrix.single]
+  change (if i.1 = a ∧ i.2 = b then 1 else 0) =
+    algebraMap ℒ k_bar ((if i.1 = a ∧ i.2 = b then 1 else 0) : ℒ)
+  simp
 
 /-- This shows the following diagram commutes:
      isoRestrict
@@ -381,11 +385,22 @@ lemma isoRestrict_map_mul (x y : ℒ ⊗[k] A) :
   have eq₁ := congr($(comm_square n k k_bar A iso) x)
   have eq₂ := congr($(comm_square n k k_bar A iso) y)
   simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, AlgHom.toLinearMap_apply,
-    AlgEquiv.toLinearEquiv_toLinearMap, LinearMap.coe_restrictScalars,
-    AlgEquiv.toLinearMap_apply] at eq₁ eq₂
-  rw [← eq₁, ← eq₂, ← _root_.map_mul] at eq
-  refine inclusion'_injective n k k_bar A iso (eq.trans ?_)
-  rw [_root_.map_mul]
+    AlgEquiv.toLinearEquiv_toLinearMap, LinearMap.coe_restrictScalars] at eq₁ eq₂
+  apply inclusion'_injective n k k_bar A iso
+  calc
+    (inclusion' n k k_bar A iso) ((isoRestrict' n k k_bar A iso) (x * y)) =
+        iso ((inclusion n k k_bar A iso) x) * iso ((inclusion n k k_bar A iso) y) := by
+      change
+        ((inclusion' n k k_bar A iso).toLinearMap ∘ₗ ↑(isoRestrict' n k k_bar A iso)) (x * y) =
+          iso ((inclusion n k k_bar A iso) x) * iso ((inclusion n k k_bar A iso) y)
+      exact eq
+    _ = (inclusion' n k k_bar A iso) ((isoRestrict' n k k_bar A iso) x) *
+        (inclusion' n k k_bar A iso) ((isoRestrict' n k k_bar A iso) y) := by
+      rw [eq₁, eq₂]
+      rfl
+    _ = (inclusion' n k k_bar A iso)
+        ((isoRestrict' n k k_bar A iso) x * (isoRestrict' n k k_bar A iso) y) := by
+      rw [_root_.map_mul]
 
 def isoRestrict : ℒ ⊗[k] A ≃ₐ[ℒ] Matrix (Fin n) (Fin n) ℒ :=
   AlgEquiv.ofLinearEquiv (isoRestrict' n k k⁻ A iso)

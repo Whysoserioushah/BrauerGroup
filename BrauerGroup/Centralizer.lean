@@ -68,7 +68,7 @@ Then the centralizer of `A ⊆ A ⊗ B` is `C(A) ⊗ B` where `C(A)` is the cent
 lemma centralizer_range_includeLeft_eq_center_tensorProduct [Module.Free R B] :
     Subalgebra.centralizer R
       (Algebra.TensorProduct.includeLeft : A →ₐ[R] A ⊗[R] B).range =
-    (Algebra.TensorProduct.map (Subalgebra.center R A).val (AlgHom.id R B)).range := by
+    (Algebra.TensorProduct.map (Subalgebra.center R A).val (.id R B)).range := by
   classical
   ext w
   constructor
@@ -100,6 +100,7 @@ lemma centralizer_range_includeLeft_eq_center_tensorProduct [Module.Free R B] :
         Algebra.TensorProduct.tmul_mul_tmul, one_mul, mul_one, Subalgebra.mem_center_iff.1 b.2 x]
     | add y z hy hz => rw [map_add, mul_add, hy, hz, add_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Let `R` be a commutative ring and `A, B` be `R`-algebras where `A` is free as `R`-module.
 Then the centralizer of `B ⊆ A ⊗ B` is `A ⊗ C(B)` where `C(B)` is the center of `B`.
@@ -107,47 +108,51 @@ Then the centralizer of `B ⊆ A ⊗ B` is `A ⊗ C(B)` where `C(B)` is the cent
 lemma centralizer_range_includeRight_eq_center_tensorProduct [Module.Free R A] :
     Subalgebra.centralizer R
       (Algebra.TensorProduct.includeRight : B →ₐ[R] A ⊗[R] B).range =
-    (Algebra.TensorProduct.map (AlgHom.id R A) (center R B).val).range := by
+    (Algebra.TensorProduct.map (.id R A) (center R B).val).range := by
   have eq1 := centralizer_range_includeLeft_eq_center_tensorProduct R B A
   apply_fun Subalgebra.comap (Algebra.TensorProduct.comm R A B).toAlgHom at eq1
   convert eq1
   · ext x
     simpa only [AlgHom.coe_range, mem_centralizer_iff, Set.mem_range,
       Algebra.TensorProduct.includeRight_apply, forall_exists_index, forall_apply_eq_imp_iff,
-      AlgEquiv.toAlgHom_eq_coe, mem_comap, AlgHom.coe_coe,
-      Algebra.TensorProduct.includeLeft_apply] using
+      mem_comap, AlgHom.coe_coe, Algebra.TensorProduct.includeLeft_apply] using
       ⟨fun h b ↦ (Algebra.TensorProduct.comm R A B).symm.injective <| by simpa using h b,
         fun h b ↦ (Algebra.TensorProduct.comm R A B).injective <| by simpa using h b⟩
   ext x
-  simp only [AlgHom.mem_range, AlgEquiv.toAlgHom_eq_coe, mem_comap, AlgHom.coe_coe]
+  simp only [AlgHom.mem_range, mem_comap]
   constructor
   · rintro ⟨x, rfl⟩
     refine ⟨(Algebra.TensorProduct.comm R _ _) x, ?_⟩
-    change AlgHom.comp ((Algebra.TensorProduct.map (center R B).val (AlgHom.id R A)))
+    change AlgHom.comp ((Algebra.TensorProduct.map (center R B).val (.id R A)))
       ((Algebra.TensorProduct.comm R A ↥(center R B))).toAlgHom x =
       (Algebra.TensorProduct.comm R A B).toAlgHom.comp
-      ((Algebra.TensorProduct.map (AlgHom.id R A) (center R B).val)) x
+      ((Algebra.TensorProduct.map (.id R A) (center R B).val)) x
     congr 1
     ext
     · rfl
     · rfl
   · rintro ⟨y, hy⟩
     refine ⟨(Algebra.TensorProduct.comm R _ _) y, (Algebra.TensorProduct.comm R A B).injective ?_⟩
-    rw [← hy]
-    change
-      ((Algebra.TensorProduct.comm R A B).toAlgHom.comp
-        (Algebra.TensorProduct.map (AlgHom.id R A) (center R B).val)).comp
-        (Algebra.TensorProduct.comm R (↥(center R B)) A) y =
-      ((Algebra.TensorProduct.map _ _)) y
-    congr 1
-    ext
-    · rfl
-    · rfl
+    calc
+      Algebra.TensorProduct.comm R A B
+          ((Algebra.TensorProduct.map (.id R A) (center R B).val)
+            ((Algebra.TensorProduct.comm R (center R B) A) y)) =
+          (Algebra.TensorProduct.map (center R B).val (.id R A)) y := by
+            change
+              ((Algebra.TensorProduct.comm R A B).toAlgHom.comp
+                (Algebra.TensorProduct.map (.id R A) (center R B).val)).comp
+                (Algebra.TensorProduct.comm R (center R B) A) y =
+              ((Algebra.TensorProduct.map _ _)) y
+            congr 1
+            ext
+            · rfl
+            · rfl
+      _ = (Algebra.TensorProduct.comm R A B) x := hy
 
 lemma centralizer_tensorProduct_eq_center_tensorProduct_left [Module.Free R B] :
     Subalgebra.centralizer R
-      (Algebra.TensorProduct.map (AlgHom.id R A) (Algebra.ofId R B)).range =
-    (Algebra.TensorProduct.map (Subalgebra.center R A).val (AlgHom.id R B)).range := by
+      (Algebra.TensorProduct.map (.id R A) (Algebra.ofId R B)).range =
+    (Algebra.TensorProduct.map (Subalgebra.center R A).val (.id R B)).range := by
   rw [← centralizer_range_includeLeft_eq_center_tensorProduct]
   simp [Algebra.TensorProduct.map_range,
     show (Algebra.TensorProduct.includeRight.comp (Algebra.ofId R B)) = Algebra.ofId R _ by ext,
@@ -155,8 +160,8 @@ lemma centralizer_tensorProduct_eq_center_tensorProduct_left [Module.Free R B] :
 
 lemma centralizer_tensorProduct_eq_center_tensorProduct_right [Module.Free R A] :
     Subalgebra.centralizer R
-      (Algebra.TensorProduct.map (Algebra.ofId R A) (AlgHom.id R B)).range =
-    (Algebra.TensorProduct.map (AlgHom.id R A) (center R B).val).range := by
+      (Algebra.TensorProduct.map (Algebra.ofId R A) (.id R B)).range =
+    (Algebra.TensorProduct.map (.id R A) (center R B).val).range := by
   rw [← centralizer_range_includeRight_eq_center_tensorProduct]
   simp [Algebra.TensorProduct.map_range,
     show (Algebra.TensorProduct.includeLeft.comp (Algebra.ofId R A)) = Algebra.ofId R (A ⊗[R] B) by

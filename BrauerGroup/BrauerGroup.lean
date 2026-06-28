@@ -383,8 +383,8 @@ theorem eqv_tensor_eqv
     IsBrauerEquivalent (mul A C) (mul B D) := by
   obtain ⟨n, m, hn, hm, ⟨e1⟩⟩ := hAB
   obtain ⟨p, q, hp, hq, ⟨e2⟩⟩ := hCD
-  exact ⟨n * p, m * q, by simp_all, by simp_all, ⟨kroneckerMatrixTensor' .. |>.symm.trans <|
-    Algebra.TensorProduct.congr e1 e2|>.trans <| kroneckerMatrixTensor' ..⟩⟩
+  exact ⟨n * p, m * q, by simp_all, by simp_all, ⟨ (kroneckerMatrixTensor' A C n p).symm.trans <|
+    (Algebra.TensorProduct.congr e1 e2).trans <| kroneckerMatrixTensor' B D m q⟩⟩
 
 set_option backward.isDefEq.respectTransparency false in
 instance Mul : Mul <| BrauerGroup (K := K) :=
@@ -555,10 +555,10 @@ def e3Aux0 : E ⊗[K] A →ₐ[E] E ⊗[K] (A ⊗[K] Matrix (Fin m) (Fin m) K) :
   AlgHom.comp
     { (Algebra.TensorProduct.assoc K K K E A (Matrix (Fin m) (Fin m) K)).toAlgHom with
       commutes' e := by
-        simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.toRingHom_eq_coe, AlgEquiv.toAlgHom_toRingHom,
-          RingHom.toMonoidHom_eq_coe, Algebra.TensorProduct.algebraMap_apply,
-          Algebra.algebraMap_self, RingHom.id_apply, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
-          MonoidHom.coe_coe, RingHom.coe_coe, Algebra.TensorProduct.assoc_tmul]
+        simp only [AlgHom.toRingHom_eq_coe, AlgEquiv.toAlgHom_toRingHom, RingHom.toMonoidHom_eq_coe,
+          Algebra.TensorProduct.algebraMap_apply, Algebra.algebraMap_self, RingHom.id_apply,
+          OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, MonoidHom.coe_coe, RingHom.coe_coe,
+          Algebra.TensorProduct.assoc_tmul]
         rfl }
     (Algebra.TensorProduct.includeLeft : E ⊗[K] A →ₐ[E] (E ⊗[K] A) ⊗[K] Matrix (Fin m) (Fin m) K)
 
@@ -571,13 +571,12 @@ def e3Aux1 : E ⊗[K] Matrix (Fin m) (Fin m) K →ₐ[E] E ⊗[K] (A ⊗[K] Matr
   AlgHom.comp
     { (e3Aux10 (K := K) (E := E) A m).toAlgHom with
       commutes' e := by
-        simp only [AlgEquiv.toAlgHom_eq_coe, e3Aux10, AlgHom.toRingHom_eq_coe,
-          AlgEquiv.toAlgHom_toRingHom, RingHom.toMonoidHom_eq_coe,
-          Algebra.TensorProduct.algebraMap_apply, Algebra.algebraMap_self, RingHom.id_apply,
-          OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, MonoidHom.coe_coe, RingHom.coe_coe,
-          AlgEquiv.trans_apply, Algebra.TensorProduct.assoc_tmul, Algebra.TensorProduct.congr_apply,
-          AlgEquiv.refl_toAlgHom, Algebra.TensorProduct.map_tmul, AlgHom.coe_id, id_eq,
-          AlgHom.coe_coe, Algebra.TensorProduct.comm_tmul]
+        simp only [e3Aux10, AlgHom.toRingHom_eq_coe, AlgEquiv.toAlgHom_toRingHom,
+          RingHom.toMonoidHom_eq_coe, Algebra.TensorProduct.algebraMap_apply,
+          Algebra.algebraMap_self, RingHom.id_apply, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
+          MonoidHom.coe_coe, RingHom.coe_coe, AlgEquiv.trans_apply,
+          Algebra.TensorProduct.assoc_tmul, Algebra.TensorProduct.congr_apply,
+          AlgEquiv.refl_toAlgHom, Algebra.TensorProduct.map_tmul, AlgHom.coe_id, id_eq]
         rfl }
     (Algebra.TensorProduct.includeLeft : E ⊗[K] Matrix (Fin m) (Fin m) K →ₐ[E]
       (E ⊗[K] Matrix (Fin m) (Fin m) K) ⊗[K] A)
@@ -622,10 +621,9 @@ def e3Aux4 :
       E ⊗[K] (A ⊗[K] Matrix (Fin m) (Fin m) K) := by
   refine Algebra.TensorProduct.lift (e3Aux0 A m) (e3Aux1 A m) fun x y ↦ ?_
   change _ = _
-  simp only [e3Aux0, AlgEquiv.toAlgHom_eq_coe, AlgHom.toRingHom_eq_coe,
-    AlgEquiv.toAlgHom_toRingHom, AlgHom.coe_comp, AlgHom.coe_mk, RingHom.coe_coe,
-    Function.comp_apply, Algebra.TensorProduct.includeLeft_apply, e3Aux1, e3Aux10,
-    AlgEquiv.coe_trans, Algebra.TensorProduct.congr_apply, AlgEquiv.refl_toAlgHom]
+  simp only [e3Aux0, AlgHom.toRingHom_eq_coe, AlgEquiv.toAlgHom_toRingHom, AlgHom.coe_comp,
+    AlgHom.coe_mk, RingHom.coe_coe, Function.comp_apply, Algebra.TensorProduct.includeLeft_apply,
+    e3Aux1, e3Aux10, AlgEquiv.coe_trans, Algebra.TensorProduct.congr_apply, AlgEquiv.refl_toAlgHom]
   induction x using TensorProduct.induction_on with
   | zero =>
     simp only [TensorProduct.zero_tmul, map_zero]; rw [zero_mul
@@ -658,10 +656,11 @@ def e3Aux4 :
       rw [TensorProduct.add_tmul]
       exact map_add _ _ _
   | tmul x y =>
-    simp only [Algebra.TensorProduct.assoc_tmul, Algebra.TensorProduct.map_tmul,
-    AlgHom.coe_id, id_eq, AlgHom.coe_coe, Algebra.TensorProduct.comm_tmul,
-    Algebra.TensorProduct.tmul_mul_tmul, _root_.mul_one, _root_.one_mul]
-    rw [mul_comm]
+    simp only [Algebra.TensorProduct.assoc_tmul, Algebra.TensorProduct.map_tmul, AlgHom.coe_id,
+      id_eq, Algebra.TensorProduct.tmul_mul_tmul]
+    erw [Algebra.TensorProduct.comm_tmul]
+    rw [Algebra.TensorProduct.tmul_mul_tmul, Algebra.TensorProduct.tmul_mul_tmul,
+      _root_.mul_one, _root_.one_mul, _root_.mul_one, _root_.one_mul, mul_comm e x]
 
 set_option maxHeartbeats 800000 in
 -- FIXME: Get rid of the raised heartbeats
@@ -690,15 +689,7 @@ lemma e3Aux5 : Function.Surjective (e3Aux4 (K := K) (E := E) A m) := by
     · rw [TensorProduct.tmul_add]
   | tmul a m =>
     refine ⟨(e ⊗ₜ[K] a) ⊗ₜ[E] ((1 : E) ⊗ₜ[K] m), ?_⟩
-    delta e3Aux4
-    rw [Algebra.TensorProduct.lift_tmul]
-    simp only [e3Aux0, AlgEquiv.toAlgHom_eq_coe, AlgHom.toRingHom_eq_coe,
-      AlgEquiv.toAlgHom_toRingHom, AlgHom.coe_comp, AlgHom.coe_mk, RingHom.coe_coe,
-      Function.comp_apply, Algebra.TensorProduct.includeLeft_apply,
-      Algebra.TensorProduct.assoc_tmul, e3Aux1, e3Aux10, AlgEquiv.coe_trans,
-      Algebra.TensorProduct.congr_apply, AlgEquiv.refl_toAlgHom, Algebra.TensorProduct.map_tmul,
-      map_one, AlgHom.coe_coe, Algebra.TensorProduct.comm_tmul,
-      Algebra.TensorProduct.tmul_mul_tmul, _root_.mul_one, _root_.one_mul]
+    simp [Algebra.TensorProduct.lift_tmul, e3Aux0, e3Aux1, e3Aux4, e3Aux10]
 
 def e3 [Algebra.IsCentral K A] [csa_A : IsSimpleRing A] :
     (E ⊗[K] A) ⊗[E] (E ⊗[K] Matrix (Fin m) (Fin m) K) ≃ₐ[E]

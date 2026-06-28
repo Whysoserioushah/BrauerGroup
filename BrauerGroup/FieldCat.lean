@@ -128,7 +128,7 @@ unif_hint forget_obj_eq_coe (R R' : FieldCat) where
 lemma forget_obj {R : FieldCat} : (forget FieldCat).obj R = R := rfl
 
 lemma forget_map {R S : FieldCat} (f : R ⟶ S) :
-    (forget FieldCat).map f = f :=
+    (forget FieldCat).map f = ⇑f.hom :=
   rfl
 
 instance {R : FieldCat} : Field ((forget FieldCat).obj R) :=

@@ -119,11 +119,9 @@ lemma mat_over_extension (φ : F →ₐ[K] E) (a : A) :
     φ.mapMatrix (e (1 ⊗ₜ a)) := by
   use g e φ
   simp only [AlgEquiv.trans_apply, Algebra.TensorProduct.congr_apply, AlgEquiv.refl_toAlgHom,
-    Algebra.TensorProduct.map_tmul, AlgHom.coe_coe, AlgHom.coe_id, id_eq,
-    Algebra.TensorProduct.assoc'_apply, AlgEquiv.coe_mk, AlgEquiv.toEquiv_eq_coe, EquivLike.coe_coe,
-    AlgEquiv.symm_mk, map_one, AlgEquiv.coe_ofBijective, Equiv.coe_fn_mk, AlgHom.coe_codRestrict,
-    φ_m_apply, matrixEquivTensor'_symm_apply, one_smul, AlgHom.mapMatrix_apply,
-    Algebra.TensorProduct.one_def]
+    Algebra.TensorProduct.map_tmul, map_one, Algebra.TensorProduct.one_def, AlgHom.coe_id, id_eq,
+    Algebra.TensorProduct.assoc'_apply, matrixEquivTensor'_symm_apply, one_smul,
+    AlgHom.mapMatrix_apply]
   ext i j
   simp [Matrix.map_apply]
 
@@ -221,7 +219,7 @@ lemma eq_polys (f1 f2 : F ⊗[K] A ≃ₐ[F] Matrix (Fin n) (Fin n) F) (a : A) :
     ReducedCharPoly f1 a = ReducedCharPoly f2 a := by
   obtain ⟨r, _, hr1, hr2⟩ := eq_pow_reducedCharpoly K F F_bar A n n f1 f2 a
   obtain rfl : r = 1 := by simpa [mul_left_eq_self₀, NeZero.ne n] using hr1.symm
-  simp only [AlgHom.coe_coe, pow_one] at hr2
+  simp only [pow_one] at hr2
   rw [← hr2]
   rfl
 
@@ -245,13 +243,12 @@ lemma mem_Kx (a : A) : ∃ f : K[X], ReducedCharPoly e a = f.mapAlgHom (Algebra.
     obtain ⟨r, _, hr1, hr⟩ := eq_pow_reducedCharpoly K F F_bar A n n e g a
     rw [eq_comm, Nat.mul_eq_right (NeZero.ne n)] at hr1
     subst hr1
-    simp only [AlgHom.coe_coe, pow_one] at hr
+    simp only [pow_one] at hr
     rw [ReducedCharPoly] at *
     apply_fun Matrix.charpoly at hg
     change _ = ((e (1 ⊗ₜ a)).map φ.toRingHom).charpoly at hg
     rw [Matrix.charpoly_map] at hg
-    simp only [AlgEquiv.toRingEquiv_eq_coe, RingEquiv.toRingHom_eq_coe,
-      AlgEquiv.toRingEquiv_toRingHom] at hg
+    simp only [RingEquiv.toRingHom_eq_coe, AlgEquiv.toRingEquiv_toRingHom] at hg
     exact hr.symm.trans hg
   simp only [ext_iff, coeff_map, RingHom.coe_coe] at fixed
   have fixed2 : ∀ m : ℕ, (e (1 ⊗ₜ a)).charpoly.coeff m ∈ (Algebra.ofId K F).range := fun m ↦
@@ -450,10 +447,10 @@ lemma reducedNorm_ne_zero_iff (a : A) : reducedNorm e a ≠ 0 ↔ IsUnit a :=
 theorem inv_under_extend (L L_bar : Type u) [Field L] [Field L_bar] [Algebra F L] [Algebra K L]
     [Algebra L L_bar] [IsAlgClosure L L_bar] (e0 : L ⊗[F] (F ⊗[K] A) ≃ₐ[L] Matrix (Fin n) (Fin n) L)
     [IsScalarTower K F L] (a : A) : reducedNorm e0 (1 ⊗ₜ a) = algebraMap F L (reducedNorm e a) := by
-  -- use det is coeffiecient of charpoly
+  -- use det is coefficient of charpoly
   sorry
 
--- mimic what I did above, write a verision for reduced trace
+-- mimic what I did above, write a version for reduced trace
 
 theorem inv_under_algEquiv (A1 A2 L : Type u) [Field L] [Algebra K L] [Ring A1] [Ring A2]
     [Algebra K A1] [Algebra K A2] [Algebra.IsCentral K A1] [Algebra.IsCentral K A2]
@@ -463,6 +460,6 @@ theorem inv_under_algEquiv (A1 A2 L : Type u) [Field L] [Algebra K L] [Ring A1] 
     (Algebra.TensorProduct.congr AlgEquiv.refl f.symm|>.trans e1) (f a) := by
   sorry
 
--- mimic what I did above, write a verision for reduced trace
+-- mimic what I did above, write a version for reduced trace
 
 end mono

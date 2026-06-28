@@ -26,7 +26,7 @@ abbrev N [Group G] : Rep.ofMulAction k G G ⟶ Rep.ofMulAction k G G :=
     classical
     simp only [map_mul, map_sum, Representation.asAlgebraHom_single, one_smul, LinearMap.coe_comp,
       Function.comp_apply, Finsupp.lsingle_apply, End.mul_apply, Representation.ofMulAction_single,
-      smul_eq_mul, LinearMap.coe_sum, Finset.sum_apply, Finsupp.coe_finset_sum]
+      smul_eq_mul, LinearMap.coe_sum, Finset.sum_apply, Finsupp.coe_finsetSum]
     rw [Fintype.sum_eq_single (x * g'⁻¹ * g⁻¹), Fintype.sum_eq_single (g⁻¹ * x * g'⁻¹)]
     · simp +contextual [mul_assoc]
     all_goals
@@ -49,8 +49,8 @@ abbrev sigmaminus1 [CommGroup G] : Rep.ofMulAction k G G ⟶ Rep.ofMulAction k G
     congr 2
     ext g2
     simp [mul_comm]
-    -- Note: Add `MonoidAlgebra.finset_sum_apply`
-    -- rw [Finsupp.finset_sum_apply, Finsupp.finset_sum_apply]
+    -- Note: Add `MonoidAlgebra.finsetSum_apply`
+    -- rw [Finsupp.finsetSum_apply, Finsupp.finsetSum_apply]
 
 def ChainComplexAbel [CommGroup G] : ChainComplex (Rep k G) ℕ where
   X _ := Rep.ofMulAction k G G
@@ -72,9 +72,9 @@ def ChainComplexAbel [CommGroup G] : ChainComplex (Rep k G) ℕ where
       ext g
       simp only [MonoidAlgebra.single_mul_apply, one_mul]
       rw [show (∑ i : G, MonoidAlgebra.single i (1 : k)) (σ⁻¹ * g) =
-          ∑ i : G, MonoidAlgebra.single i (1 : k) (σ⁻¹ * g) from Finsupp.finset_sum_apply _ _ _,
+          ∑ i : G, MonoidAlgebra.single i (1 : k) (σ⁻¹ * g) from Finsupp.finsetSum_apply _ _ _,
         show (∑ i : G, MonoidAlgebra.single i (1 : k)) g =
-          ∑ i : G, MonoidAlgebra.single i (1 : k) g from Finsupp.finset_sum_apply _ _ _]
+          ∑ i : G, MonoidAlgebra.single i (1 : k) g from Finsupp.finsetSum_apply _ _ _]
       simp
     · ext : 2
       simp only [Rep.hom_comp, Representation.IntertwiningMap.comp_toLinearMap, Rep.hom_ofHom,
@@ -87,9 +87,9 @@ def ChainComplexAbel [CommGroup G] : ChainComplex (Rep k G) ℕ where
       ext g
       simp only [MonoidAlgebra.mul_single_apply, mul_one]
       rw [show (∑ i : G, MonoidAlgebra.single i (1 : k)) (g * σ⁻¹) =
-          ∑ i : G, MonoidAlgebra.single i (1 : k) (g * σ⁻¹) from Finsupp.finset_sum_apply _ _ _,
+          ∑ i : G, MonoidAlgebra.single i (1 : k) (g * σ⁻¹) from Finsupp.finsetSum_apply _ _ _,
         show (∑ i : G, MonoidAlgebra.single i (1 : k)) g =
-          ∑ i : G, MonoidAlgebra.single i (1 : k) g from Finsupp.finset_sum_apply _ _ _]
+          ∑ i : G, MonoidAlgebra.single i (1 : k) g from Finsupp.finsetSum_apply _ _ _]
       simp
 
 abbrev π_aux [CommGroup G] :
@@ -145,7 +145,7 @@ def CyclicCoh.homotopy_aux [CommGroup G] : .trivial k G k ⟶ (ChainComplexAbel 
     intro g1
     rw [Representation.ofMulAction_def, Finsupp.lmapDomain_apply]
     simp only [Finsupp.linearEquivFunOnFinite, LinearEquiv.coe_symm_mk]
-    rw [Finsupp.mapDomain, Finsupp.sum_fintype _ _ (by simp), Finsupp.finset_sum_apply]
+    rw [Finsupp.mapDomain, Finsupp.sum_fintype _ _ (by simp), Finsupp.finsetSum_apply]
     simp only [Finsupp.single_apply, smul_eq_mul]
     rw [Finset.sum_eq_single (g⁻¹ * g1)]
     · rw [if_pos (by group)]; rfl
@@ -363,8 +363,8 @@ abbrev N' [Group G] (A : Rep k G) : A ⟶ A :=
     congr 2
     ext g2
     simp
-    -- Note: Add `MonoidAlgebra.finset_sum_apply`
-    -- rw [Finsupp.finset_sum_apply, Finsupp.finset_sum_apply]
+    -- Note: Add `MonoidAlgebra.finsetSum_apply`
+    -- rw [Finsupp.finsetSum_apply, Finsupp.finsetSum_apply]
     -- simp
 
 abbrev sigmaminus1' [CommGroup G] (A : Rep k G) : A ⟶ A :=
@@ -397,7 +397,7 @@ def Acomplex [CommGroup G] (A : Rep k G) : CochainComplex (Rep k G) ℕ where
       rw [sub_mul, sub_eq_zero]
       ext
       simp
-      -- rw [Finsupp.finset_sum_apply, Finsupp.finset_sum_apply]
+      -- rw [Finsupp.finsetSum_apply, Finsupp.finsetSum_apply]
       -- simp
     · ext : 2
       simp only [Rep.hom_comp, Representation.IntertwiningMap.comp_toLinearMap, Rep.hom_ofHom,
@@ -409,7 +409,7 @@ def Acomplex [CommGroup G] (A : Rep k G) : CochainComplex (Rep k G) ℕ where
       rw [mul_sub, sub_eq_zero]
       ext
       simp
-      -- rw [Finsupp.finset_sum_apply, Finsupp.finset_sum_apply]
+      -- rw [Finsupp.finsetSum_apply, Finsupp.finsetSum_apply]
       -- simp
 
 omit [Fintype G] in
@@ -584,9 +584,9 @@ abbrev CyclicCoh.groupCohOdd (hn : Odd n) [h : NeZero n] [CommGroup G] [Decidabl
         ext g
         simp only [MonoidAlgebra.mul_single_apply, mul_one]
         rw [show (∑ i : G, MonoidAlgebra.single i (1 : k)) (g * σ⁻¹) =
-            ∑ i : G, MonoidAlgebra.single i (1 : k) (g * σ⁻¹) from Finsupp.finset_sum_apply _ _ _,
+            ∑ i : G, MonoidAlgebra.single i (1 : k) (g * σ⁻¹) from Finsupp.finsetSum_apply _ _ _,
           show (∑ i : G, MonoidAlgebra.single i (1 : k)) g =
-            ∑ i : G, MonoidAlgebra.single i (1 : k) g from Finsupp.finset_sum_apply _ _ _]
+            ∑ i : G, MonoidAlgebra.single i (1 : k) g from Finsupp.finsetSum_apply _ _ _]
         simp
       simp only [Acomplex, HomologicalComplex.shortComplexFunctor_obj_X₁,
         HomologicalComplex.shortComplexFunctor_obj_f, Functor.mapHomologicalComplex_obj_d,

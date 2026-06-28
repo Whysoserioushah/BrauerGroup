@@ -62,8 +62,7 @@ lemma Mopcomm_square (A : Type*) [Ring A] [Algebra R A] :
 lemma mop_bij (A : Azumaya R) : Function.Bijective (AlgHom.mulLeftRight R Aᵐᵒᵖ) := by
   rw [Mopcomm_square R A]
   erw [Function.Bijective.of_comp_iff]
-  · simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, AlgHom.coe_coe, AlgEquiv.coe_ofBijective,
-      AlgHom.coe_mk, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
+  · simp only [AlgHom.coe_comp]
     rw [Function.Bijective.of_comp_iff]
     · exact EndmopEquiv R A|>.bijective
     · rw [Function.Bijective.of_comp_iff]

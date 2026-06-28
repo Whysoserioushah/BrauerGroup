@@ -513,7 +513,7 @@ lemma linindep1ij (x : Dˣ) (hx : ∀ z, x.1⁻¹ * f k e z * x = k.val z)
     LinearIndependent ℝ
       (Fin.cons (algebraMap ℝ D (Real.sqrt (x_corre_R _ _ _ hx hDD).choose)⁻¹ * ↑x)
         ![1, ↑(e.symm { re := 0, im := 1 })]) := by
-  rw [linearIndependent_fin_cons]
+  rw [linearIndependent_finCons]
   constructor
   · exact linindep1i _ _
   · simp only [map_inv₀, Matrix.range_cons, Matrix.range_empty,
@@ -556,7 +556,7 @@ set_option synthInstance.maxHeartbeats 40000 in
 lemma linindepijk (x : Dˣ) (hx : ∀ z, x.1⁻¹ * f k e z * x = k.val z)
     (hDD : Module.finrank ℝ D = 4) :
     LinearIndependent ℝ (basisijk k e x hx hDD) := by
-  rw [linearIndependent_fin_cons]
+  rw [linearIndependent_finCons]
   refine ⟨linindep1ij _ _ _ hx hDD, ?_⟩
   by_contra! h
   simp only [Fin.range_cons, Matrix.range_cons, Matrix.range_empty, Set.union_empty,

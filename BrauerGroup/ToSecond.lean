@@ -611,7 +611,7 @@ lemma conjFactor_linearIndependent (x_ : Π σ, A.conjFactor σ) :
       ∑ τ ∈ (B.repr ⟨_, mem1⟩).support, B.repr ⟨_, mem1⟩ τ • (x_ τ).1.1 := by
     conv_lhs => rw [← B.linearCombination_repr ⟨(x_ σ).1.1, mem1⟩, Finsupp.linearCombination_apply,
       Finsupp.sum]
-    rw [AddSubmonoidClass.coe_finset_sum]
+    rw [AddSubmonoidClass.coe_finsetSum]
     refine Finset.sum_congr rfl fun i _ => ?_
     simp only [SetLike.val_smul, smul_def]
     congr 1
