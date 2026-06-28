@@ -573,14 +573,15 @@ theorem is_central_of_wdb [hctr : Algebra.IsCentral K B]
   have : NeZero n := ⟨hn⟩
   constructor
   intro x hx
-  have hx' : (Matrix.diagonal fun _ ↦ x) ∈ Subalgebra.center K M[Fin n, S] :=
-    Matrix.mem_center_iff' _ _ _ _ |>.2 <|
-      ⟨⟨x, hx⟩, by
-        ext; simp only [diagonal, of_apply]; split_ifs
-        · simp_all only [smul_apply, one_apply_eq]
-          change _ = x • (1 : S)
-          simp only [smul_eq_mul, mul_one]
-        · simp_all only [smul_apply, ne_eq, not_false_eq_true, one_apply_ne, smul_zero]⟩
+  have hx' : (Matrix.diagonal fun _ ↦ x) ∈ Subalgebra.center K M[Fin n, S] := by
+    refine Matrix.mem_center_iff' _ _ _ _ |>.2 ⟨⟨x, hx⟩, ?_⟩
+    ext
+    simp only [diagonal, of_apply]
+    split_ifs
+    · simp_all only [Matrix.smul_apply, one_apply_eq]
+      change _ = x • (1 : S)
+      simp only [smul_eq_mul, mul_one]
+    · simp_all
   have hx'' : Wdb.symm (Matrix.diagonal fun _ ↦ x) ∈ Subalgebra.center K B := by
     rw [Subalgebra.mem_center_iff] at hx' ⊢
     exact fun b ↦ Wdb.injective <| by simpa using hx' (Wdb b)
