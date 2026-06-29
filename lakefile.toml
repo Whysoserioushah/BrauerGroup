@@ -22,7 +22,7 @@ git = "https://github.com/PatrickMassot/checkdecls.git"
 [[require]]
 name = "mathlib"
 git = "https://github.com/leanprover-community/mathlib4"
-rev = "749ea6a384276750699b6b7a8f50727132f4dc4c"
+rev = "e1d1de3bbb575ceb968a895a3462d5a9ca4b22c9"
 
 [[lean_lib]]
 name = "BrauerGroup"

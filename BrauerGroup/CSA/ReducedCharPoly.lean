@@ -331,7 +331,7 @@ lemma unique_onver_split (L L_bar : Type u) [Field L] [Field L_bar] [Algebra K L
     (Ideal.Quotient.algebra K) _ _ _ e' ψ a
   have alg' : Algebra E F_bar :=
     @algClosure_ext E F F_bar _ (IsField.toField this) _ (RingHom.toAlgebra φ.toRingHom) _ (by
-      convert Module.Finite.quotient F (Ideal.exists_maximal (F ⊗[K] L)).choose
+      convert! Module.Finite.quotient F (Ideal.exists_maximal (F ⊗[K] L)).choose
       ext r m
       change φ r * m = r • m
       simp only [AlgHom.coe_mk, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, φ]
