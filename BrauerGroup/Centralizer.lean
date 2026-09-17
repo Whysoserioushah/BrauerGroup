@@ -114,7 +114,7 @@ lemma centralizer_range_includeRight_eq_center_tensorProduct [Module.Free R A] :
   · ext x
     simpa only [AlgHom.coe_range, mem_centralizer_iff, Set.mem_range,
       Algebra.TensorProduct.includeRight_apply, forall_exists_index, forall_apply_eq_imp_iff,
-      mem_comap, AlgHom.coe_coe, Algebra.TensorProduct.includeLeft_apply] using
+      mem_comap, AlgHom.coe_ofClass, Algebra.TensorProduct.includeLeft_apply] using
       ⟨fun h b ↦ (Algebra.TensorProduct.comm R A B).symm.injective <| by simpa using h b,
         fun h b ↦ (Algebra.TensorProduct.comm R A B).injective <| by simpa using h b⟩
   ext x
