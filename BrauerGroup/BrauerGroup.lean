@@ -559,7 +559,7 @@ def e3Aux0 : E ⊗[K] A →ₐ[E] E ⊗[K] (A ⊗[K] Matrix (Fin m) (Fin m) K) :
       commutes' e := by
         simp only [AlgHom.toRingHom_eq_coe, AlgEquiv.toAlgHom_toRingHom, RingHom.toMonoidHom_eq_coe,
           Algebra.TensorProduct.algebraMap_apply, Algebra.algebraMap_self, RingHom.id_apply,
-          OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, MonoidHom.coe_coe, RingHom.coe_coe,
+          OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, MonoidHom.coe_ofClass, RingHom.coe_coe,
           Algebra.TensorProduct.assoc_tmul]
         rfl }
     (Algebra.TensorProduct.includeLeft : E ⊗[K] A →ₐ[E] (E ⊗[K] A) ⊗[K] Matrix (Fin m) (Fin m) K)
@@ -576,7 +576,7 @@ def e3Aux1 : E ⊗[K] Matrix (Fin m) (Fin m) K →ₐ[E] E ⊗[K] (A ⊗[K] Matr
         simp only [e3Aux10, AlgHom.toRingHom_eq_coe, AlgEquiv.toAlgHom_toRingHom,
           RingHom.toMonoidHom_eq_coe, Algebra.TensorProduct.algebraMap_apply,
           Algebra.algebraMap_self, RingHom.id_apply, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
-          MonoidHom.coe_coe, RingHom.coe_coe, AlgEquiv.trans_apply,
+          MonoidHom.coe_ofClass, RingHom.coe_coe, AlgEquiv.trans_apply,
           Algebra.TensorProduct.assoc_tmul, Algebra.TensorProduct.congr_apply,
           AlgEquiv.refl_toAlgHom, Algebra.TensorProduct.map_tmul, AlgHom.coe_id, id_eq]
         rfl }
