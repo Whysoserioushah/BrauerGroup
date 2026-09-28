@@ -355,8 +355,7 @@ theorem exists_sep_masSubfield' : ∃ (a : D), IsMax (SubField.bot_adjoin K D a)
     (A₂ := L) (e2.trans e1.symm).toRingEquiv (RingEquiv.refl _) (by
     ext x
     simp only [AlgEquiv.toRingEquiv_toRingHom, RingHom.coe_comp, RingHom.coe_coe,
-      Function.comp_apply, RingEquiv.coe_ringHom_refl, RingHomCompTriple.comp_eq,
-      SetLike.coe_eq_coe]
+      Function.comp_apply, RingEquiv.toRingHom_refl, RingHomCompTriple.comp_eq, SetLike.coe_eq_coe]
     unfold e1 e2
     simp only [equivOfEq_symm]
     erw [AlgEquiv.trans_apply]
