@@ -118,7 +118,8 @@ def matrix (n : ℕ) : MoritaEquivalence R A (Matrix (Fin (n+1)) (Fin (n + 1)) A
 
 def matrix' (n : ℕ) [hn : NeZero n] : MoritaEquivalence R A (Matrix (Fin n) (Fin n) A) where
   eqv := moritaEquivalentToMatrix A _
-end  MoritaEquivalence
+
+end MoritaEquivalence
 -- abbrev ofIsoApp1 (e : R ≃+* S) (X : ModuleCat R) : X ⟶
 --     (ModuleCat.restrictScalars e.symm.toRingHom ⋙ ModuleCat.restrictScalars e.toRingHom).obj X :=
 --   ModuleCat.ofHom (Y := (ModuleCat.restrictScalars e.symm.toRingHom ⋙
@@ -171,22 +172,15 @@ instance : Algebra R (End (ModuleCat.of A A)) := inferInstance
 
 @[simps]
 def mopToEnd : Aᵐᵒᵖ →ₐ[R] End (ModuleCat.of A A) where
-  toFun a := ModuleCat.ofHom <|
+  toFun a := .of <| ModuleCat.ofHom <|
     { toFun := fun (x : A) ↦ x * a.unop
       map_add' := by simp [add_mul]
       map_smul' := by simp [mul_assoc] }
-  map_zero' := by simp; rfl
+  map_zero' := by ext; simp
   map_one' := by aesop
-  map_add' := fun x y => by simp [mul_add]; rfl
-  map_mul' := fun (x y) => by
-    simp only [MulOpposite.unop_mul, End.mul_def]
-    apply ModuleCat.hom_ext
-    simp only [ModuleCat.hom_comp]; ext; simp
-  commutes' r := by
-    apply hom_ext
-    ext
-    change _ = algebraMap R A r * 1
-    simp
+  map_add' x y := by ext; simp
+  map_mul' x y := by ext; simp
+  commutes' r := by ext; change _ = algebraMap R A r * 1; simp
 
 -- variable [Algebra K R]
 
@@ -214,18 +208,19 @@ def mopToEnd : Aᵐᵒᵖ →ₐ[R] End (ModuleCat.of A A) where
 --     simp [Module.algebraMap_end_apply, Algebra.algebraMap_eq_smul_one]
 
 set_option backward.isDefEq.respectTransparency false in
-lemma moptoend_bij : Function.Bijective (mopToEnd R A) :=
-  ⟨RingHom.injective_iff_ker_eq_bot _ |>.mpr <|
-    SetLike.ext fun (α : Aᵐᵒᵖ) => ⟨fun (h : _ = _) => by
-      rw [ModuleCat.hom_ext_iff] at h
-      simp only [mopToEnd, hom_zero, LinearMap.ext_iff, LinearMap.zero_apply] at h
-      specialize h (1 : A)
-      simp_all,
-      by rintro rfl; simp⟩, fun φ => ⟨MulOpposite.op (φ.hom.toFun (1 : A)), ModuleCat.hom_ext <|
-      LinearMap.ext fun r ↦ by
-      simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, mopToEnd_apply, MulOpposite.unop_op,
-        hom_ofHom, LinearMap.coe_mk, AddHom.coe_mk]
-      rw [← smul_eq_mul, ← φ.hom.map_smul, smul_eq_mul, mul_one]⟩⟩
+lemma moptoend_bij : Function.Bijective (mopToEnd R A) := by
+  refine ⟨RingHom.injective_iff_ker_eq_bot _ |>.mpr ?_,
+    fun φ => ⟨MulOpposite.op (φ.asHom.hom.toFun (1 : A)), ?_⟩⟩
+  · ext x
+    obtain ⟨x, rfl⟩ := MulOpposite.op_surjective x
+    simp +contextual [mopToEnd, End.ext_iff, ModuleCat.hom_ext_iff, LinearMap.ext_iff,
+      forall_or_right]
+  · simp only [mopToEnd, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, AlgHom.coe_mk,
+      RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, MulOpposite.unop_op, End.ext_iff,
+      ModuleCat.hom_ext_iff, ConcreteCategory.hom_ofHom, LinearMap.ext_iff, LinearMap.coe_mk,
+      AddHom.coe_mk]
+    rintro x
+    rw [← smul_eq_mul, ← φ.asHom.hom.map_smul, smul_eq_mul, mul_one]
 
 -- noncomputable def mopEquivEnd : Rᵐᵒᵖ ≃+* End (ModuleCat.of R R) :=
 --   RingEquiv.ofBijective (mopToEnd R) ⟨RingHom.injective_iff_ker_eq_bot _ |>.mpr $
@@ -254,24 +249,13 @@ variable (e : MoritaEquivalence R A B)
 set_option backward.isDefEq.respectTransparency false in
 variable {R S} in
 def aux1 : End (ModuleCat.of A A) ≃ₐ[R] End (e.eqv.functor.obj <| .of A A) where
-  toFun (f : _ ⟶ _) := e.eqv.functor.map f
-  invFun g := e.eqv.unit.app _ ≫ e.eqv.inverse.map g ≫ e.eqv.unitInv.app _
-  left_inv := by
-    intro f
-    simp only [Equivalence.inv_fun_map, Functor.id_obj, Category.assoc]
-    rw [← Category.assoc]
-    change (e.eqv.unit ≫ e.eqv.unitInv).app _ ≫ _ = _
-    simp
-  right_inv := by
-    intro g
-    simp only [Functor.map_comp, Equivalence.fun_inv_map, Functor.id_obj,
-      Category.assoc, Equivalence.counitInv_functor_comp, Category.comp_id]
-    exact e.eqv.functor_unit_comp_assoc (ModuleCat.of A A) g
-  map_mul' x y := by simp
-  map_add' x y := by rw [e.eqv.functor.map_add]
-  commutes' r := by
-    rw [Algebra.algebraMap_eq_smul_one, e.linear.map_smul, Algebra.algebraMap_eq_smul_one]
-    simp only [End.one_def, CategoryTheory.Functor.map_id]
+  toFun f := .of (e.eqv.functor.map f.asHom)
+  invFun g := .of (e.eqv.unit.app _ ≫ e.eqv.inverse.map g.asHom ≫ e.eqv.unitInv.app _)
+  left_inv f := by ext; simp
+  right_inv g := by ext; simp
+  map_mul' x y := by apply End.ext; simp
+  map_add' x y := by apply End.ext; simp
+  commutes' r := by ext; simp [Algebra.algebraMap_eq_smul_one]
 
 -- instance (M : Type*) [AddCommGroup M] [Module B M] : Algebra R (Module.End B M) :=
 -- {
@@ -311,14 +295,13 @@ noncomputable def aux20 : (e.eqv.functor.obj (ModuleCat.of A A)) ≅ ModuleCat.o
 
 set_option backward.isDefEq.respectTransparency false in
 def aux2 (M N : ModuleCat B) (f : M ≅ N) : End M ≃ₐ[R] End N where
-  toFun x := f.inv ≫ x ≫ f.hom
-  invFun x := f.hom ≫ x ≫ f.inv
-  left_inv x := by simp
-  right_inv x := by simp
-  map_mul' x y := by simp
-  map_add' x y := by rw [Preadditive.add_comp, Preadditive.comp_add]
+  toFun x := .of (f.inv ≫ x.asHom ≫ f.hom)
+  invFun x := .of (f.hom ≫ x.asHom ≫ f.inv)
+  left_inv x := by ext; simp
+  right_inv x := by ext; simp
+  map_mul' x y := by ext; simp
+  map_add' x y := by ext; simp
   commutes' r := by
-    apply hom_ext
     ext n
     change f.hom.hom ((ModuleCat.ofHom _).hom (f.inv.hom n)) = (ModuleCat.ofHom _).hom n
     erw [map_smul f.hom.hom]
