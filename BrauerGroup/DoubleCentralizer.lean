@@ -533,7 +533,6 @@ lemma Subalgebra.conj_simple_iff {B : Subalgebra F A} {x : Aˣ} :
       simp only [toConj, AlgHom.coe_mk, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
       generalize_proofs
       rw [TwoSidedIdeal.mem_mk']
-      try assumption
       simp only [Set.mem_image, SetLike.mem_coe, TwoSidedIdeal.mem_comap, AlgHom.coe_mk,
         RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, Subtype.mk.injEq, Units.mul_left_inj,
         Units.mul_right_inj, Subtype.exists, exists_and_right, exists_eq_right, ha,
@@ -544,7 +543,6 @@ lemma Subalgebra.conj_simple_iff {B : Subalgebra F A} {x : Aˣ} :
       simp only [TwoSidedIdeal.mem_comap]
       generalize_proofs
       rw [TwoSidedIdeal.mem_mk']
-      try assumption
       simp only [toConj, AlgHom.coe_mk, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
         Set.mem_image, SetLike.mem_coe, Subtype.mk.injEq, Units.mul_left_inj, Units.mul_right_inj,
         Subtype.exists, exists_and_right, exists_eq_right, ha, exists_true_left]
