@@ -585,7 +585,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma conjFactor_linearIndependent (x_ : Π σ, A.conjFactor σ) :
     LinearIndependent K (v := fun (i : Gal(K/F)) => (x_ i).1.1) := by
   classical
-  by_contra! rid
+  by_contra rid
   obtain ⟨J, LI, maximal⟩ := exists_maximal_linearIndepOn K (fun (i : Gal(K/F)) => (x_ i).1.1)
   have ne : J ≠ Set.univ := by
     rintro rfl

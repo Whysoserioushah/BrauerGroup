@@ -409,7 +409,7 @@ lemma mul_inv (A : CSA.{u, u} K) : IsBrauerEquivalent (mul A (inv (K := K) A)) o
   let n := Module.finrank K A
   have hn : NeZero n := by
     constructor
-    by_contra! hn
+    by_contra hn
     simp only [n] at hn
     have := Module.finrank_pos_iff (R := K) (M := A) |>.2 inferInstance
     omega
@@ -421,7 +421,7 @@ lemma inv_mul (A : CSA.{u, u} K) : IsBrauerEquivalent (mul (inv (K := K) A) A) o
   let n := Module.finrank K A
   have hn : NeZero n := by
     constructor
-    by_contra! hn
+    by_contra hn
     simp only [n] at hn
     have := Module.finrank_pos_iff (R := K) (M := A) |>.2 inferInstance
     omega

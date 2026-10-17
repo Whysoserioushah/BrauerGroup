@@ -248,7 +248,7 @@ lemma minimal_ideal_isSimpleModule {A : Type u} [Ring A]
   rw [or_iff_not_imp_left]
   intro hJ
   specialize I_minimal (J.map I.subtype : Ideal A) (by
-    contrapose! hJ
+    contrapose hJ
     apply_fun Submodule.comap (f := I.subtype) at hJ
     rw [Submodule.comap_map_eq_of_injective (hf := Submodule.injective_subtype _)] at hJ
     rw [hJ, Submodule.comap_bot]
@@ -378,12 +378,12 @@ lemma Wedderburn_Artin.aux.equivIdeal
     by_contra!
     obtain ⟨⟨y, (hy1 : ∑ j : Fin n, _ = 0)⟩, hy2⟩ :=
       Submodule.nonzero_mem_of_bot_lt (bot_lt_iff_ne_bot.mpr this)
-    replace hy2 : y ≠ 0 := by contrapose! hy2; subst hy2; rfl
+    replace hy2 : y ≠ 0 := by contrapose hy2; subst hy2; rfl
     obtain ⟨j, hj⟩ : ∃ (j : Fin n), y j ≠ 0 := by contrapose! hy2; ext; rw [hy2]; rfl
     have eq1 : Ideal.span {(y j).1} = I :=
       Ideal.eq_of_le_of_isSimpleModule (A := A) I (Ideal.span {(y j).1})
       (by simp only [Ideal.span_le, Set.singleton_subset_iff, Subtype.coe_prop]) (y j).1
-      (by contrapose! hj; rwa [Subtype.ext_iff]) <| Ideal.subset_span
+      (by contrapose hj; rwa [Subtype.ext_iff]) <| Ideal.subset_span
         (by simp only [Set.mem_singleton_iff])
     have mem : (i j).1 ∈ Ideal.span {(y j).1} := eq1.symm ▸ (i j).2
     rw [Ideal.mem_span_singleton'] at mem

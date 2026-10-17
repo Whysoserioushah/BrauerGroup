@@ -535,7 +535,7 @@ lemma comm_square_endend' :
 variable [Nontrivial M]
 
 instance : NeZero (nn R M) := ⟨by
-  by_contra! hn
+  by_contra hn
   have : Subsingleton (Fin (nn R M) → R) := by
     rw [hn]
     exact Unique.instSubsingleton
