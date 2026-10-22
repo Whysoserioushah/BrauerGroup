@@ -389,16 +389,16 @@ theorem eqv_tensor_eqv
     (Algebra.TensorProduct.congr e1 e2).trans <| kroneckerMatrixTensor' B D m q⟩⟩
 
 set_option backward.isDefEq.respectTransparency false in
-instance Mul : Mul <| BrauerGroup (K := K) :=
+instance Mul : Mul <| BrauerGroup K :=
   ⟨Quotient.lift₂ (fun A B ↦ Quotient.mk (CSA_Setoid) <| BrauerGroup.mul A B)
   (by
     simp only [Quotient.eq]
     intro A B C D hAB hCD
     exact eqv_tensor_eqv A C B D hAB hCD)⟩
 
-instance One : One (BrauerGroup (K := K)) := ⟨Quotient.mk (CSA_Setoid) one_in'⟩
+instance One : One (BrauerGroup K) := ⟨Quotient.mk (CSA_Setoid) one_in'⟩
 
-theorem mul_assoc' (A B C : BrauerGroup (K := K)) : A * B * C = A * (B * C) := by
+theorem mul_assoc' (A B C : BrauerGroup K) : A * B * C = A * (B * C) := by
   induction A using Quotient.inductionOn' with | h A
   induction B using Quotient.inductionOn' with | h B
   induction C using Quotient.inductionOn' with | h C
@@ -428,57 +428,38 @@ lemma inv_mul (A : CSA.{u, u} K) : IsBrauerEquivalent (mul (inv (K := K) A) A) o
   have := tensor_op_self K A
   exact ⟨1, n, one_ne_zero, hn.1, ⟨dim_one_iso _|>.trans this⟩⟩
 
-variable (K R : Type*) [CommSemiring K] [Semiring R] [Algebra K R] in
-open Matrix MulOpposite in
-/-- Mn(Rᵒᵖ) ≃ₐ[K] Mₙ(R)ᵒᵖ -/
-def matrixEquivMatrixMop_algebra (n : ℕ) :
-    Matrix (Fin n) (Fin n) Rᵐᵒᵖ ≃ₐ[K] (Matrix (Fin n) (Fin n) R)ᵐᵒᵖ where
-  toFun M := op (M.transpose.map (fun d => d.unop))
-  invFun M := M.unop.transpose.map (fun d => op d)
-  left_inv a := by aesop
-  right_inv a := by aesop
-  map_mul' x y := unop_injective <| by ext; simp [transpose_map, transpose_apply, mul_apply]
-  map_add' x y := by aesop
-  commutes' k := by
-    simp only [MulOpposite.algebraMap_apply, op_inj]; ext i j
-    simp only [map_apply, transpose_apply, algebraMap_matrix_apply]
-    if h : i = j then simp only [h, ↓reduceIte, MulOpposite.algebraMap_apply, unop_op]
-    else simp only [MulOpposite.algebraMap_apply, h, ↓reduceIte, unop_eq_zero_iff, ite_eq_right_iff,
-      op_eq_zero_iff]; tauto
-
 lemma inv_eqv (A B : CSA K) (hAB : IsBrauerEquivalent A B) :
     IsBrauerEquivalent (inv (K := K) A) (inv (K := K) B) := by
   unfold inv
   obtain ⟨n, m, hn, hm, ⟨iso⟩⟩ := hAB
-  refine ⟨n, m, hn, hm, ⟨(matrixEquivMatrixMop_algebra _ _ _).trans <|
-    (AlgEquiv.op iso).trans (matrixEquivMatrixMop_algebra _ _ _).symm⟩⟩
+  exact ⟨n, m, hn, hm, ⟨AlgEquiv.mopMatrix.trans <| iso.op.trans AlgEquiv.mopMatrix.symm⟩⟩
 
 set_option backward.isDefEq.respectTransparency false in
-instance Inv : Inv (BrauerGroup (K := K)) where
+instance Inv : Inv (BrauerGroup K) where
   inv := Quotient.lift (fun A ↦ Quotient.mk (CSA_Setoid) <| inv A) fun A B hAB ↦ by
     change IsBrauerEquivalent _ _ at hAB
     simp only [Quotient.eq]; change IsBrauerEquivalent _ _
     exact inv_eqv (K := K) A B hAB
 
-theorem mul_left_inv' (A : BrauerGroup (K := K)) : A⁻¹ * A = 1 := by
+theorem mul_left_inv' (A : BrauerGroup K) : A⁻¹ * A = 1 := by
   induction A using Quotient.inductionOn' with | h A
   change _ = Quotient.mk'' one_in'
   apply Quotient.sound; exact inv_mul A
 
 set_option backward.isDefEq.respectTransparency false in
-theorem one_mul' (A : BrauerGroup (K := K)) : 1 * A = A := by
+theorem one_mul' (A : BrauerGroup K) : 1 * A = A := by
   induction A using Quotient.inductionOn' with | h A
   change Quotient.mk'' one_in' * _ = _; apply Quotient.sound
   exact (mul_one 1 A).trans (iso_to_eqv _ _ (Algebra.TensorProduct.congr
     (dim_one_iso _) AlgEquiv.refl))|>.symm
 
-theorem mul_one' (A : BrauerGroup (K := K)) : A * 1 = A := by
+theorem mul_one' (A : BrauerGroup K) : A * 1 = A := by
   induction A using Quotient.inductionOn' with | h A
   change _ * Quotient.mk'' one_in' = _; apply Quotient.sound
   exact (one_mul 1 A).trans (iso_to_eqv _ _ (Algebra.TensorProduct.congr
     AlgEquiv.refl (dim_one_iso _)))|>.symm
 
-instance Bruaer_Group : Group (BrauerGroup (K := K)) where
+instance Bruaer_Group : Group (BrauerGroup K) where
   mul_assoc := mul_assoc'
   one_mul := one_mul'
   mul_one := mul_one'
@@ -489,17 +470,17 @@ lemma Alg_closed_equiv_one [IsAlgClosed K] : ∀(A : CSA K), IsBrauerEquivalent 
   obtain ⟨n, hn, ⟨iso⟩⟩ := simple_eq_matrix_algClosed K A
   exact ⟨1, n, one_ne_zero, hn, ⟨dim_one_iso A|>.trans iso⟩⟩
 
-lemma Alg_closed_eq_one [IsAlgClosed K] : ∀(A : BrauerGroup (K := K)), A = 1 := by
+lemma Alg_closed_eq_one [IsAlgClosed K] : ∀(A : BrauerGroup K), A = 1 := by
   intro A; induction A using Quotient.inductionOn' with | h A
   change _ = Quotient.mk'' one_in'; apply Quotient.sound
   change IsBrauerEquivalent _ _; exact Alg_closed_equiv_one A
 
-instance [IsAlgClosed K] : Unique (BrauerGroup (K := K)) where
+instance [IsAlgClosed K] : Unique (BrauerGroup K) where
   default := 1
   uniq := Alg_closed_eq_one
 
 theorem Alg_closed_Brauer_trivial [IsAlgClosed K] : (⊤ : Subgroup (BrauerGroup K)) =
-    (⊥ : Subgroup <| BrauerGroup (K := K)) :=
+    (⊥ : Subgroup <| BrauerGroup K) :=
   Subgroup.ext fun _ ↦ ⟨fun _ ↦ Alg_closed_eq_one _, fun _ ↦ ⟨⟩⟩
 
 end BrauerGroup
@@ -790,7 +771,7 @@ end someEquivs
 section Q_to_C
 
 set_option backward.isDefEq.respectTransparency false in
-abbrev BaseChange : BrauerGroup (K := K) →* BrauerGroup (K := E) where
+abbrev BaseChange : BrauerGroup K →* BrauerGroup (K := E) where
   toFun :=
     Quotient.map'
     (fun A =>
@@ -826,7 +807,7 @@ lemma BaseChange_Q_to_C_eq_one : BaseChange_Q_to_C = 1 := by
 
 end Q_to_C
 
-instance IsAbelBrauer : CommGroup (BrauerGroup (K := K)) where
+instance IsAbelBrauer : CommGroup (BrauerGroup K) where
   __ := BrauerGroup.Bruaer_Group
   mul_comm A B := by
     induction A using Quotient.inductionOn' with | h A

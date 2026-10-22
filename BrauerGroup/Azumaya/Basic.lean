@@ -212,8 +212,9 @@ noncomputable section
 
 open MulOpposite Matrix
 
-abbrev Mat.inv (n : ℕ) : Module.End R (Matrix (Fin n) (Fin n) R) →ₗ[R]
-    Matrix (Fin n) (Fin n) R ⊗[R] (Matrix (Fin n) (Fin n) R)ᵐᵒᵖ where
+abbrev Mat.inv (n : ℕ) :
+    Module.End R (Matrix (Fin n) (Fin n) R) →ₗ[R]
+      Matrix (Fin n) (Fin n) R ⊗[R] (Matrix (Fin n) (Fin n) R)ᵐᵒᵖ where
   toFun := fun f ↦ ∑ ⟨⟨i, j⟩, k, l⟩ : (Fin n × Fin n) × Fin n × Fin n,
     f (single j k 1) i l • (single i j 1) ⊗ₜ[R] op (single k l 1)
   map_add' := fun f1 f2 ↦ by
@@ -228,8 +229,7 @@ lemma Mat.inv_toFun1' (n : ℕ) :
     (Mat.inv R n).comp (AlgHom.mulLeftRight R (Matrix (Fin n) (Fin n) R)).toLinearMap = .id :=
   Basis.ext ((Matrix.stdBasis _ _ _).tensorProduct ((Matrix.stdBasis _ _ _).map (opLinearEquiv ..)))
   fun ⟨⟨i0, j0⟩, k0, l0⟩ ↦  by
-    simp [stdBasis_eq_single, AlgHom.mulLeftRight_apply,
-      single, ite_and, mul_apply, Fintype.sum_prod_type]
+    simp [stdBasis_eq_single, single, ite_and, Matrix.mul_apply, Fintype.sum_prod_type]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma Mat.inv_toFun2' (n : ℕ) :
