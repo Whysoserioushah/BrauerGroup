@@ -35,35 +35,36 @@ lemma Matrix.mem_center_iff (R : Type*) [Ring R] (n : ℕ) (M) :
 
 set_option backward.isDefEq.respectTransparency false in
 def Matrix.centerEquivBase (n : ℕ) (hn : 0 < n) (R : Type*) [Ring R] :
-    Subring.center (M[Fin n, R]) ≃+* (Subring.center R) where
+    Subring.center M[Fin n, R] ≃+* Subring.center R where
   toFun A := ⟨(A.1 ⟨0, by omega⟩ ⟨0, by omega⟩), by
     obtain ⟨a, ha⟩ := (Matrix.mem_center_iff R n A.1).1 A.2
     simp [ha, Subring.smul_def]⟩
   invFun a := ⟨a • 1, Subring.mem_center_iff.2 fun A ↦ Matrix.ext <| by simp⟩
   left_inv := by
-    if hn : n = 0
-    then subst hn; exact fun _ ↦ Subsingleton.elim _ _
-    else
-    rintro ⟨A, hA⟩; obtain ⟨⟨α, hα⟩, rfl⟩ := Matrix.mem_center_iff _ _ _ |>.1 hA
-    simp only [smul_apply, one_apply_eq, Subtype.mk.injEq]
+    obtain rfl | hn := eq_or_ne n 0
+    · exact fun _ ↦ Subsingleton.elim _ _
+    rintro ⟨A, hA⟩
+    obtain ⟨⟨α, hα⟩, rfl⟩ := Matrix.mem_center_iff _ _ _ |>.1 hA
+    ext : 1
     change (α • (1 : R)) • (1 : Matrix (Fin n) (Fin n) R) = α • (1 : _)
-    simp only [smul_eq_mul, mul_one]
+    simp
   right_inv := by
-    intro ⟨r, hr⟩; simp only [smul_apply, one_apply_eq, Subtype.mk.injEq]
+    intro ⟨r, hr⟩
+    ext : 1
     change r • (1 : R) = _
-    simp only [smul_eq_mul, mul_one]
+    simp
   map_mul' := by
     rintro ⟨A, hA⟩ ⟨B, hB⟩
     rw [Matrix.mem_center_iff] at hA hB
     obtain ⟨a, rfl⟩ := hA
     obtain ⟨b, rfl⟩ := hB
-    simp only [MulMemClass.mk_mul_mk, mul_smul_one, smul_apply, one_apply_eq]
+    simp
   map_add' := by
     rintro ⟨A, hA⟩ ⟨B, hB⟩
     rw [Matrix.mem_center_iff] at hA hB
     obtain ⟨a, rfl⟩ := hA
     obtain ⟨b, rfl⟩ := hB
-    simp only [AddMemClass.mk_add_mk, add_apply, smul_apply, one_apply_eq]
+    simp
 
 end RingEquiv
 
