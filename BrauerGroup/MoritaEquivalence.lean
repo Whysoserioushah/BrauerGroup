@@ -24,9 +24,9 @@ variable (ι : Type w) [Fintype ι] [Inhabited ι] [DecidableEq ι]
 
 instance (M : Type*) [AddCommGroup M] [Module R M] : Module M[ι, R] (ι → M) where
   smul N v i := ∑ j : ι, N i j • v j
-  one_smul v := funext fun i ↦ show ∑ _, _ = _ by simp [one_apply]
+  one_smul v := funext fun i ↦ show ∑ _, _ = _ by simp [Matrix.one_apply]
   mul_smul N₁ N₂ v := funext fun i ↦ show ∑ _, _ = ∑ _, _ • (∑ _, _) by
-    simp_rw [mul_apply, Finset.smul_sum, Finset.sum_smul, SemigroupAction.mul_smul]
+    simp_rw [Matrix.mul_apply, Finset.smul_sum, Finset.sum_smul, SemigroupAction.mul_smul]
     rw [Finset.sum_comm]
   smul_zero v := funext fun i ↦ show ∑ _, _ = _ by simp
   smul_add N v₁ v₂ := funext fun i ↦ show ∑ j : ι, N i j • (v₁ + v₂) j = (∑ _, _) + (∑ _, _) by
@@ -315,7 +315,7 @@ noncomputable def matrix.counitIsoHomMap (M : ModuleCat M[ι, R]) :
       rw [show x = ∑ i : ι, (single i i 1 : M[ι, R]) • x by
         rw [← Finset.sum_smul, show ∑ i : ι, (single i i 1 : M[ι, R]) = 1 by
           ext
-          simp only [sum_apply, single, one_apply]
+          simp only [Matrix.sum_apply, single, Matrix.one_apply]
           split_ifs with h
           · subst h
             simp only [of_apply, and_self, Finset.sum_ite_eq', Finset.mem_univ,

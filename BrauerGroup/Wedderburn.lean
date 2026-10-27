@@ -214,7 +214,7 @@ def matrixEquivMatrixMop (n : ℕ) (D : Type*) [Ring D] :
   invFun M := (MulOpposite.unop M).transpose.map (fun d => MulOpposite.op d)
   left_inv a := by aesop
   right_inv a := by aesop
-  map_mul' x y := unop_injective <| by ext; simp [transpose_map, transpose_apply, mul_apply]
+  map_mul' x y := unop_injective <| by ext; simp [Matrix.mul_apply]
   map_add' x y := by aesop
 
 -- instance matrix_simple_ring (ι : Type) [ne : Nonempty ι] [Fintype ι] [DecidableEq ι]
