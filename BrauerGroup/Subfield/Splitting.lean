@@ -83,11 +83,8 @@ lemma exists_embedding_of_isSplit [FiniteDimensional F K] (A : CSA F) (split : i
         }, by
         rintro _ ⟨x, rfl⟩
         exact LinearMap.ext fun v ↦ by simp [emb]⟩
-      map_one' := by ext; simp only [one_smul, LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk,
-        LinearMap.coe_single, Function.comp_apply, OneMemClass.coe_one, Module.End.one_apply]
-      map_mul' := by intros; ext; simp only [LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk,
-        LinearMap.coe_single, Function.comp_apply, Pi.smul_apply, smul_eq_mul, _root_.mul_assoc,
-        MulMemClass.coe_mul, Module.End.mul_apply]
+      map_one' := by ext; simp
+      map_mul' _ _ := by ext; simp [_root_.mul_assoc]
       map_zero' := by ext; simp only [zero_smul, LinearMap.coe_comp, LinearMap.coe_mk,
         AddHom.coe_mk, LinearMap.coe_single, Function.comp_apply, Pi.zero_apply,
         ZeroMemClass.coe_zero, LinearMap.zero_comp, LinearMap.zero_apply]
@@ -224,21 +221,16 @@ theorem isSplit_iff_dimension [FiniteDimensional F K] (A : CSA F) :
       (by
         ext
         simp only [smul_eq_mul, Algebra.TensorProduct.one_def, LinearMap.coe_mk, lift.tmul',
-          AddHom.coe_mk, one_smul, _root_.one_mul, Module.End.one_apply, μ'', μ', μ])
+          AddHom.coe_mk, one_smul, _root_.one_mul, one_apply_eq_self, μ'', μ', μ])
       (by
         intro x y
         ext a''
         induction x with
         | tmul c a =>
           induction y with
-          | tmul c' a' =>
-            simp only [smul_eq_mul, Algebra.TensorProduct.tmul_mul_tmul, mul_comm c c',
-              LinearMap.coe_mk, lift.tmul', AddHom.coe_mk, mul_smul, _root_.mul_assoc,
-              Module.End.mul_apply, map_smul, μ'', μ', μ]
-          | add m n hm hn =>
-            simp only [mul_add, map_add, LinearMap.add_apply, hm, Module.End.mul_apply, hn]
-        | add m n hm hn =>
-          simp only [add_mul, map_add, LinearMap.add_apply, hm, Module.End.mul_apply, hn])
+          | tmul c' a' => simp [mul_comm c c', mul_smul, _root_.mul_assoc, μ'', μ', μ]
+          | add m n hm hn => simp [mul_add, map_add, *]
+        | add m n hm hn => simp [add_mul, map_add, *])
     have : FiniteDimensional K B := FiniteDimensional.right F K B
     let e : Module.End K B ≃ₐ[K] Matrix _ _ _ := algEquivMatrix (Module.finBasis _ _)
     rw [split_sound' K F A B (Quotient.eq''.1 eq)]

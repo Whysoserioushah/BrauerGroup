@@ -34,7 +34,7 @@ noncomputable abbrev aux0 (N : ModuleCat A) : Module.End A N →ₐ[R] Module.En
   commutes' r := by
     ext n
     simp only [ModuleCat.of_coe, Algebra.algebraMap_eq_smul_one, LinearMap.smul_apply,
-      Module.End.one_apply]
+      one_apply_eq_self]
     rw [show ModuleCat.ofHom (r • 1) = r • ModuleCat.ofHom 1 by ext; simp,
       e1.map_smul, Module.End.one_eq_id, ModuleCat.ofHom_id, e1.map_id, ModuleCat.hom_smul]
     rfl

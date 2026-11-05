@@ -433,7 +433,7 @@ instance (M : Type v) [AddCommGroup M] [Module R M] [FaithfulSMul R M] :
   eq_of_smul_eq_smul {r1 r2} h12 := by
     specialize h12 1
     rw [LinearMap.ext_iff] at h12
-    simp only [LinearMap.smul_apply, Module.End.one_apply] at h12
+    simp only [LinearMap.smul_apply, one_apply_eq_self] at h12
     exact eq_of_smul_eq_smul h12
 
 abbrev MatrixAlg (n : ℕ) [NeZero n] : Azumaya R := {
