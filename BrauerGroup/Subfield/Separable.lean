@@ -435,8 +435,9 @@ theorem exists_finite_galois_split :
       (B₂ := f.fieldRange) (RingEquiv.refl K) (AlgEquiv.ofInjectiveField f).toRingEquiv <| by
       ext; erw [AlgEquiv.ofInjective_apply _ f.injective]; simp
     simp only [mem_separableClosure_iff]
-    exact IsSeparable.map f.fieldRange.val Subtype.val_injective <|
-      Algebra.isSeparable_def _ _ |>.1 this ⟨x, hx⟩
+    have := (Algebra.IsSeparable.isSeparable K ⟨x, hx⟩).map (f := f.fieldRange.val)
+      Subtype.val_injective
+    exact this
   exact ⟨L', inferInstance, inferInstance, inferInstance,
     {to_isSeparable := le_separableClosure_iff _ _ _|>.1 this,
       to_normal := inferInstance},

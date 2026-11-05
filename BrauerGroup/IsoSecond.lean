@@ -485,20 +485,10 @@ noncomputable def φ0 :
       simp only [RingHom.id_apply]
       rw [smul_comm]
     }
-  map_one' := by
-    refine LinearMap.ext fun _ ↦ ?_
-    simp only [one_smul, LinearMap.coe_mk, AddHom.coe_mk, Module.End.one_apply]
-  map_mul' x y := by
-    refine LinearMap.ext fun _ ↦ ?_
-    simp only [LinearMap.coe_mk, AddHom.coe_mk, Module.End.mul_apply]
-    rw [mul_smul]
-  map_zero' := by
-    refine LinearMap.ext fun _ ↦ ?_
-    simp only [zero_smul, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.zero_apply]
-  map_add' x y := by
-    refine LinearMap.ext fun _ ↦ ?_
-    simp only [LinearMap.coe_mk, AddHom.coe_mk, LinearMap.add_apply]
-    rw [add_smul]
+  map_one' := LinearMap.ext <| by simp
+  map_mul' x y := LinearMap.ext <| by simp [mul_smul]
+  map_zero' := LinearMap.ext <| by simp
+  map_add' x y := LinearMap.ext <| by simp [add_smul]
   commutes' f := by
     refine LinearMap.ext fun m ↦ ?_
     simp only [MulOpposite.algebraMap_apply, Algebra.TensorProduct.algebraMap_apply,
@@ -891,14 +881,8 @@ def endCMIso :
       LinearEquiv.refl_toLinearMap, LinearMap.id_comp]
     simp only [LinearMap.comp_assoc, LinearEquiv.comp_coe, LinearEquiv.symm_trans_self,
       LinearEquiv.refl_toLinearMap, LinearMap.comp_id]
-  map_mul' x y := by
-    refine DFunLike.ext _ _ fun z ↦ ?_
-    simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, Module.End.mul_apply,
-      LinearEquiv.symm_apply_apply]
-  map_add' x y := by
-    refine DFunLike.ext _ _ fun z ↦ ?_
-    simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, LinearMap.add_apply,
-      map_add]
+  map_mul' x y := by ext; simp
+  map_add' x y := by ext; simp
   commutes' f := by
     refine DFunLike.ext _ _ fun z ↦ ?_
     simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,

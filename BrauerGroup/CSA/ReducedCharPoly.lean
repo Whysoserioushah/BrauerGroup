@@ -251,11 +251,11 @@ lemma mem_Kx (a : A) : ∃ f : K[X], ReducedCharPoly e a = f.mapAlgHom (Algebra.
     rw [Matrix.charpoly_map] at hg
     simp only [RingEquiv.toRingHom_eq_coe, AlgEquiv.toRingEquiv_toRingHom] at hg
     exact hr.symm.trans hg
-  simp only [ext_iff, coeff_map, RingHom.coe_coe] at fixed
+  simp only [AddMonoidAlgebra.ext_iff, DFunLike.ext_iff, coeff_map, RingHom.coe_coe] at fixed
   have fixed2 : ∀ m : ℕ, (e (1 ⊗ₜ a)).charpoly.coeff m ∈ (Algebra.ofId K F).range := fun m ↦
     fixedpoints K F _ fun φ ↦ fixed φ m |>.symm
   rw [ReducedCharPoly]
-  refine ⟨⟨.ofCoeff ⟨(e (1 ⊗ₜ[K] a)).charpoly.support, fun m ↦ fixed2 m|>.choose, ?_⟩⟩, ?_⟩
+  refine ⟨⟨⟨(e (1 ⊗ₜ[K] a)).charpoly.support, fun m ↦ fixed2 m|>.choose, ?_⟩⟩, ?_⟩
   · simp only [mem_support_iff, ne_eq, AlgHom.toRingHom_eq_coe, Algebra.toRingHom_ofId]
     intro k
     constructor
@@ -274,7 +274,7 @@ lemma mem_Kx (a : A) : ∃ f : K[X], ReducedCharPoly e a = f.mapAlgHom (Algebra.
       rw [FaithfulSMul.algebraMap_eq_zero_iff] at this
       exact h1 <| by convert! this
   ext k
-  simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, coe_mapAlgHom, coeff_map, coeff_ofFinsupp,
+  simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, coe_mapAlgHom, coeff_map,
     Finsupp.coe_mk]
   exact fixed2 k|>.choose_spec.symm
 

@@ -105,14 +105,10 @@ lemma mul_smul1 (K A B M : Type u)
     smul1 K A B M f m (x * y) = smul1 K A B M f (smul1 K A B M f m y) x := fun x y m ↦ by
   dsimp [smul1, smul1AddHom, smul1AddHom']
   induction x
-  · rename_i b1 l1
-    induction y
-    · rename_i b2 l2
-      simp only [Algebra.TensorProduct.tmul_mul_tmul, TensorProduct.liftAddHom_tmul,
-        AddMonoidHom.coe_mk, ZeroHom.coe_mk, map_mul, Module.End.mul_apply, LinearMapClass.map_smul]
-      simp only [smul_smul]
-    · simp_all [mul_add]
-  · simp_all [add_mul]
+  · induction y
+    · simp [smul_smul]
+    · simp [mul_add, *]
+  · simp [add_mul, *]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma smul1_add (K A B M : Type u)
@@ -198,9 +194,7 @@ instance module_inst_findim (K A B M : Type u)
     ((algebraMap K (B ⊗[K] Module.End A M) (c k)) • (show module_inst K A B M f from k)) by
       simp only [Algebra.TensorProduct.algebraMap_apply]
       change _ = smul1 K A B M f k _
-      simp only [smul1, smul1AddHom, smul1AddHom', ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe,
-        LinearMap.coe_mk, AddHom.coe_mk, TensorProduct.liftAddHom_tmul, AddMonoidHom.coe_mk,
-        ZeroHom.coe_mk, AlgHom.commutes, algebraMap_smul, Module.End.one_apply]]
+      simp [smul1, smul1AddHom, smul1AddHom']]
   refine Submodule.smul_mem _ _ ?_
   simp only
   refine Submodule.subset_span ?_
@@ -299,13 +293,11 @@ theorem SkolemNoether (K A B M : Type u)
     apply_fun ISO using AlgEquiv.injective _
     simp only [map_mul, AlgEquiv.apply_symm_apply, map_one, a, b]
     ext m
-    simp only [Module.End.mul_apply, LinearMap.coe_mk, AddHom.coe_mk, LinearEquiv.apply_symm_apply,
-      Module.End.one_apply, Φ, Ψ]), (by
+    simp [Φ, Ψ]), (by
     apply_fun ISO using AlgEquiv.injective _
     simp only [map_mul, AlgEquiv.apply_symm_apply, map_one, b, a]
     ext m
-    simp only [Module.End.mul_apply, LinearMap.coe_mk, AddHom.coe_mk, LinearEquiv.symm_apply_apply,
-      Module.End.one_apply, Ψ, Φ])⟩, ?_⟩
+    simp [Φ, Ψ])⟩, ?_⟩
   intro x
   simp only [Units.inv_mk, a, b]
   apply_fun ISO using AlgEquiv.injective _
@@ -313,7 +305,7 @@ theorem SkolemNoether (K A B M : Type u)
   ext m
   simp only [toEndEndAlgHom, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, AlgHom.coe_mk,
     RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, toEndEnd_apply,
-    DistribSMul.toLinearMap_apply, Module.End.mul_apply, LinearMap.coe_mk, AddHom.coe_mk]
+    DistribSMul.toLinearMap_apply, mul_apply_eq_comp, LinearMap.coe_mk, AddHom.coe_mk]
   have := φ.map_smul (x ⊗ₜ LinearMap.id) (φ.symm m)
   change φ (smul1 K A B M _ _ (x ⊗ₜ LinearMap.id)) = _ at this
   simp only [smul1, smul1AddHom, smul1AddHom', ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe,

@@ -476,20 +476,15 @@ instance (M : Type v) [AddCommGroup M] [Module A M] [Module k M] [IsScalarTower 
       map_smul' := by
         simp only [Module.End.smul_def, RingHom.id_apply, LinearMap.map_smul_of_tower,
           implies_true] }
-    map_one' := by ext; simp only [one_smul, LinearMap.coe_mk, AddHom.coe_mk, Module.End.one_apply]
-    map_mul' := by
-      intros; ext
-      simp only [LinearMap.coe_mk, AddHom.coe_mk, Module.End.mul_apply, LinearMap.map_smul_of_tower]
-      rw [mul_comm, mul_smul]
+    map_one' := by ext; simp
+    map_mul' _ _ := by ext; simp [mul_comm, ← mul_smul]
     map_zero' := by ext; simp
-    map_add' := by
-      intros; ext
-      simp only [add_smul, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.add_apply]
+    map_add' _ _ := by ext; simp [add_smul]
   }
   commutes' := by
     intros r f
     ext m
-    simp only [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, Module.End.mul_apply,
+    simp only [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, mul_apply_eq_comp,
       LinearMap.coe_mk, AddHom.coe_mk]
     let s : Module.End A M :=
     { toFun x := r • x
@@ -525,7 +520,7 @@ instance (M : Type v) [AddCommGroup M] [Module A M] [Module k M] [IsScalarTower 
   smul_def' := by
     intro r f
     ext m
-    simp only [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, Module.End.mul_apply,
+    simp only [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, mul_apply_eq_comp,
       LinearMap.coe_mk, AddHom.coe_mk]
     let s : Module.End A M :=
       { toFun x := r • x
