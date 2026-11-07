@@ -10,6 +10,8 @@ suppress_compilation
 open Module
 open scoped TensorProduct
 
+attribute [local implicit_reducible] Rep.ofMulDistribMulAction
+
 universe u
 variable (K F : Type) [Field K] [Field F] [Algebra F K]
 
@@ -1017,7 +1019,6 @@ variable [FiniteDimensional F K] [IsGalois F K] [DecidableEq Gal(K/F)]
 --       show ∀ x, fromSnd F K (toSnd x) = x by intro x; exact congr_fun fromSnd_toSnd x, ofMul_mul,
 --       ofMul_toMul]
 
-set_option backward.isDefEq.respectTransparency false in
 open groupCohomology in
 def isoSnd : Additive (RelativeBrGroup K F) ≃+ H2 (galAct F K) :=
   .symm <| .mk' (Additive.ofMul.symm.trans <| equivSnd (F := F) (K := K)).symm fun x y ↦ by
@@ -1027,22 +1028,15 @@ def isoSnd : Additive (RelativeBrGroup K F) ≃+ H2 (galAct F K) :=
     have hx := isMulCocycle₂_of_mem_cocycles₂ _ hx'
     rcases y with ⟨y, hy'⟩
     have hy := isMulCocycle₂_of_mem_cocycles₂ _ hy'
-    simp only [Additive.ofMul_symm_eq, equivSnd, H2π, ModuleCat.hom_comp,
-      LinearMap.coe_comp, Function.comp_apply, Equiv.symm_trans_apply, Additive.toMul_symm_eq,
-      Equiv.coe_fn_symm_mk, π_comp_H2Iso_hom_apply, CategoryTheory.Iso.inv_hom_id_apply]
-    erw [map_add]
-    simp only [π_comp_H2Iso_hom_apply, CategoryTheory.Iso.inv_hom_id_apply]
-    change fromSnd F K (Quotient.mk'' _) =
-      fromSnd F K (Quotient.mk'' _) * fromSnd F K (Quotient.mk'' _)
-    erw [fromSnd_wd, fromSnd_wd]
-    erw [fromSnd_wd]
+    simp only [Additive.ofMul_symm_eq, equivSnd, H2π, CategoryTheory.ConcreteCategory.comp_apply,
+      Function.comp_apply, Equiv.symm_trans_apply, Additive.toMul_symm_eq, Equiv.coe_fn_symm_mk,
+      map_add]
+    rw [π_comp_H2Iso_hom_apply, π_comp_H2Iso_hom_apply, CategoryTheory.Iso.inv_hom_id_apply,
+      CategoryTheory.Iso.inv_hom_id_apply, ← Submodule.Quotient.mk_add, fromSnd_wd, fromSnd_wd,
+      fromSnd_wd]
     apply_fun Additive.toMul
-    simp only [AddMemClass.mk_add_mk,  MulMemClass.mk_mul_mk,
-      EmbeddingLike.apply_eq_iff_eq]
+    simp only [AddMemClass.mk_add_mk, EmbeddingLike.apply_eq_iff_eq]
     refine Subtype.ext ?_
-    change _ = Quotient.mk'' _
-    rw [Quotient.eq'']
-    change IsBrauerEquivalent _ _
-    exact @map_mul_proof.isBrauerEquivalent _ _ _ _ _ _ _ ⟨hx⟩ ⟨hy⟩ _ _ |>.symm
+    exact Quotient.sound' (@map_mul_proof.isBrauerEquivalent _ _ _ _ _ _ _ ⟨hx⟩ ⟨hy⟩ _ _).symm
 
 end RelativeBrGroup

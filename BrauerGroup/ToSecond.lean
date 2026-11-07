@@ -11,6 +11,8 @@ suppress_compilation
 
 open FiniteDimensional BrauerGroup Module groupCohomology
 
+attribute [local implicit_reducible] Rep.ofMulDistribMulAction
+
 variable {F K : Type} [Field K] [Field F] [Algebra F K]
 variable (X : BrauerGroup F)
 
@@ -89,6 +91,7 @@ section single
 
 variable (ρ σ τ : Gal(K/F))
 
+@[implicit_reducible]
 def conjFactor (σ : Gal(K/F)) : Type := {a : Aˣ // ∀ x : K, A.ι (σ x) = a * A.ι x * a⁻¹}
 
 def arbitraryConjFactor : A.conjFactor σ where
@@ -523,7 +526,7 @@ def _root_.Amelia.toAdditive (M G : Type 0) [Monoid M] [CommGroup G] [MulDistrib
   Rep.ofMulDistribMulAction M G ≃+ Additive G := AddEquiv.refl _
 
 variable (F K) in
-noncomputable def galAct : Rep ℤ Gal(K/F) := .ofMulDistribMulAction Gal(K/F) Kˣ
+noncomputable abbrev galAct : Rep ℤ Gal(K/F) := .ofMulDistribMulAction Gal(K/F) Kˣ
 
 @[simp] lemma galAct_ρ_apply (σ : Gal(K/F)) (x : Kˣ) :
     (galAct F K).ρ σ (.ofMul x) = .ofMul (x.map σ) := rfl
@@ -829,7 +832,7 @@ variable [IsGalois F K]
 lemma fromSnd_wd (a : cocycles₂ (galAct F K)) :
     haveI : Fact (IsMulCocycle₂ (M := Kˣ) (Additive.toMul ∘ a)) :=
       ⟨isMulCocycle₂_of_mem_cocycles₂ _ a.2⟩
-    (fromSnd F K <| Submodule.mkQ _ a) =
+    (fromSnd F K <| Submodule.Quotient.mk a) =
     ⟨Quotient.mk'' (CrossProductAlgebra.asCSA (Additive.toMul ∘ a)),
       mem_relativeBrGroup_iff_nonempty_goodRep.2
         ⟨_, rfl, CrossProductAlgebra.incl _, CrossProductAlgebra.dim_eq_sq⟩⟩ := rfl
@@ -839,7 +842,6 @@ def _root_.Amfix.coboundariesOfIsMulCoboundary₂ {G M : Type} [Group G] [CommGr
     coboundaries₂ (Rep.ofMulDistribMulAction G M) :=
   ⟨Additive.ofMul ∘ f, hf.choose, funext fun g ↦ hf.choose_spec g.1 g.2⟩
 
-set_option backward.isDefEq.respectTransparency false in
 open GoodRep groupCohomology in
 lemma toSnd_fromSnd : toSnd ∘ fromSnd F K ∘ (H2Iso (galAct F K)).hom = id := by
   ext a
@@ -853,9 +855,8 @@ lemma toSnd_fromSnd : toSnd ∘ fromSnd F K ∘ (H2Iso (galAct F K)).hom = id :=
     ⟨CrossProductAlgebra.asCSA am, rfl, CrossProductAlgebra.incl am, CrossProductAlgebra.dim_eq_sq⟩
   let y_ σ : A.conjFactor σ :=
     ⟨CrossProductAlgebra.of am σ, fun c ↦ by erw [CrossProductAlgebra.of_conj]; rfl⟩
-  simp only [H2π, ModuleCat.hom_comp, LinearMap.coe_comp, Function.comp_apply,
-    π_comp_H2Iso_hom_apply, CategoryTheory.Iso.inv_hom_id_apply]
-  erw [fromSnd_wd]
+  simp only [H2π, CategoryTheory.ConcreteCategory.comp_apply]
+  rw [π_comp_H2Iso_hom_apply, CategoryTheory.Iso.inv_hom_id_apply, fromSnd_wd]
   rw [toSnd_wd _ _ y_]
   let b : Gal(K/F) × Gal(K/F) → Kˣ := A.toCocycles₂ y_
   change H2π _ _ = H2π _ _
@@ -865,7 +866,7 @@ lemma toSnd_fromSnd : toSnd ∘ fromSnd F K ∘ (H2Iso (galAct F K)).hom = id :=
     (Amfix.coboundariesOfIsMulCoboundary₂ H).2
   refine ⟨fun _ => 1, ?_⟩
   intro σ τ
-  simp only [smul_one, div_self', _root_.mul_one, cocyclesOfIsMulCocycle₂_coe, Function.comp_apply,
+  simp only [smul_one, div_self', _root_.mul_one, cocyclesOfIsMulCocycle₂_coe,
     cocycles₂.val_eq_coe]
   erw [Equiv.symm_apply_apply]
   simp only [toCocycles₂, conjFactorCompCoeffAsUnit]
@@ -875,11 +876,12 @@ lemma toSnd_fromSnd : toSnd ∘ fromSnd F K ∘ (H2Iso (galAct F K)).hom = id :=
   change (am (σ, τ)).1 = _
   change _ = A.conjFactorCompCoeff (y_ σ) (y_ τ) (y_ (σ * τ))
   apply_fun A.ι using RingHom.injective _
-  rw [conjFactorCompCoeff_spec'', CrossProductAlgebra.of_mul_of, _root_.mul_assoc]
-  simp [A, y_]
-  rfl
+  rw [conjFactorCompCoeff_spec'']
+  change CrossProductAlgebra.incl am (am (σ, τ)) =
+    (CrossProductAlgebra.of am σ * CrossProductAlgebra.of am τ : CrossProductAlgebra am) *
+      ↑(CrossProductAlgebra.of am (σ * τ))⁻¹
+  simp [CrossProductAlgebra.of_mul_of, _root_.mul_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma fromSnd_toSnd : (fromSnd F K ∘ (H2Iso (galAct F K)).hom) ∘ toSnd = id := by
   ext X
   obtain ⟨A⟩ := mem_relativeBrGroup_iff_nonempty_goodRep.1 X.2
@@ -887,9 +889,8 @@ lemma fromSnd_toSnd : (fromSnd F K ∘ (H2Iso (galAct F K)).hom) ∘ toSnd = id 
   rw [toSnd_wd (A := A) (x_ := A.arbitraryConjFactor)]
   ext : 1
   conv_rhs => rw [← A.quot_eq]
-  simp only [GoodRep.toH2, H2π, ModuleCat.hom_comp, LinearMap.coe_comp, Function.comp_apply,
-    π_comp_H2Iso_hom_apply, CategoryTheory.Iso.inv_hom_id_apply]
-  erw [fromSnd_wd]
+  simp only [GoodRep.toH2, H2π, CategoryTheory.ConcreteCategory.comp_apply]
+  rw [π_comp_H2Iso_hom_apply, CategoryTheory.Iso.inv_hom_id_apply, fromSnd_wd]
   rw [Quotient.eq'']
   apply IsBrauerEquivalent.iso_to_eqv
   set f : Gal(K/F) × Gal(K/F) → Kˣ :=
