@@ -5,6 +5,7 @@ public import Mathlib.Algebra.Azumaya.Matrix
 public import Mathlib.Algebra.Module.CharacterModule
 public import Mathlib.LinearAlgebra.Contraction
 public import Mathlib.LinearAlgebra.TensorProduct.Opposite
+public import Mathlib.LinearAlgebra.TensorProduct.Projective
 
 @[expose] public section
 
