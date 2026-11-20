@@ -11,8 +11,8 @@ first type times a corresponding subtype of the second type. -/
 @[simps]
 def Equiv.prodSubtypeSndEquivProdSubtype {α β} {p : β → Prop} :
     {s : α × β // p s.2} ≃ α × {b // p b} where
-  toFun x := ⟨x.1.1, x.1.2, x.2⟩
-  invFun x := ⟨⟨x.1, x.2⟩, x.2.2⟩
+  toFun x := ⟨x.val.1, x.val.2, x.property⟩
+  invFun x := ⟨⟨x.1, x.2⟩, x.2.property⟩
   left_inv _ := rfl
   right_inv _ := rfl
 

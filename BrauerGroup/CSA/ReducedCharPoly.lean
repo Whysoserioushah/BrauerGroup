@@ -62,7 +62,8 @@ lemma φ_m_inj (φ : F →ₐ[K] E) : Function.Injective (φ_m n φ) := fun M N 
 variable {K F E} in
 set_option backward.isDefEq.respectTransparency false in
 abbrev e1Aux (φ : F →ₐ[K] E) : Matrix (Fin n) (Fin n) φ.range ≃ₐ[K] (φ_m n φ).range where
-  toFun M := ⟨(M · · |>.1), fun i j ↦ M i j |>.2.choose, by ext i j; exact M i j|>.2.choose_spec⟩
+  toFun M := ⟨(M · · |>.val), fun i j ↦ M i j |>.property.choose,
+    by ext i j; exact M i j |>.property.choose_spec⟩
   invFun := fun ⟨M, h⟩ i j ↦ ⟨M i j, h.choose i j, Matrix.ext_iff.2 h.choose_spec i j⟩
   left_inv _ := by simp
   right_inv _ := by simp

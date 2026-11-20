@@ -209,7 +209,7 @@ def C_smul_aux (c : C) : M α β →ₗ[F] M α β :=
   Submodule.mapQ (Submodule.span F (S α β)) (Submodule.span F (S α β))
     (TensorProduct.lift
       { toFun a := {
-          toFun b := ∑ σ : Gal(K/F), ((c.1 σ • basis σ) * a) ⊗ₜ (basis σ * b)
+          toFun b := ∑ σ : Gal(K/F), ((c.val σ • basis σ) * a) ⊗ₜ (basis σ * b)
           map_add' b b' := by
             rw [← Finset.sum_add_distrib]
             refine Finset.sum_congr rfl fun σ _ => ?_
@@ -240,7 +240,7 @@ def C_smul_aux (c : C) : M α β →ₗ[F] M α β :=
       LinearMap.coe_mk, AddHom.coe_mk, SetLike.mem_coe]
     rw [← Finset.sum_sub_distrib]
     refine Submodule.sum_mem _ fun σ _ =>
-      Submodule.subset_span ⟨⟨σ k, c.1 σ • (basis σ * a), basis σ * b⟩, ?_⟩
+      Submodule.subset_span ⟨⟨σ k, c.val σ • (basis σ * a), basis σ * b⟩, ?_⟩
     simp only [← smul_mul_assoc, basis_smul_comm]
     congr 2
     apply val_injective
@@ -336,20 +336,20 @@ theorem C_mul_smul' (x y : C) (ab : M α β) : (x * y) • ab = x • y • ab :
       | tmul a b =>
         change C_smul (⟨mulLinearMap _ (.single σ k1) (.single τ k2)⟩ : C) _ = C_smul _ (C_smul _ _)
         simp only [mulLinearMap_single_single, Pi.mul_apply, Units.val_mul]
-        rw [← mul_one (k1 * σ k2 * ((α (σ, τ)).1 * (β (σ, τ)).1)), ← smul_eq_mul _ 1,
+        rw [← mul_one (k1 * σ k2 * ((α (σ, τ)).val * (β (σ, τ)).val)), ← smul_eq_mul _ 1,
           ← Finsupp.smul_single, ← CrossProductAlgebra.smul_mk, mk_single_one, ← mul_one k1,
           ← mul_one k2, ← smul_eq_mul _ 1, ← Finsupp.smul_single, ← smul_mk, mk_single_one,
           ← smul_eq_mul _ 1, ← Finsupp.smul_single, ← smul_mk, mk_single_one, ← C_smul_def,
           ← C_smul_def, ← C_smul_def, C_smul_calc, C_smul_calc, C_smul_calc, Submodule.Quotient.eq]
         simp only [smul_eq_mul, _root_.mul_one]
         rw [← _root_.mul_assoc (basis σ) _ b, CrossProductAlgebra.basis_mul_basis σ τ,
-          incl_apply, smul_mul_assoc (β (σ, τ)).1, _root_.one_mul, smul_mul_assoc (β (σ, τ)).1,
+          incl_apply, smul_mul_assoc (β (σ, τ)).val, _root_.one_mul, smul_mul_assoc (β (σ, τ)).val,
           ← _root_.mul_assoc (k1 • basis σ), basis_smul_comm, ← mul_smul (σ k2), mul_comm k1,
           smul_mul_assoc (σ k2 * k1), CrossProductAlgebra.basis_mul_basis σ τ]
         simp only [incl_apply, smul_one_mul]
-        rw [← mul_smul (σ k2 * k1), mul_comm (α (_, _)).1, ← _root_.mul_assoc,
-          mul_comm (σ k2 * k1) (β (_, _)).1, _root_.mul_assoc, mul_smul, smul_mul_assoc]
-        exact Submodule.subset_span ⟨⟨(β (σ, τ)).1, (σ k2 * k1 * ↑(α (σ, τ))) • basis (σ * τ) * a,
+        rw [← mul_smul (σ k2 * k1), mul_comm (α (_, _)).val, ← _root_.mul_assoc,
+          mul_comm (σ k2 * k1) (β (_, _)).val, _root_.mul_assoc, mul_smul, smul_mul_assoc]
+        exact Submodule.subset_span ⟨⟨(β (σ, τ)).val, (σ k2 * k1 * ↑(α (σ, τ))) • basis (σ * τ) * a,
           basis (σ * τ) * b⟩, rfl⟩
       | add x y h1 h2 =>
         simp only [C_smul_def, Submodule.Quotient.mk_add, map_add] at h1 h2 ⊢
@@ -361,21 +361,21 @@ instance : MulAction C (M α β) where
     change (1 : C) • Submodule.Quotient.mk x = Submodule.Quotient.mk x
     induction x with
     | tmul a b =>
-      rw [show (1 : C) = ((β (1, 1)).1⁻¹ * (α (1, 1)).1⁻¹) • CrossProductAlgebra.basis 1 by
+      rw [show (1 : C) = ((β (1, 1)).val⁻¹ * (α (1, 1)).val⁻¹) • CrossProductAlgebra.basis 1 by
         apply val_injective; simp [CrossProductAlgebra.basis], C_smul_calc, mul_smul,
         show basis 1 = (⟨.single 1 1⟩ : CrossProductAlgebra α) from rfl,
-        show ((α (1, 1)).1)⁻¹ • (⟨.single 1 1⟩ : A) = ⟨(↑(α (1, 1)))⁻¹ • .single 1 1⟩ by
+        show ((α (1, 1)).val)⁻¹ • (⟨.single 1 1⟩ : A) = ⟨(↑(α (1, 1)))⁻¹ • .single 1 1⟩ by
           apply val_injective
           simp only [smul_mk, Finsupp.smul_single, smul_eq_mul, mul_one]
           congr
-          change _ = (α (1, 1))⁻¹.1 * 1
+          change _ = (α (1, 1))⁻¹.val * 1
           simp,
-        Finsupp.smul_single, show (α (1, 1))⁻¹ • 1 = (α (1, 1)).1⁻¹ by
-          change (α (1, 1))⁻¹.1 * 1 = _; simp,
-        show (⟨.single 1 (α (1, 1)).1⁻¹⟩ : A) = 1 by rfl,
+        Finsupp.smul_single, show (α (1, 1))⁻¹ • 1 = (α (1, 1)).val⁻¹ by
+          change (α (1, 1))⁻¹.val * 1 = _; simp,
+        show (⟨.single 1 (α (1, 1)).val⁻¹⟩ : A) = 1 by rfl,
         smul_mul_assoc, _root_.one_mul, Submodule.Quotient.eq]
-      refine Submodule.subset_span ⟨⟨(β (1, 1)).1⁻¹, a, basis 1 * b⟩, ?_⟩
-      simp [← smul_mul_assoc, show ((β (1, 1)).1)⁻¹ • basis 1 = (1 : B) by
+      refine Submodule.subset_span ⟨⟨(β (1, 1)).val⁻¹, a, basis 1 * b⟩, ?_⟩
+      simp [← smul_mul_assoc, show ((β (1, 1)).val)⁻¹ • basis 1 = (1 : B) by
         apply val_injective; simp [CrossProductAlgebra.basis]]
     | add x y hx hy =>
       simp only [Submodule.Quotient.mk_add]
@@ -441,7 +441,7 @@ instance : IsScalarTower F C (M α β) := .of_algebraMap_smul fun x m ↦ by
   | add x y h1 h2 =>
     rw [Submodule.Quotient.mk_add, smul_add, h1, h2, smul_add]
   | tmul a b =>
-  rw [Algebra.algebraMap_eq_smul_one, one_def, ← mul_one ((α * β) _).1⁻¹,
+  rw [Algebra.algebraMap_eq_smul_one, one_def, ← mul_one ((α * β) _).val⁻¹,
   ← smul_eq_mul _ 1, ← Finsupp.smul_single, ← smul_mk, mk_single_one, ← smul_assoc, C_smul_calc]
   simp only [Pi.mul_apply, Units.val_mul, mul_inv_rev, smul_assoc, Algebra.smul_mul_assoc]
   rw [← smul_tmul', Submodule.Quotient.mk_smul]
@@ -467,10 +467,10 @@ instance : IsScalarTower F C (M α β) := .of_algebraMap_smul fun x m ↦ by
   rw [← mk_single_one]
   change Submodule.Quotient.mk (_ ⊗ₜ (⟨mulLinearMap β _ _⟩ : B)) = _
   simp only [mulLinearMap_single_single, _root_.one_mul, AlgEquiv.one_apply, mul_comm k2]
-  rw [← smul_eq_mul (β _).1, ← Finsupp.smul_single, ← smul_mk, Submodule.Quotient.eq]
+  rw [← smul_eq_mul (β _).val, ← Finsupp.smul_single, ← smul_mk, Submodule.Quotient.eq]
   simp_rw [map_one_fst_of_isMulCocycle₂ Fact.out]
-  refine Submodule.subset_span ⟨⟨(β (1, 1)).1⁻¹, ⟨Finsupp.single σ k1⟩,
-    (β (1, 1)).1 • ⟨Finsupp.single τ k2⟩⟩, ?_⟩
+  refine Submodule.subset_span ⟨⟨(β (1, 1)).val⁻¹, ⟨Finsupp.single σ k1⟩,
+    (β (1, 1)).val • ⟨Finsupp.single τ k2⟩⟩, ?_⟩
   simp only [smul_mk, Finsupp.smul_single, smul_eq_mul, isUnit_iff_ne_zero, ne_eq,
     Units.ne_zero, not_false_eq_true, IsUnit.inv_mul_cancel_left, sub_left_inj]
   congr 3
@@ -619,8 +619,8 @@ lemma exists_simple_module_directSum [IsGalois F K] :
       simp only [Finsupp.smul_single, Algebra.algebraMap_eq_smul_one, val_smul, val_one,
         map_one_fst_of_isMulCocycle₂ Fact.out, Pi.mul_apply, Units.val_mul, mul_inv_rev,
         mulLinearMap_single_single, one_mul, AlgEquiv.one_apply, Algebra.smul_mul_assoc]
-      rw [mul_comm _ c, mul_assoc c, ← smul_mul_assoc, ← mul_assoc ((β (1, 1)).1⁻¹ * _),
-        mul_assoc (β (1, 1)).1⁻¹, inv_mul_cancel₀ (by simp), _root_.mul_one]
+      rw [mul_comm _ c, mul_assoc c, ← smul_mul_assoc, ← mul_assoc ((β (1, 1)).val⁻¹ * _),
+        mul_assoc (β (1, 1)).val⁻¹, inv_mul_cancel₀ (by simp), _root_.mul_one]
       field_simp
   let iso' : C ≃ₗ[F] (ι →₀ S) := iso.restrictScalars F
   haveI : IsScalarTower F C (ι →₀ S) := by

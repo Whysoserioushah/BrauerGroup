@@ -286,8 +286,8 @@ instance TensorProduct.isCentral
     refine ⟨kx + ky, ?_⟩
     rw [map_add, hx, hy, map_add]
   | tmul a b =>
-  obtain ⟨a', ha⟩ := isCentral_A.1 a.2
-  obtain ⟨b', hb⟩ := isCentral_B.1 b.2
+  obtain ⟨a', ha⟩ := isCentral_A.out a.property
+  obtain ⟨b', hb⟩ := isCentral_B.out b.property
   refine ⟨b' * a', ?_⟩
   simp only [AlgHom.toRingHom_eq_coe, map_mul, RingHom.coe_coe, Algebra.TensorProduct.map_tmul,
     Subalgebra.coe_val, ← ha, ← hb]
@@ -391,7 +391,7 @@ lemma TensorProduct.map_comap_eq_of_isSimple_isCentralSimple
       subst s_ne_empty
       simp only [Finset.card_empty, Finset.sum_empty, ne_eq, not_true_eq_false] at *
     else
-      obtain ⟨i₀, hi₀⟩ := Finset.nonempty_iff_ne_empty.mpr s_ne_empty
+      obtain ⟨i₀, hi₀⟩ := Finset.ne_empty_iff_nonempty.mp s_ne_empty
       have ineq1 : 0 < n := by
         rw [← card_s, Finset.card_pos]
         exact ⟨i₀, hi₀⟩
@@ -413,7 +413,8 @@ lemma TensorProduct.map_comap_eq_of_isSimple_isCentralSimple
           if hx' : x = i₀ then left; exact hx'
           else right; exact ⟨hx', hx⟩
         · rintro (rfl|⟨_, hx2⟩) <;> assumption
-      have span_bi₀ : TwoSidedIdeal.span {b i₀} = ⊤ := isSimple_B.1.2 _ |>.resolve_left fun r ↦ by
+      have span_bi₀ : TwoSidedIdeal.span {b i₀} = ⊤ :=
+        isSimple_B.simple.eq_bot_or_eq_top _ |>.resolve_left fun r ↦ by
         have mem : b i₀ ∈ (⊥ : TwoSidedIdeal B) := by
           rw [← r]
           apply TwoSidedIdeal.subset_span
@@ -426,7 +427,7 @@ lemma TensorProduct.map_comap_eq_of_isSimple_isCentralSimple
         rw [one_eq]
         refine Finset.sum_congr rfl fun i _ => ?_
         congr
-        simpa only [Set.mem_singleton_iff] using (y i).2
+        simpa only [Set.mem_singleton_iff] using (y i).property
       let ω := ∑ i ∈ s, 𝒜 i ⊗ₜ[K] b i
       let Ω := ∑ i : ℐ, (1 ⊗ₜ[K] xL i) * ω * (1 ⊗ₜ[K] xR i)
       have Ω_in_I : Ω ∈ I := TwoSidedIdeal.finsetSum_mem _ _ _ fun i _ => I.mul_mem_right _ _ <|
@@ -473,25 +474,28 @@ lemma TensorProduct.map_comap_eq_of_isSimple_isCentralSimple
         _ = 𝒜 i₀ ⊗ₜ[K] 1 + ∑ i ∈ (s.erase i₀).attach, 𝒜 i ⊗ₜ[K] ∑ j : ℐ, xL j * b i * xR j := by
             congr 1
             exact Finset.sum_attach _ _ |>.symm
-        _ = 𝒜 i₀ ⊗ₜ[K] 1 + ∑ i ∈ (s.erase i₀).attach, 𝒜 i ⊗ₜ[K] algebraMap _ _ (k i.1 i.2) := by
+        _ = 𝒜 i₀ ⊗ₜ[K] 1 +
+              ∑ i ∈ (s.erase i₀).attach, 𝒜 i ⊗ₜ[K] algebraMap _ _ (k i.val i.property) := by
             congr 1
             refine Finset.sum_congr rfl fun i _ => ?_
-            rw [hk i.1 i.2]
-        _ = 𝒜 i₀ ⊗ₜ[K] 1 +  ∑ i ∈ (s.erase i₀).attach, 𝒜 i ⊗ₜ[K] (k i.1 i.2 • (1 : B) : B) := by
+            rw [hk i.val i.property]
+        _ = 𝒜 i₀ ⊗ₜ[K] 1 +
+              ∑ i ∈ (s.erase i₀).attach, 𝒜 i ⊗ₜ[K] (k i.val i.property • (1 : B) : B) := by
             congr 1
             refine Finset.sum_congr rfl fun i _ => ?_
             rw [Algebra.algebraMap_eq_smul_one]
-        _ = 𝒜 i₀ ⊗ₜ[K] 1 + ∑ i ∈ (s.erase i₀).attach, (k i.1 i.2 • 𝒜 i) ⊗ₜ[K] (1 : B) := by
+        _ = 𝒜 i₀ ⊗ₜ[K] 1 + ∑ i ∈ (s.erase i₀).attach, (k i.val i.property • 𝒜 i) ⊗ₜ[K] (1 : B) := by
             congr 1
             refine Finset.sum_congr rfl fun i _ => ?_
             rw [TensorProduct.smul_tmul]
-        _ = 𝒜 i₀ ⊗ₜ[K] 1 + (∑ i ∈ (s.erase i₀).attach, (k i.1 i.2 • 𝒜 i)) ⊗ₜ[K] (1 : B) := by
+        _ = 𝒜 i₀ ⊗ₜ[K] 1 +
+              (∑ i ∈ (s.erase i₀).attach, (k i.val i.property • 𝒜 i)) ⊗ₜ[K] (1 : B) := by
             rw [TensorProduct.sum_tmul]
-        _ = (𝒜 i₀ + (∑ i ∈ (s.erase i₀).attach, (k i.1 i.2 • 𝒜 i))) ⊗ₜ[K] 1 := by
+        _ = (𝒜 i₀ + (∑ i ∈ (s.erase i₀).attach, (k i.val i.property • 𝒜 i))) ⊗ₜ[K] 1 := by
             rw [TensorProduct.add_tmul]
       rw [Ω_eq2] at Ω_in_I
-      have hI : I.comap f = ⊤ := isSimple_A.2 _ |>.resolve_left fun r ↦ by
-        have mem : 𝒜 i₀ + (∑ i ∈ (s.erase i₀).attach, (k i.1 i.2 • 𝒜 i)) ∈ I.comap f := by
+      have hI : I.comap f = ⊤ := isSimple_A.eq_bot_or_eq_top _ |>.resolve_left fun r ↦ by
+        have mem : 𝒜 i₀ + (∑ i ∈ (s.erase i₀).attach, (k i.val i.property • 𝒜 i)) ∈ I.comap f := by
           rw [TwoSidedIdeal.mem_comap]
           exact Ω_in_I
         rw [r] at mem
@@ -517,7 +521,7 @@ lemma TensorProduct.map_comap_eq_of_isSimple_isCentralSimple
           conv_rhs => rw [← mem]
           congr 1
           refine Finset.sum_congr rfl fun i _ => ?_
-          rw [dite_eq_left i.2]) i₀ hi₀
+          rw [dite_eq_left i.property]) i₀ hi₀
         rw [ite_eq_left rfl] at LI
         exact zero_ne_one LI.symm
       rw [hI, TwoSidedIdeal.coe_top_set, TwoSidedIdeal.le_iff]
@@ -544,7 +548,7 @@ instance TensorProduct.simple
       I = TwoSidedIdeal.span (Set.image f <| I.comap f) by
     refine ⟨⟨fun I => ?_⟩⟩
     specialize eq1 I
-    rcases isSimple_A.1.2 (I.comap f) with h|h
+    rcases isSimple_A.simple.eq_bot_or_eq_top (I.comap f) with h|h
     · left
       rw [h, TwoSidedIdeal.coe_bot_set, Set.image_singleton, map_zero] at eq1
       rw [eq1, eq_bot_iff, TwoSidedIdeal.le_iff]
@@ -553,7 +557,7 @@ instance TensorProduct.simple
       obtain ⟨ι, inst, xL, xR, y, rfl⟩ := hx
       rw [SetLike.mem_coe]
       refine TwoSidedIdeal.finsetSum_mem _ _ _ fun i _ => ?_
-      have := (y i).2
+      have := (y i).property
       simp only [Set.mem_singleton_iff] at this
       rw [this, mul_zero, zero_mul]
       rfl
@@ -580,7 +584,7 @@ instance baseChange
     obtain ⟨x, rfl⟩ := le_of_eq (center_tensorProduct K L D) H; clear H
     induction x with
     | tmul l d =>
-      obtain ⟨k, hk⟩ := h.out d.2
+      obtain ⟨k, hk⟩ := h.out d.property
       refine ⟨k • l, ?_⟩
       simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, Algebra.ofId_apply,
         Algebra.TensorProduct.algebraMap_apply, Algebra.algebraMap_self, RingHom.id_apply]
@@ -630,7 +634,7 @@ theorem CSA_implies_CSA (K : Type*) (B : Type*) [Field K] [Ring B] [Algebra K B]
     (Wdb : B ≃ₐ[K] (Matrix (Fin n) (Fin n) D)) [Algebra.IsCentral K B] [IsSimpleRing B] :
     Algebra.IsCentral K D := by
   refine ⟨fun d hd => ?_⟩
-  obtain ⟨k, hk⟩ := Wdb.isCentral.1
+  obtain ⟨k, hk⟩ := Wdb.isCentral.out
     (show (Matrix.diagonal fun _ ↦ d) ∈ _ by
       rw [Matrix.mem_center_iff']
       refine ⟨⟨d, hd⟩, ?_⟩

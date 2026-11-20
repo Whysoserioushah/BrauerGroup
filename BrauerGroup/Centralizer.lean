@@ -97,7 +97,8 @@ lemma centralizer_range_includeLeft_eq_center_tensorProduct [Module.Free R B] :
     | tmul b c =>
     simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, Algebra.TensorProduct.includeLeft_apply,
       Algebra.TensorProduct.map_tmul, coe_val, AlgHom.coe_id, id_eq,
-      Algebra.TensorProduct.tmul_mul_tmul, one_mul, mul_one, Subalgebra.mem_center_iff.1 b.2 x]
+      Algebra.TensorProduct.tmul_mul_tmul, one_mul, mul_one,
+      Subalgebra.mem_center_iff.1 b.property x]
 
 set_option backward.isDefEq.respectTransparency false in
 /--

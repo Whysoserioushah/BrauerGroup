@@ -286,7 +286,7 @@ def dim_one_iso (R : Type*) [Ring R] [Algebra K R] : (Matrix (Fin 1) (Fin 1) R) 
 open IsBrauerEquivalent
 
 theorem eqv_mat (A : CSA K) (n : ℕ) [hn : NeZero n] : IsBrauerEquivalent A (matrix_A n A) := by
-  refine ⟨n, 1, hn.1, one_ne_zero, ?_⟩
+  refine ⟨n, 1, hn.out, one_ne_zero, ?_⟩
   unfold matrix_A one_mul_in eqv_in
   exact ⟨dim_one_iso _ |>.symm⟩
 
@@ -360,11 +360,11 @@ def matrix_eqv (m n : ℕ) : (Matrix (Fin m) (Fin m) K) ⊗[K] (Matrix (Fin n) (
 
 lemma one_mul (n : ℕ) [hn : NeZero n] (A : CSA K) :
     IsBrauerEquivalent A (one_mul_in n A) :=
-  ⟨n, 1, hn.1, one_ne_zero, ⟨.symm <| (dim_one_iso _).trans <| matrixEquivTensor _ _ _ |>.symm⟩⟩
+  ⟨n, 1, hn.out, one_ne_zero, ⟨.symm <| (dim_one_iso _).trans <| matrixEquivTensor _ _ _ |>.symm⟩⟩
 
 lemma mul_one (n : ℕ) [hn : NeZero n] (A : CSA K) :
     IsBrauerEquivalent A (mul_one_in n A) :=
-  ⟨n, 1, hn.1, one_ne_zero, ⟨.symm <| (dim_one_iso _).trans <| .symm <|
+  ⟨n, 1, hn.out, one_ne_zero, ⟨.symm <| (dim_one_iso _).trans <| .symm <|
     matrixEquivTensor _ _ _ |>.trans <| Algebra.TensorProduct.comm _ _ _⟩⟩
 
 lemma mul_assoc (A B C : CSA K) :
@@ -414,7 +414,7 @@ lemma mul_inv (A : CSA.{u, u} K) : IsBrauerEquivalent (mul A (inv (K := K) A)) o
     have := Module.finrank_pos_iff (R := K) (M := A) |>.2 inferInstance
     omega
   have := tensor_self_op K A
-  exact ⟨1, n, one_ne_zero, hn.1, ⟨dim_one_iso _|>.trans this⟩⟩
+  exact ⟨1, n, one_ne_zero, hn.out, ⟨dim_one_iso _|>.trans this⟩⟩
 
 lemma inv_mul (A : CSA.{u, u} K) : IsBrauerEquivalent (mul (inv (K := K) A) A) one_in' := by
   unfold mul inv one_in'
@@ -426,7 +426,7 @@ lemma inv_mul (A : CSA.{u, u} K) : IsBrauerEquivalent (mul (inv (K := K) A) A) o
     have := Module.finrank_pos_iff (R := K) (M := A) |>.2 inferInstance
     omega
   have := tensor_op_self K A
-  exact ⟨1, n, one_ne_zero, hn.1, ⟨dim_one_iso _|>.trans this⟩⟩
+  exact ⟨1, n, one_ne_zero, hn.out, ⟨dim_one_iso _|>.trans this⟩⟩
 
 lemma inv_eqv (A B : CSA K) (hAB : IsBrauerEquivalent A B) :
     IsBrauerEquivalent (inv (K := K) A) (inv (K := K) B) := by

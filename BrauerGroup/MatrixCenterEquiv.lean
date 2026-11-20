@@ -36,8 +36,8 @@ lemma Matrix.mem_center_iff (R : Type*) [Ring R] (n : ℕ) (M) :
 set_option backward.isDefEq.respectTransparency false in
 def Matrix.centerEquivBase (n : ℕ) (hn : 0 < n) (R : Type*) [Ring R] :
     Subring.center M[Fin n, R] ≃+* Subring.center R where
-  toFun A := ⟨(A.1 ⟨0, by omega⟩ ⟨0, by omega⟩), by
-    obtain ⟨a, ha⟩ := (Matrix.mem_center_iff R n A.1).1 A.2
+  toFun A := ⟨(A.val ⟨0, by omega⟩ ⟨0, by omega⟩), by
+    obtain ⟨a, ha⟩ := (Matrix.mem_center_iff R n A.val).1 A.property
     simp [ha, Subring.smul_def]⟩
   invFun a := ⟨a • 1, Subring.mem_center_iff.2 fun A ↦ Matrix.ext <| by simp⟩
   left_inv := by

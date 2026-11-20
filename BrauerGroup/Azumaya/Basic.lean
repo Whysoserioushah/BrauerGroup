@@ -77,14 +77,14 @@ variable (A : Type u) [Ring A] [Algebra K A]
 lemma Algebra.IsCentral_ofAlgEquiv (A B : Type*) [Ring A] [Ring B] [Algebra K A] [Algebra K B]
     (e : A ≃ₐ[K] B) (hA : Algebra.IsCentral K A) :  Algebra.IsCentral K B where
   out x hx := by
-    obtain ⟨k, hk⟩ := hA.1 (show e.symm x ∈ _ by
+    obtain ⟨k, hk⟩ := hA.out (show e.symm x ∈ _ by
       simp only [Subalgebra.mem_center_iff] at hx ⊢
       exact fun x ↦ by simpa using congr(e.symm $(hx (e x))))
     exact ⟨k, by apply_fun e.symm; rw [← hk]; simp⟩
 
 lemma IsSimpleRing.ofAlgEquiv (A B : Type*) [Ring A] [Ring B] [Algebra K A] [Algebra K B]
     (e : A ≃ₐ[K] B) (hA : IsSimpleRing A) : IsSimpleRing B :=
-  ⟨OrderIso.isSimpleOrder_iff (TwoSidedIdeal.orderIsoOfRingEquiv e.toRingEquiv)|>.1 hA.1⟩
+  ⟨OrderIso.isSimpleOrder_iff (TwoSidedIdeal.orderIsoOfRingEquiv e.toRingEquiv)|>.1 hA.simple⟩
 
 theorem IsAzumaya_iff_CentralSimple [Nontrivial A] : IsAzumaya K A ↔ FiniteDimensional K A ∧
     Algebra.IsCentral K A ∧ IsSimpleRing A :=
@@ -105,14 +105,14 @@ theorem IsAzumaya_iff_CentralSimple [Nontrivial A] : IsAzumaya K A ↔ FiniteDim
         specialize ha (1 : A)
         rw [← Algebra.algebraMap_eq_smul_one, ← Algebra.algebraMap_eq_smul_one] at ha
         exact FaithfulSMul.algebraMap_injective _ _ ha
-      fg_top := fin.1
+      fg_top := fin.fg_top
       bij := bijective_of_dim_eq_of_isCentralSimple K _ _
         (AlgHom.mulLeftRight K A) <| tensor_self_op.dim_eq _ _
     }⟩
 
 def finswap {n m : ℕ} : Fin (n * m) ≃ Fin (m * n) where
-  toFun i := ⟨i.1, by rw [mul_comm m n]; exact i.2⟩
-  invFun i := ⟨i.1, by rw [mul_comm n m]; exact i.2⟩
+  toFun i := ⟨i.val, by rw [mul_comm m n]; exact i.isLt⟩
+  invFun i := ⟨i.val, by rw [mul_comm n m]; exact i.isLt⟩
   left_inv _ := rfl
   right_inv _ := rfl
 

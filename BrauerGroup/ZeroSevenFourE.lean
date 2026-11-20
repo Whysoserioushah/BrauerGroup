@@ -539,14 +539,14 @@ lemma exists_gen (M : Type v) [AddCommGroup M]
     [Module A M] [IsSimpleModule A M] :
     ∃ m : M, m ≠ 0 ∧ ∀ m', ∃ a : A, m' = a • m := by
     have i : Submodule.IsPrincipal (⊤ : Submodule A M) := inferInstance
-    refine ⟨i.1.choose, ?_, fun m ↦ by
+    refine ⟨i.principal.choose, ?_, fun m ↦ by
       classical
-      have : m ∈ Submodule.span A {i.1.choose} := by
-        rw [← i.1.choose_spec]; trivial
+      have : m ∈ Submodule.span A {i.principal.choose} := by
+        rw [← i.principal.choose_spec]; trivial
       rw [Submodule.mem_span_singleton] at this
       simpa [Eq.comm]⟩
     intro h
-    have := i.1.choose_spec
+    have := i.principal.choose_spec
     rw [h] at this
     simp only [Submodule.span_zero_singleton, top_ne_bot] at this
 
@@ -614,7 +614,7 @@ lemma IsBalanced.congr_aux (M N : Type v) [AddCommGroup M] [AddCommGroup N] [Mod
       simp only [Module.End.smul_def, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
         LinearEquiv.symm_apply_apply, L] at this
       simp [this] }
-  obtain ⟨b, hb⟩ := h.1 a'
+  obtain ⟨b, hb⟩ := h.surj a'
   refine ⟨b, ?_⟩
   ext n
   simpa [a'] using congr(l <| $hb <| l.symm n)
@@ -667,7 +667,7 @@ lemma isBalanced_of_simpleMod (M : Type v) [AddCommGroup M] [Module A M] [IsSimp
       simp only [Finsupp.coe_finsetSum, Finset.sum_apply, Finsupp.single_apply, Finset.sum_ite_eq',
         Finsupp.mem_support_iff, ne_eq, ite_not, Finsupp.mapRange_apply, ite_eq_right_iff]
       aesop }
-  obtain ⟨a, ha⟩ := b.1 G
+  obtain ⟨a, ha⟩ := b.surj G
   refine ⟨a, ?_⟩
   ext m
   obtain ⟨j⟩ : Nonempty ι := by by_contra!; exact not_subsingleton _ e.toEquiv.subsingleton
@@ -681,7 +681,7 @@ noncomputable def end_end_iso
     [Module A M] [IsSimpleModule A M] [Module k M] [IsScalarTower k A M] :
     A ≃ₐ[k] Module.End (Module.End A M) M :=
   AlgEquiv.ofBijective (toEndEndAlgHom k A M) ⟨toEndEnd_injective k A M,
-    isBalanced_of_simpleMod k A M |>.1⟩
+    isBalanced_of_simpleMod k A M |>.surj⟩
 
 lemma Wedderburn_Artin_uniqueness₀
     (n n' : ℕ) [NeZero n] [NeZero n']

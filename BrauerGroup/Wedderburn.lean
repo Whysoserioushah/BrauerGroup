@@ -268,9 +268,9 @@ lemma Wedderburn_Artin.aux.one_eq
     (I : Ideal A) (I_nontrivial : I ≠ ⊥) :
     ∃ (n : ℕ) (x : Fin n → A) (i : Fin n → I), ∑ j : Fin n, i j * x j = 1 := by
   let I' : TwoSidedIdeal A := TwoSidedIdeal.span I
-  have I'_is_everything : I' = ⊤ := simple.1.2 I' |>.resolve_left (fun r ↦ by
+  have I'_is_everything : I' = ⊤ := simple.simple.eq_bot_or_eq_top I' |>.resolve_left (fun r ↦ by
     obtain ⟨y, hy⟩ := Submodule.nonzero_mem_of_bot_lt (bot_lt_iff_ne_bot.mpr I_nontrivial)
-    have hy' : y.1 ∈ I' := by
+    have hy' : y.val ∈ I' := by
       change I'.ringCon y 0
       exact .of _ _ <| by simp
     rw [r] at hy'
@@ -371,7 +371,7 @@ lemma Wedderburn_Artin.aux.equivIdeal
     map_add' := fun v1 v2 => by simp [add_mul, Finset.sum_add_distrib]
     map_smul' := fun a v => by simp [Finset.mul_sum, mul_assoc] }
   have g_surj : Function.Surjective g := fun a ↦
-    ⟨fun j ↦ ⟨a * (i j), I.mul_mem_left _ (i j).2⟩,
+    ⟨fun j ↦ ⟨a * (i j), I.mul_mem_left _ (i j).property⟩,
       by simp [g, mul_assoc, ← Finset.mul_sum, one_eq]⟩
   have g_inj : Function.Injective g := by
     rw [← LinearMap.ker_eq_bot]
@@ -380,15 +380,15 @@ lemma Wedderburn_Artin.aux.equivIdeal
       Submodule.nonzero_mem_of_bot_lt (bot_lt_iff_ne_bot.mpr this)
     replace hy2 : y ≠ 0 := by contrapose hy2; subst hy2; rfl
     obtain ⟨j, hj⟩ : ∃ (j : Fin n), y j ≠ 0 := by contrapose! hy2; ext; rw [hy2]; rfl
-    have eq1 : Ideal.span {(y j).1} = I :=
-      Ideal.eq_of_le_of_isSimpleModule (A := A) I (Ideal.span {(y j).1})
-      (by simp only [Ideal.span_le, Set.singleton_subset_iff, Subtype.coe_prop]) (y j).1
+    have eq1 : Ideal.span {(y j).val} = I :=
+      Ideal.eq_of_le_of_isSimpleModule (A := A) I (Ideal.span {(y j).val})
+      (by simp only [Ideal.span_le, Set.singleton_subset_iff, Subtype.coe_prop]) (y j).val
       (by contrapose hj; rwa [Subtype.ext_iff]) <| Ideal.subset_span
         (by simp only [Set.mem_singleton_iff])
-    have mem : (i j).1 ∈ Ideal.span {(y j).1} := eq1.symm ▸ (i j).2
+    have mem : (i j).val ∈ Ideal.span {(y j).val} := eq1.symm ▸ (i j).property
     rw [Ideal.mem_span_singleton'] at mem
     obtain ⟨r, hr⟩ := mem
-    have hr' : (i j).1 - r * (y j).1 = 0 := by rw [hr, sub_self]
+    have hr' : (i j).val - r * (y j).val = 0 := by rw [hr, sub_self]
     apply_fun (r * ·) at hy1
     simp only [Finset.mul_sum, ← mul_assoc, mul_zero] at hy1
     have one_eq' : ∑ j : Fin n, ↑(i j) * x j - ∑ _, _ = 1 - 0 := congr_arg₂ (· - ·) one_eq hy1
@@ -498,7 +498,7 @@ def algebraMapEndIdealMop (I : Ideal B) : K →+* (Module.End B I)ᵐᵒᵖ wher
 instance (I : Ideal B) : Algebra K (Module.End B I)ᵐᵒᵖ where
   algebraMap := algebraMapEndIdealMop K I
   commutes' := fun r ⟨x⟩ => MulOpposite.unop_injective <| DFunLike.ext _ _ fun ⟨i, hi⟩ =>
-    Subtype.ext <| show (x (r • ⟨i, hi⟩)).1 = r • (x ⟨i, hi⟩).1 by
+    Subtype.ext <| show (x (r • ⟨i, hi⟩)).val = r • (x ⟨i, hi⟩).val by
       convert Subtype.ext_iff.mp (x.map_smul (algebraMap K B r) ⟨i, hi⟩) using 1 <;> aesop
   smul k x := .op <| (algebraMapEndIdealMop K I k).unop * x.unop
   smul_def' := fun r ⟨x⟩ => MulOpposite.unop_injective <| DFunLike.ext _ _ fun ⟨i, hi⟩ =>

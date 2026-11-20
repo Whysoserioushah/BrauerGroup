@@ -80,8 +80,8 @@ open fromModuleCatOverMatrix
 instance fromModuleCatOverMatrix.module_α (M : Type*) [AddCommGroup M] [Module M[ι, R] M] :
     Module R <| α R ι M where
   smul a x := by
-    refine ⟨(single default default a : M[ι, R]) • x.1, ?_⟩
-    obtain ⟨y, hy⟩ := x.2
+    refine ⟨(single default default a : M[ι, R]) • x.val, ?_⟩
+    obtain ⟨y, hy⟩ := x.property
     refine ⟨(single default default a : M[ι, R]) • y, hy ▸ ?_⟩
     simp only
     rw [← SemigroupAction.mul_smul, ← SemigroupAction.mul_smul]
@@ -132,7 +132,7 @@ instance fromModuleCatOverMatrix.module_α (M : Type*) [AddCommGroup M] [Module 
 @[simp]
 lemma fromModuleCatOverMatrix.smul_α_coe {M : Type*} [AddCommGroup M] [Module M[ι, R] M]
     (x : R) (y : α R ι M) : ((x • y : α R ι M) : M) =
-    (single default default x : M[ι, R]) • y.1 := rfl
+    (single default default x : M[ι, R]) • y.val := rfl
 
 open fromModuleCatOverMatrix
 
@@ -141,8 +141,8 @@ def fromModuleCatOverMatrix : ModuleCat M[ι, R] ⥤ ModuleCat R where
   obj M := .of _ <| α R ι M
   map f := ModuleCat.ofHom {
     toFun x := by
-      refine ⟨f x.1, ?_⟩
-      obtain ⟨y, hy⟩ := x.2
+      refine ⟨f x.val, ?_⟩
+      obtain ⟨y, hy⟩ := x.property
       refine ⟨f y, ?_⟩
       rw [← hy, f.hom.map_smul]
     map_add' := by
@@ -165,7 +165,7 @@ set_option backward.isDefEq.respectTransparency false in
 def matrix.unitIsoHom :
     toModuleCatOverMatrix R ι ⋙ fromModuleCatOverMatrix R ι ⟶ 𝟭 (ModuleCat R) where
   app X := ModuleCat.ofHom
-    { toFun x := ∑ i : ι, x.1 i
+    { toFun x := ∑ i : ι, x.val i
       map_add' := by
         rintro ⟨_, x, rfl⟩ ⟨_, y, rfl⟩
         simp only [← Finset.sum_add_distrib]
@@ -351,7 +351,7 @@ noncomputable def matrix.counitIsoHomMap (M : ModuleCat M[ι, R]) :
           convert zero_smul (Matrix ι ι R) (v i).val using 2
           simp [single, of_apply, hj.symm]
           rfl
-        obtain ⟨y, hy⟩ := (v i).2
+        obtain ⟨y, hy⟩ := (v i).property
         rw [← hy]
         simp only [← SemigroupAction.mul_smul, single_mul_single_same, mul_one]
       · rw [Function.update_of_ne]
@@ -483,10 +483,10 @@ lemma isSimpleModule_iff_injective_or_eq_zero
   constructor
   · intros inst1
     constructor
-    · have := inst1.1.1
+    · have := inst1.toIsSimpleOrder.toNontrivial
       rwa [Submodule.nontrivial_iff] at this
     · intro N f
-      refine inst1.1.2 (LinearMap.ker f.hom) |>.elim
+      refine inst1.toIsSimpleOrder.eq_bot_or_eq_top (LinearMap.ker f.hom) |>.elim
         (fun h => Or.inr <| by rwa [LinearMap.ker_eq_bot] at h) <|
         fun h ↦ Or.inl <| by
           simp only [LinearMap.ker_eq_top] at h

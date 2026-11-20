@@ -15,15 +15,16 @@ variable (K D : Type u) [Field K] [DivisionRing D] [Algebra K D] [FiniteDimensio
 
 theorem dim_max_subfield (k : SubField K D) (hk : IsMax k) :
     Module.finrank K D = Module.finrank K k * Module.finrank K k := by
-  let : Field k.1 := inferInstanceAs <| Field k
-  have dimdim := dim_centralizer K (A := D) k.1 |>.symm
-  have := Subalgebra.le_centralizer_self.2 k.2
-  have eq : k.1 = Subalgebra.centralizer K (A := D) k.1 := by
+  let : Field k.toSubalgebra := inferInstanceAs <| Field k
+  have dimdim := dim_centralizer K (A := D) k.toSubalgebra |>.symm
+  have := Subalgebra.le_centralizer_self.2 k.mul_comm
+  have eq : k.toSubalgebra = Subalgebra.centralizer K (A := D) k.toSubalgebra := by
     by_contra! hneq
     have lt := LE.le.lt_iff_ne this|>.2 hneq
-    obtain ⟨a, ha1, ha2⟩ : ∃ a ∈ Subalgebra.centralizer K (A := D) k.1, a ∉ k.1 :=
+    obtain ⟨a, ha1, ha2⟩ :
+        ∃ a ∈ Subalgebra.centralizer K (A := D) k.toSubalgebra, a ∉ k.toSubalgebra :=
       Set.ssubset_iff_of_subset this|>.1 lt
-    let : CommRing (Algebra.adjoin K (insert a k.1) : Subalgebra K D) :=
+    let : CommRing (Algebra.adjoin K (insert a k.toSubalgebra) : Subalgebra K D) :=
     { mul_comm := by
         rintro ⟨x, hx⟩ ⟨y, hy⟩
         simp only [MulMemClass.mk_mul_mk, Subtype.mk.injEq]
@@ -54,29 +55,30 @@ theorem dim_max_subfield (k : SubField K D) (hk : IsMax k) :
       · exact Semifield.toIsField K
       · exact FaithfulSMul.algebraMap_injective K _
     let L : SubField K D := {
-      __ := Algebra.adjoin K (insert a k.1)
+      __ := Algebra.adjoin K (insert a k.toSubalgebra)
       mul_comm x hx y hy := by
-        have := this.2 ⟨x, hx⟩ ⟨y, hy⟩
+        have := this.mul_comm ⟨x, hx⟩ ⟨y, hy⟩
         change (⟨x * y, Subalgebra.mul_mem _ hx hy⟩ :
-          (Algebra.adjoin K (insert a k.1) : Subalgebra K D)) = ⟨_, _⟩ at this
+          (Algebra.adjoin K (insert a k.toSubalgebra) : Subalgebra K D)) = ⟨_, _⟩ at this
         simp only [Subtype.mk.injEq] at this ⊢; exact this
       exists_inverse x hx hx0 := by
-         have := this.3 (Subtype.coe_ne_coe.1 hx0 : (⟨x, hx⟩ :
-          (Algebra.adjoin K (insert a k.1) : Subalgebra K D)) ≠ 0)
-         use this.choose.1
-         exact ⟨this.choose.2, by
+         have := this.mul_inv_cancel (Subtype.coe_ne_coe.1 hx0 : (⟨x, hx⟩ :
+          (Algebra.adjoin K (insert a k.toSubalgebra) : Subalgebra K D)) ≠ 0)
+         use this.choose.val
+         exact ⟨this.choose.property, by
           have eq := this.choose_spec
-          change ⟨x * this.choose.1, _⟩ = (1 : Algebra.adjoin K (insert a k.1)) at eq
+          change ⟨x * this.choose.val, _⟩ = (1 : Algebra.adjoin K (insert a k.toSubalgebra)) at eq
           exact Subtype.ext_iff.1 eq⟩
     }
     refine ha2 <| hk (b := L) ?_ ?_
-    · change k.1 ≤ Algebra.adjoin K (insert a k.1)
-      nth_rw 1 [← Algebra.adjoin_eq k.1]
+    · change k.toSubalgebra ≤ Algebra.adjoin K (insert a k.toSubalgebra)
+      nth_rw 1 [← Algebra.adjoin_eq k.toSubalgebra]
       refine Algebra.adjoin_mono ?_
       exact Set.subset_insert _ _
     · change _ ∈ Algebra.adjoin K _
-      have adjoin_le : Algebra.adjoin K {a} ≤ Algebra.adjoin K (insert a k.1) :=
-        Algebra.adjoin_mono (s := {a}) (Set.singleton_subset_iff.mpr (Set.mem_insert a k.1))
+      have adjoin_le : Algebra.adjoin K {a} ≤ Algebra.adjoin K (insert a k.toSubalgebra) :=
+        Algebra.adjoin_mono (s := {a})
+          (Set.singleton_subset_iff.mpr (Set.mem_insert a k.toSubalgebra))
       have := Algebra.adjoin_le_iff |>.1 adjoin_le
       exact this rfl
   rw [← eq] at dimdim
@@ -84,52 +86,55 @@ theorem dim_max_subfield (k : SubField K D) (hk : IsMax k) :
 
 lemma cor_two_1to2 (A : Type u) [Ring A] [Algebra K A] [FiniteDimensional K A]
     [Algebra.IsCentral K A] [IsSimpleRing A] (L : SubField K A) :
-    Subalgebra.centralizer K L.1 = L.1 ↔
+    Subalgebra.centralizer K L.toSubalgebra = L.toSubalgebra ↔
       Module.finrank K A = Module.finrank K L * Module.finrank K L where
   mp h := by
-    let : Field L.1 := inferInstanceAs <| Field L
-    have := dim_centralizer K (A := A) L.1
+    let : Field L.toSubalgebra := inferInstanceAs <| Field L
+    have := dim_centralizer K (A := A) L.toSubalgebra
     rw [h] at this
     exact this.symm
   mpr h := by
-    let : Field L.1 := inferInstanceAs <| Field L
-    have := dim_centralizer K (A := A) L.1
+    let : Field L.toSubalgebra := inferInstanceAs <| Field L
+    have := dim_centralizer K (A := A) L.toSubalgebra
     rw [h] at this
     erw [mul_eq_mul_right_iff] at this
     obtain h1 | h2 := this
-    · exact Subalgebra.eq_of_le_of_finrank_eq (Subalgebra.le_centralizer_self.2 L.2) h1.symm|>.symm
-    · have := Module.finrank_pos (R := K) (M := L.1)
+    · exact Subalgebra.eq_of_le_of_finrank_eq (Subalgebra.le_centralizer_self.2 L.mul_comm)
+        h1.symm |>.symm
+    · have := Module.finrank_pos (R := K) (M := L.toSubalgebra)
       simp_all only [lt_self_iff_false]
 
 lemma cor_two_2to3 (A : Type u) [Ring A] [Algebra K A] [FiniteDimensional K A]
     [Algebra.IsCentral K A] [IsSimpleRing A] (L : SubField K A) :
     Module.finrank K A = Module.finrank K L * Module.finrank K L →
-    (∀ (L' : Subalgebra K A) (_ : ∀ x ∈ L', ∀ y ∈ L',  x * y = y * x), L.1 ≤ L' → L.1 = L') :=
+    (∀ (L' : Subalgebra K A) (_ : ∀ x ∈ L', ∀ y ∈ L', x * y = y * x),
+      L.toSubalgebra ≤ L' → L.toSubalgebra = L') :=
   fun hrank L' hL' hLL ↦ by
-  let : Field L.1 := inferInstanceAs <| Field L
-  have := dim_centralizer K (A := A) L.1 |>.symm
+  let : Field L.toSubalgebra := inferInstanceAs <| Field L
+  have := dim_centralizer K (A := A) L.toSubalgebra |>.symm
   simp only [this, SubField.coe_toSubalgebra] at hrank
   erw [mul_eq_mul_right_iff] at hrank
   obtain h1 | h2 := hrank
-  · have := Subalgebra.eq_of_le_of_finrank_eq (Subalgebra.le_centralizer_self.2 L.2) h1.symm
+  · have := Subalgebra.eq_of_le_of_finrank_eq (Subalgebra.le_centralizer_self.2 L.mul_comm) h1.symm
     exact le_antisymm hLL fun x hx => this.symm ▸ Subalgebra.mem_centralizer_iff _ |>.2
       fun y hy => hL' _ hx _ (hLL hy) |>.symm
-  · have := Module.finrank_pos (R := K) (M := L.1)
+  · have := Module.finrank_pos (R := K) (M := L.toSubalgebra)
     simp_all only [mul_zero, lt_self_iff_false]
 
 lemma cor_two_3to1 (A : Type u) [Ring A] [Algebra K A] [FiniteDimensional K A]
     [Algebra.IsCentral K A] [IsSimpleRing A] (L : SubField K A) :
-    (∀ (L' : Subalgebra K A)  (_ : ∀ x ∈ L', ∀ y ∈ L',  x * y = y * x), L.1 ≤ L' → L.1 = L') →
-    Subalgebra.centralizer K L = L.1 := by
+    (∀ (L' : Subalgebra K A) (_ : ∀ x ∈ L', ∀ y ∈ L', x * y = y * x),
+      L.toSubalgebra ≤ L' → L.toSubalgebra = L') →
+    Subalgebra.centralizer K L = L.toSubalgebra := by
   intro H
   refine le_antisymm ?_ ?_
   · by_contra hL'
-    have := Subalgebra.le_centralizer_self.2 L.2
+    have := Subalgebra.le_centralizer_self.2 L.mul_comm
     have Llt := lt_of_le_not_ge this hL'
-    have exist_ele : ∃ a ∈ Subalgebra.centralizer K L.1, a ∉ L.1 :=
+    have exist_ele : ∃ a ∈ Subalgebra.centralizer K L.toSubalgebra, a ∉ L.toSubalgebra :=
       Set.ssubset_iff_of_subset this|>.1 Llt
     obtain ⟨a, ⟨ha1, ha2⟩⟩ := exist_ele
-    specialize H (Algebra.adjoin K (insert a L.1)) (fun x hx y hy ↦ by
+    specialize H (Algebra.adjoin K (insert a L.toSubalgebra)) (fun x hx y hy ↦ by
       refine Algebra.adjoin_induction₂ (fun x y hx hy ↦ by
         simp only [Set.mem_insert_iff, SetLike.mem_coe] at hx hy
         rcases hx with rfl|hx <;> rcases hy with rfl|hy
@@ -139,25 +144,28 @@ lemma cor_two_3to1 (A : Type u) [Ring A] [Algebra K A] [FiniteDimensional K A]
         · rw [Subalgebra.mem_centralizer_iff] at ha1
           rename_i hxx
           exact ha1 _ hxx
-        · exact L.2 hx hy)
+        · exact L.mul_comm hx hy)
         (fun k1 k2 ↦ Algebra.commutes _ _) (fun k x _ ↦ Algebra.commutes _ _)
         (fun k x _ ↦ Algebra.commutes _ _|>.symm)
         (fun x y z _ _ _ hxz hyz ↦ by rw [mul_add, add_mul, hxz, hyz])
         (fun x y z _ _ _ hxz hyz ↦ by rw [mul_add, add_mul, hxz, hyz])
         (fun x y z _ _ _ hxz hyz ↦ by rw [mul_assoc, hyz, ← mul_assoc, hxz, mul_assoc])
         (fun x y z _ _ _ hxy hxz ↦ by rw [← mul_assoc, hxy, mul_assoc, hxz, ← mul_assoc]) hx hy)
-      (by nth_rw 1 [← Algebra.adjoin_eq L.1]; exact Algebra.adjoin_mono (Set.subset_insert _ _))
-    have : L.1 ≠ Algebra.adjoin K (insert a L.1) := ne_of_mem_of_not_mem' (a := a)
+      (by
+        nth_rw 1 [← Algebra.adjoin_eq L.toSubalgebra]
+        exact Algebra.adjoin_mono (Set.subset_insert _ _))
+    have : L.toSubalgebra ≠ Algebra.adjoin K (insert a L.toSubalgebra) :=
+      ne_of_mem_of_not_mem' (a := a)
       (by exact (Algebra.adjoin_le_iff |>.1 (Algebra.adjoin_mono (R := K) (s := {a})
-        (Set.singleton_subset_iff.mpr (Set.mem_insert a L.1)))) rfl) ha2|>.symm
+        (Set.singleton_subset_iff.mpr (Set.mem_insert a L.toSubalgebra)))) rfl) ha2|>.symm
     tauto
-  · exact Subalgebra.le_centralizer_self.2 L.2
+  · exact Subalgebra.le_centralizer_self.2 L.mul_comm
 
 lemma maxsubfield_of_div_iff (L : SubField K D) : (∀ (L' : Subalgebra K D)
-    (_ : ∀ x ∈ L', ∀ y ∈ L',  x * y = y * x), L.1 ≤ L' → L.1 = L') ↔
+    (_ : ∀ x ∈ L', ∀ y ∈ L',  x * y = y * x), L.toSubalgebra ≤ L' → L.toSubalgebra = L') ↔
     IsMax L :=
   ⟨fun h ↦ fun L' hL' ↦ le_of_eq <| SubField.toSubalgebra_inj.1 <|
-    h L'.1 (fun _ a _ a_1 ↦ L'.2 a a_1) hL'|>.symm,
+    h L'.toSubalgebra (fun _ a _ a_1 ↦ L'.mul_comm a a_1) hL'|>.symm,
   fun h ↦ cor_two_2to3 K D L <| dim_max_subfield K D L h⟩
 
 lemma IsMaxSubfield.ofAlgEquiv (L1 L2 : SubField K D) (e : L1 ≃ₐ[K] L2)

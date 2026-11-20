@@ -28,7 +28,7 @@ lemma toSubalgebra_injective : Injective (toSubalgebra : SubField R A → Subalg
   toSubalgebra_injective.eq_iff
 
 instance : SetLike (SubField R A) A where
-  coe L := L.1
+  coe L := L.toSubalgebra
   coe_injective := SetLike.coe_injective.comp toSubalgebra_injective
 
 @[simp] lemma mem_carrier : a ∈ L.carrier ↔ a ∈ L := .rfl
@@ -47,22 +47,24 @@ instance : PartialOrder (SubField R A) := .ofSetLike ..
 @[simp] lemma toSubalgebra_lt_toSubalgebra : L₁.toSubalgebra < L₂.toSubalgebra ↔ L₁ < L₂ := .rfl
 
 instance : SubsemiringClass (SubField R A) A where
-  mul_mem {s} := mul_mem (s := s.1)
-  one_mem {s} := one_mem (s := s.1)
-  add_mem {s} := add_mem (s := s.1)
-  zero_mem {s} := zero_mem (s := s.1)
+  mul_mem {s} := mul_mem (s := s.toSubalgebra)
+  one_mem {s} := one_mem (s := s.toSubalgebra)
+  add_mem {s} := add_mem (s := s.toSubalgebra)
+  zero_mem {s} := zero_mem (s := s.toSubalgebra)
 
 instance (priority := low) algebra' {K' : Type*} [CommSemiring K'] [SMul K' R] [Algebra K' A]
     [IsScalarTower K' R A] (S : SubField R A) : Algebra K' S := S.toSubalgebra.algebra'
 
 open scoped Classical in
-noncomputable instance carrier.instSemifield [Nontrivial A] : Semifield L.1 where
+noncomputable instance carrier.instSemifield [Nontrivial A] : Semifield L.toSubalgebra where
   __ := L
-  mul_comm := fun ⟨a, ha⟩ ⟨b, hb⟩ ↦ Subtype.ext_iff.2 <| L.2 ha hb
-  inv := fun ⟨x, hx⟩ ↦ if h0 : x = 0 then 0 else ⟨L.3 hx h0|>.choose,
-    L.3 hx h0|>.choose_spec.1⟩
-  exists_pair_ne := ⟨⟨0, Subalgebra.zero_mem L.1⟩, ⟨1, Subalgebra.one_mem L.1⟩, by simp⟩
-  mul_inv_cancel a ha := by ext; simpa [ha] using (L.3 a.2 <| mod_cast ha).choose_spec.2
+  mul_comm := fun ⟨a, ha⟩ ⟨b, hb⟩ ↦ Subtype.ext_iff.2 <| L.mul_comm ha hb
+  inv := fun ⟨x, hx⟩ ↦ if h0 : x = 0 then 0 else ⟨L.exists_inverse hx h0|>.choose,
+    L.exists_inverse hx h0|>.choose_spec.1⟩
+  exists_pair_ne :=
+    ⟨⟨0, Subalgebra.zero_mem L.toSubalgebra⟩, ⟨1, Subalgebra.one_mem L.toSubalgebra⟩, by simp⟩
+  mul_inv_cancel a ha := by
+    ext; simpa [ha] using (L.exists_inverse a.property <| mod_cast ha).choose_spec.2
   inv_zero := by simp only [↓reduceDIte]
   nnqsmul := _
 
@@ -70,7 +72,7 @@ noncomputable instance carrier.instSemifield [Nontrivial A] : Semifield L.1 wher
 @[simps toSubalgebra]
 def dSup (s : Set (SubField R A)) (hs : s.Nonempty) (hsdir : DirectedOn (· ≤ ·) s) :
     SubField R A where
-  toSubalgebra := ⨆ L ∈ s, L.1
+  toSubalgebra := ⨆ L ∈ s, L.toSubalgebra
   mul_comm := by
     simp only [Subsemiring.coe_carrier_toSubmonoid, Subalgebra.coe_toSubsemiring,
       Subalgebra.coe_biSup_of_directedOn hs hsdir, coe_toSubalgebra, Set.iSup_eq_iUnion,
@@ -96,11 +98,11 @@ section CommRing
 variable [CommRing R] [Ring A] [Algebra R A] {L : SubField R A} {a : A}
 
 instance : SubringClass (SubField R A) A where
-  mul_mem {s} := mul_mem (s := s.1)
-  one_mem {s} := one_mem (s := s.1)
-  add_mem {s} := add_mem (s := s.1)
-  zero_mem {s} := zero_mem (s := s.1)
-  neg_mem {s} := neg_mem (s := s.1)
+  mul_mem {s} := mul_mem (s := s.toSubalgebra)
+  one_mem {s} := one_mem (s := s.toSubalgebra)
+  add_mem {s} := add_mem (s := s.toSubalgebra)
+  zero_mem {s} := zero_mem (s := s.toSubalgebra)
+  neg_mem {s} := neg_mem (s := s.toSubalgebra)
 
 @[simp] lemma mem_toSubring : a ∈ L.toSubring ↔ a ∈ L := .rfl
 @[simp] lemma coe_toSubring (L : SubField R A) : (L.toSubring : Set A) = L := rfl

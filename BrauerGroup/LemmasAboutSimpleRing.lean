@@ -27,7 +27,7 @@ lemma IsSimpleRing.left_of_tensor (B C : Type u)
       refine SetLike.ext fun x ↦ ?_
       rw [show x = 0 from Subsingleton.elim _ _]
       refine ⟨fun _ => TwoSidedIdeal.zero_mem _, fun _ ↦ TwoSidedIdeal.zero_mem _⟩
-    have H := hbc.1.1
+    have H := hbc.simple.toNontrivial
     rw [← not_subsingleton_iff_nontrivial] at H
     contradiction
   rcases hC with hC|hC
@@ -41,7 +41,7 @@ lemma IsSimpleRing.left_of_tensor (B C : Type u)
       refine SetLike.ext fun x ↦ ?_
       rw [show x = 0 from Subsingleton.elim _ _]
       refine ⟨fun _ => TwoSidedIdeal.zero_mem _, fun _ ↦ TwoSidedIdeal.zero_mem _⟩
-    have H := hbc.1.1
+    have H := hbc.simple.toNontrivial
     rw [← not_subsingleton_iff_nontrivial] at H
     contradiction
   by_contra h
@@ -89,5 +89,5 @@ lemma IsSimpleRing.right_of_tensor (B C : Type u)
   have : IsSimpleRing (C ⊗[K] B) := by
     let e : C ⊗[K] B ≃ₐ[K] (B ⊗[K] C) := Algebra.TensorProduct.comm _ _ _
     have := TwoSidedIdeal.orderIsoOfRingEquiv e.toRingEquiv
-    exact ⟨(OrderIso.isSimpleOrder_iff this).mpr hbc.1⟩
+    exact ⟨(OrderIso.isSimpleOrder_iff this).mpr hbc.simple⟩
   apply IsSimpleRing.left_of_tensor (K := K) (B := C) (C := B)

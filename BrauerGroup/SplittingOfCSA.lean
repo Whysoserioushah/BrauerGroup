@@ -157,7 +157,7 @@ theorem CSA_iff_exist_split (k_bar : Type u) [Field k_bar] [Algebra k k_bar]
         Nonempty (L ⊗[k] A ≃ₐ[L] Matrix (Fin n) (Fin n) L) := by
   constructor
   · rintro ⟨_, _⟩
-    have := hk_bar.1
+    have := hk_bar.isAlgClosed
     obtain ⟨n, hn, ⟨iso⟩⟩ := simple_eq_matrix_algClosed k_bar (k_bar ⊗[k] A)
     refine ⟨n, hn, ?_⟩
     use lemma_tto.ℒℒ n k k_bar A iso
@@ -172,7 +172,7 @@ theorem CSA_iff_exist_split (k_bar : Type u) [Field k_bar] [Algebra k k_bar]
 lemma dim_is_sq (k_bar : Type u) [Field k_bar] [Algebra k k_bar] [hk_bar : IsAlgClosure k k_bar]
     [Algebra.IsCentral k A] [IsSimpleRing A] [FiniteDimensional k A] :
     IsSquare (Module.finrank k A) := by
-  have := hk_bar.1
+  have := hk_bar.isAlgClosed
   obtain ⟨n, _, ⟨iso⟩⟩ := simple_eq_matrix_algClosed k_bar (k_bar ⊗[k] A)
   refine ⟨n, ?_⟩
   have := Module.finrank_matrix k_bar k_bar (Fin n) (Fin n)
@@ -203,7 +203,7 @@ def isSplit (L : Type u) [Field L] [Algebra k L] : Prop :=
 def split_by_alg_closure (A : CSA k) : split k A k_bar where
   n := deg k k_bar A
   iso := by
-    haveI := hk_bar.1
+    haveI := hk_bar.isAlgClosed
     choose n _ iso using simple_eq_matrix_algClosed k_bar (k_bar ⊗[k] A)
     have iso' := iso.some; clear iso
     have e : Matrix (Fin n) (Fin n) k_bar ≃ₐ[k_bar] Matrix (Fin (deg k k_bar A))

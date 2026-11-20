@@ -97,7 +97,7 @@ lemma BrauerOverR (A : CSA.{0, 0} ℝ) :
   else
   right
   obtain ⟨n, hn, D, _, _, ⟨e⟩⟩ := Wedderburn_Artin_algebra_version.{0, 0} ℝ A
-  have := A.4
+  have := A.fin_dim
   have : FiniteDimensional ℝ D := is_fin_dim_of_wdb ℝ A hn D e
   obtain ⟨⟨e'⟩⟩ | hD2 | hD3 := FrobeniusTheorem D
   · have := is_central_of_wdb ℝ A n D hn e|>.center_eq_bot

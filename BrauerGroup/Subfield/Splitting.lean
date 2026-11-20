@@ -63,7 +63,7 @@ lemma exists_embedding_of_isSplit [FiniteDimensional F K] (A : CSA F) (split : i
         rw [Subalgebra.mem_center_iff]
         rintro ⟨_, ⟨y, rfl⟩⟩
         rw [Subtype.ext_iff]
-        exact x.2 (emb y) ⟨y, rfl⟩
+        exact x.property (emb y) ⟨y, rfl⟩
       rw [Algebra.IsCentral.center_eq_bot, Algebra.mem_bot] at hx'
       obtain ⟨r, hr⟩ := hx'
       simp only [Subtype.ext_iff, SubalgebraClass.coe_algebraMap] at hr
@@ -127,7 +127,7 @@ lemma exists_embedding_of_isSplit [FiniteDimensional F K] (A : CSA F) (split : i
     clear dim_eq2
     simp only [mul_eq_mul_right_iff, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true,
       pow_eq_zero_iff] at dim_eq1
-    refine dim_eq1 |>.resolve_right hn.1 |>.symm
+    refine dim_eq1 |>.resolve_right hn.out |>.symm
 
 /--
 theorem 3.3
@@ -139,7 +139,7 @@ theorem isSplit_iff_dimension [FiniteDimensional F K] (A : CSA F) :
   constructor
   · intro split
     obtain ⟨B, eq1, ι, eq2⟩ := exists_embedding_of_isSplit K F A split
-    refine ⟨⟨.of F B.1ᵐᵒᵖ⟩, ?_, {
+    refine ⟨⟨.of F B.toAlgCatᵐᵒᵖ⟩, ?_, {
       toFun k := op <| ι k
       map_one' := by simp
       map_mul' := by intros; simp [← op_mul, ← map_mul, mul_comm]

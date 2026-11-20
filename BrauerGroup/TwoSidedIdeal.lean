@@ -93,7 +93,7 @@ lemma mem_span_ideal_iff_exists_fin (s : Ideal R) (x : R) :
   rw [mem_span_iff_exists_fin]
   fconstructor
   · rintro ⟨n, fin, xL, xR, y, rfl⟩
-    exact ⟨n, fin, xR, fun i ↦ ⟨xL i * y i, s.mul_mem_left _ (y i).2⟩, by simp⟩
+    exact ⟨n, fin, xR, fun i ↦ ⟨xL i * y i, s.mul_mem_left _ (y i).property⟩, by simp⟩
   · rintro ⟨n, fin, xR, y, rfl⟩
     exact ⟨n, fin, 1, xR, y, by simp⟩
 
@@ -132,7 +132,7 @@ lemma _root_.IsSimpleRing.iff_eq_zero_or_injective'
     if hker : TwoSidedIdeal.ker f.toRingHom = ⊤
     then exact Or.inl hker
     else
-      replace hker := so.1.2 (TwoSidedIdeal.ker f) |>.resolve_right hker
+      replace hker := so.simple.eq_bot_or_eq_top (TwoSidedIdeal.ker f) |>.resolve_right hker
       rw [injective_iff_ker_eq_bot]
       exact Or.inr hker
   · intro h

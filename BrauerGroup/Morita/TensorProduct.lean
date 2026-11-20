@@ -333,8 +333,8 @@ instance : (equivModuleOverTensor R A C).inverse.Linear R where
 abbrev toBCfunctor (F : ModuleCat A ⥤ ModuleCat B) [F.Additive] [F.Linear R] :
     TensorModule R A C ⥤ TensorModule R B C where
   obj M := {
-    carrier := F.obj M.1
-    morphism := (Morita.aux0 R A B F M.1).comp M.morphism
+    carrier := F.obj M.carrier
+    morphism := (Morita.aux0 R A B F M.carrier).comp M.morphism
   }
   map {M N} f := {
     hom := F.map f.hom
@@ -347,7 +347,7 @@ abbrev toBCfunctor (F : ModuleCat A ⥤ ModuleCat B) [F.Additive] [F.Linear R] :
       congr 1
       exact f.commutes c
   }
-  map_id M := by ext : 1; exact F.map_id M.1
+  map_id M := by ext : 1; exact F.map_id M.carrier
   map_comp f g := by ext1; exact F.map_comp f.hom g.hom
 
 set_option backward.isDefEq.respectTransparency false in
@@ -357,7 +357,7 @@ abbrev MoritaTensorAux0 (e : ModuleCat A ≌ ModuleCat B) [e.functor.Additive] [
   inverse := toBCfunctor R B A C e.inverse
   unitIso := NatIso.ofComponents
     (fun M ↦ TensorModule.Iso_mk _ _ _
-      (e.unitIso.app M.1) fun c ↦ by
+      (e.unitIso.app M.carrier) fun c ↦ by
         change (e.unitIso.app M.carrier).hom ≫
             e.inverse.map (e.functor.map (ModuleCat.ofHom (M.morphism c))) =
           ModuleCat.ofHom (M.morphism c) ≫ (e.unitIso.app M.carrier).hom
@@ -371,7 +371,7 @@ abbrev MoritaTensorAux0 (e : ModuleCat A ≌ ModuleCat B) [e.functor.Additive] [
         (e.unitIso.hom.naturality f.hom)) x)
   counitIso := NatIso.ofComponents
     (fun M ↦ TensorModule.Iso_mk _ _ _
-      (e.counitIso.app M.1) fun c ↦ by
+      (e.counitIso.app M.carrier) fun c ↦ by
         change (e.counitIso.app M.carrier).hom ≫ ModuleCat.ofHom (M.morphism c) =
           e.functor.map (e.inverse.map (ModuleCat.ofHom (M.morphism c))) ≫
             (e.counitIso.app M.carrier).hom

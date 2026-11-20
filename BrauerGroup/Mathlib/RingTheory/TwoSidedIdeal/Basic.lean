@@ -18,9 +18,9 @@ end NonUnitalNonAssocRing
 section Ring
 variable [Ring R] {I : TwoSidedIdeal R}
 
-attribute [local instance] instSMulMemClassMulOpposite in
+attribute [local instance] smulMemClass_mulOpposite in
 instance : Module Rᵐᵒᵖ I where
-  smul r x := ⟨x.1 * r.unop, I.mul_mem_right _ _ x.2⟩
+  smul r x := ⟨x.val * r.unop, I.mul_mem_right _ _ x.property⟩
   one_smul x := by ext; simp
   mul_smul x y z := by ext; simp [mul_assoc]
   smul_zero x := by ext; simp

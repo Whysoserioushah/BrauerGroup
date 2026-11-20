@@ -101,26 +101,26 @@ def arbitraryConjFactor : A.conjFactor σ where
 variable {A ρ σ τ}
 
 @[simp] lemma conjFactor_prop (x : A.conjFactor σ) (c : K) :
-    x.1 * A.ι c * x.1⁻¹ = A.ι (σ c) := x.2 c |>.symm
+    x.val * A.ι c * x.val⁻¹ = A.ι (σ c) := x.property c |>.symm
 
 def mul' (x : A.conjFactor σ) (y : A.conjFactor τ) : A.conjFactor (σ * τ) :=
-⟨x.1 * y.1, fun c ↦ by
+⟨x.val * y.val, fun c ↦ by
   simp only [AlgEquiv.mul_apply, Units.val_mul, _root_.mul_assoc, mul_inv_rev]
-  rw [← _root_.mul_assoc (A.ι c), ← mul_assoc (y.1 : A), ← mul_assoc (y.1 : A),
+  rw [← _root_.mul_assoc (A.ι c), ← mul_assoc (y.val : A), ← mul_assoc (y.val : A),
     conjFactor_prop, ← _root_.mul_assoc, conjFactor_prop]⟩
 
 @[simp]
-lemma mul'_coe (x : A.conjFactor σ) (y : A.conjFactor τ) : (mul' x y).1.1 = x.1 * y.1 := rfl
+lemma mul'_coe (x : A.conjFactor σ) (y : A.conjFactor τ) : (mul' x y).val.val = x.val * y.val := rfl
 
 lemma conjFactor_rel_aux (x y : A.conjFactor σ) :
-    ∃ (c : K), x.1 = y.1 * A.ι c := by
-  have mem1 : (y.1⁻¹ * x.1 : A) ∈ Subalgebra.centralizer F A.ι.range := by
+    ∃ (c : K), x.val = y.val * A.ι c := by
+  have mem1 : (y.val⁻¹ * x.val : A) ∈ Subalgebra.centralizer F A.ι.range := by
     rw [Subalgebra.mem_centralizer_iff]
     rintro _ ⟨z, rfl⟩
-    have := x.2 z |>.symm.trans (y.2 z)
-    apply_fun (x.1⁻¹.1 * ·) at this
+    have := x.property z |>.symm.trans (y.property z)
+    apply_fun (x.val⁻¹.val * ·) at this
     simp only [← _root_.mul_assoc, Units.inv_mul, _root_.one_mul] at this
-    apply_fun (· * x.1.1) at this
+    apply_fun (· * x.val.val) at this
     simp only [Units.inv_mul_cancel_right] at this
     simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe]
     conv_rhs => rw [this]
@@ -131,7 +131,7 @@ lemma conjFactor_rel_aux (x y : A.conjFactor σ) :
   simp only [hc, Units.mul_inv_cancel_left]
 
 lemma conjFactor_rel (x y : A.conjFactor σ) :
-    ∃! (c : K), x.1 = y.1 * A.ι c := by
+    ∃! (c : K), x.val = y.val * A.ι c := by
   obtain ⟨c, hc⟩ := conjFactor_rel_aux x y
   refine ⟨c, hc, fun c' (hc' : _ = _) => ?_⟩
   rw [hc] at hc'
@@ -141,9 +141,9 @@ lemma conjFactor_rel (x y : A.conjFactor σ) :
 def conjFactorTwistCoeff (x y : A.conjFactor σ) : K := conjFactor_rel x y |>.choose
 
 lemma conjFactorTwistCoeff_spec (x y : A.conjFactor σ) :
-    x.1 = y.1 * A.ι (conjFactorTwistCoeff x y) := conjFactor_rel x y |>.choose_spec.1
+    x.val = y.val * A.ι (conjFactorTwistCoeff x y) := conjFactor_rel x y |>.choose_spec.1
 
-lemma conjFactorTwistCoeff_unique (x y : A.conjFactor σ) (c : K) (h : x.1 = y.1 * A.ι c) :
+lemma conjFactorTwistCoeff_unique (x y : A.conjFactor σ) (c : K) (h : x.val = y.val * A.ι c) :
     c = conjFactorTwistCoeff x y :=
   conjFactor_rel x y |>.choose_spec.2 _ h
 
@@ -190,14 +190,15 @@ lemma conjFactorTwistCoeff_swap''' (x y : A.conjFactor σ) :
   simp [← map_mul]
 
 lemma conjFactorTwistCoeff_spec' (x y : A.conjFactor σ) :
-    x.1 = A.ι (σ <| conjFactorTwistCoeff x y) * y.1 := by
-  calc x.1.1
-    _ = x.1 * A.ι (conjFactorTwistCoeff x y) * x.1⁻¹ * (x.1 * A.ι (conjFactorTwistCoeff y x)) := by
+    x.val = A.ι (σ <| conjFactorTwistCoeff x y) * y.val := by
+  calc x.val.val
+    _ = x.val * A.ι (conjFactorTwistCoeff x y) * x.val⁻¹ *
+          (x.val * A.ι (conjFactorTwistCoeff y x)) := by
         simp only [_root_.mul_assoc, Units.inv_mul_cancel_left, conjFactorTwistCoeff_swap'',
           _root_.mul_one]
-    _ = A.ι (σ <| conjFactorTwistCoeff x y) * (x.1 * A.ι (conjFactorTwistCoeff y x)) := by
+    _ = A.ι (σ <| conjFactorTwistCoeff x y) * (x.val * A.ι (conjFactorTwistCoeff y x)) := by
         simp only [conjFactor_prop]
-    _ = A.ι (σ <| conjFactorTwistCoeff x y) * y.1 := by
+    _ = A.ι (σ <| conjFactorTwistCoeff x y) * y.val := by
         simp [← conjFactorTwistCoeff_spec]
 
 def conjFactorCompCoeff (x : A.conjFactor σ) (y : A.conjFactor τ) (z : A.conjFactor (σ * τ)) : K :=
@@ -215,12 +216,12 @@ def conjFactorCompCoeffAsUnit
 
 lemma conjFactorCompCoeff_spec
     (x : A.conjFactor σ) (y : A.conjFactor τ) (z : A.conjFactor (σ * τ)) :
-    (x.1 * y.1 : A) = A.ι (conjFactorCompCoeff x y z) * z.1 :=
+    (x.val * y.val : A) = A.ι (conjFactorCompCoeff x y z) * z.val :=
   conjFactorTwistCoeff_spec' (mul' x y) z
 
 lemma conjFactorCompCoeff_spec'_ (x : A.conjFactor σ) (y : A.conjFactor τ)
     (z : A.conjFactor (σ * τ)) :
-    A.ι (conjFactorCompCoeffAsUnit x y z)⁻¹ * (x.1 * y.1 : A) = z.1 := by
+    A.ι (conjFactorCompCoeffAsUnit x y z)⁻¹ * (x.val * y.val : A) = z.val := by
   rw [conjFactorCompCoeff_spec (z := z), ← _root_.mul_assoc, ← map_mul]
   simp only [conjFactorCompCoeffAsUnit, AlgEquiv.mul_apply]
   rw [inv_mul_cancel₀, map_one, _root_.one_mul]
@@ -228,21 +229,21 @@ lemma conjFactorCompCoeff_spec'_ (x : A.conjFactor σ) (y : A.conjFactor τ)
 
 lemma conjFactorCompCoeff_spec' (x : A.conjFactor σ) (y : A.conjFactor τ)
     (z : A.conjFactor (σ * τ)) :
-    A.ι (σ <| τ <| conjFactorTwistCoeff z (mul' x y)) * (x.1 * y.1 : A) = z.1 := by
+    A.ι (σ <| τ <| conjFactorTwistCoeff z (mul' x y)) * (x.val * y.val : A) = z.val := by
   convert conjFactorCompCoeff_spec'_ x y z using 3
   norm_cast
 
 lemma conjFactorCompCoeff_spec'' (x : A.conjFactor σ) (y : A.conjFactor τ)
     (z : A.conjFactor (σ * τ)) :
-    A.ι (conjFactorCompCoeff x y z) = x.1 * y.1 * z.1⁻¹ := by
+    A.ι (conjFactorCompCoeff x y z) = x.val * y.val * z.val⁻¹ := by
   suffices A.ι (conjFactorCompCoeff x y z) * z.val.val = x.val.val * y.val.val by simp [← this]
   rw [← A.conjFactorCompCoeff_spec' x y z]
   simp only [conjFactorCompCoeff, ← _root_.mul_assoc, ← map_mul, conjFactorTwistCoeff_swap, map_one,
     _root_.one_mul]
 
 lemma conjFactorCompCoeff_inv (x : A.conjFactor σ) (y : A.conjFactor τ) (z : A.conjFactor (σ * τ)) :
-    A.ι ((conjFactorCompCoeff x y z)⁻¹) = z.1 * (y.1⁻¹ * x.1⁻¹) := by
-  suffices eq : Units.map A.ι (conjFactorCompCoeffAsUnit x y z)⁻¹ = z.1 * (y.1⁻¹ * x.1⁻¹) by
+    A.ι ((conjFactorCompCoeff x y z)⁻¹) = z.val * (y.val⁻¹ * x.val⁻¹) := by
+  suffices eq : Units.map A.ι (conjFactorCompCoeffAsUnit x y z)⁻¹ = z.val * (y.val⁻¹ * x.val⁻¹) by
     rw [Units.ext_iff] at eq
     simp only [conjFactorCompCoeffAsUnit, Units.inv_mk, Units.coe_map, MonoidHom.coe_ofClass,
       AlgEquiv.mul_apply, Units.val_mul] at eq
@@ -259,15 +260,15 @@ lemma conjFactorCompCoeff_comp_comp₁
     (xρ : A.conjFactor ρ) (xσ : A.conjFactor σ) (xτ : A.conjFactor τ)
     (xρσ : A.conjFactor (ρ * σ))
     (xρστ : A.conjFactor (ρ * σ * τ)) :
-    xρ.1.1 * xσ.1 * xτ.1 =
+    xρ.val.val * xσ.val * xτ.val =
     A.ι (conjFactorCompCoeff xρ xσ xρσ) *
     A.ι (conjFactorCompCoeff xρσ xτ xρστ) *
-    xρστ.1 := by
+    xρστ.val := by
   rw [conjFactorCompCoeff_spec (z := xρσ), _root_.mul_assoc,
     conjFactorCompCoeff_spec (z := xρστ), ← _root_.mul_assoc]
 
 lemma conjFactorCompCoeff_eq (x : A.conjFactor σ) (y : A.conjFactor τ) (z : A.conjFactor (σ * τ)) :
-    A.ι (conjFactorCompCoeff x y z) = (x.1 * y.1) * z.1⁻¹ := by
+    A.ι (conjFactorCompCoeff x y z) = (x.val * y.val) * z.val⁻¹ := by
   have := conjFactorTwistCoeff_spec' (mul' x y) z
   simp only [AlgEquiv.mul_apply, mul'_coe] at this
   rw [this]
@@ -279,14 +280,14 @@ lemma conjFactorCompCoeff_comp_comp₂
     (xρ : A.conjFactor ρ) (xσ : A.conjFactor σ) (xτ : A.conjFactor τ)
     (xστ : A.conjFactor (σ * τ))
     (xρστ : A.conjFactor (ρ * σ * τ)) :
-    xρ.1.1 * (xσ.1 * xτ.1) =
+    xρ.val.val * (xσ.val * xτ.val) =
     A.ι (ρ <| conjFactorCompCoeff xσ xτ xστ) *
     A.ι (conjFactorCompCoeff xρ xστ xρστ) *
-    xρστ.1 := by
+    xρστ.val := by
   have eq1 :
-      xρ.1 * A.ι (conjFactorCompCoeff xσ xτ xστ) =
-      A.ι (ρ <| conjFactorCompCoeff xσ xτ xστ) * xρ.1 := by
-    have := xρ.2 (conjFactorCompCoeff xσ xτ xστ)
+      xρ.val * A.ι (conjFactorCompCoeff xσ xτ xστ) =
+      A.ι (ρ <| conjFactorCompCoeff xσ xτ xστ) * xρ.val := by
+    have := xρ.property (conjFactorCompCoeff xσ xτ xστ)
     conv_rhs => rw [this, _root_.mul_assoc]
     simp
   conv_lhs => rw [conjFactorCompCoeff_spec (z := xστ), ← _root_.mul_assoc, eq1]
@@ -298,10 +299,10 @@ lemma conjFactorCompCoeff_comp_comp₃
     (xρστ : A.conjFactor (ρ * σ * τ)) :
     A.ι (conjFactorCompCoeff xρ xσ xρσ) *
     A.ι (conjFactorCompCoeff xρσ xτ xρστ) *
-    xρστ.1 =
+    xρστ.val =
     A.ι (ρ <| conjFactorCompCoeff xσ xτ xστ) *
     A.ι (conjFactorCompCoeff xρ xστ xρστ) *
-    xρστ.1 := by
+    xρστ.val := by
   rw [← conjFactorCompCoeff_comp_comp₁, ← conjFactorCompCoeff_comp_comp₂, _root_.mul_assoc]
 
 lemma conjFactorCompCoeff_comp_comp
@@ -325,7 +326,7 @@ fun p =>
 
 variable (ρ σ τ) in
 lemma toCocycles₂_cond (x_ : Π σ, A.conjFactor σ) :
-    ρ (A.toCocycles₂ x_ (σ, τ)).1 * A.toCocycles₂ x_ (ρ, σ * τ) =
+    ρ (A.toCocycles₂ x_ (σ, τ)).val * A.toCocycles₂ x_ (ρ, σ * τ) =
     A.toCocycles₂ x_ (ρ, σ) * A.toCocycles₂ x_ (ρ * σ, τ) := by
   delta toCocycles₂
   dsimp only [conjFactorCompCoeffAsUnit, AlgEquiv.mul_apply]
@@ -384,10 +385,10 @@ lemma isoConjCoeff_spec' :
 
 lemma isoConjCoeff_spec'' (c : K) (x : A.conjFactor σ) :
     B.ι (σ c) =
-    (A.isoConjCoeff B * (A.iso B <| x.1) * (A.isoConjCoeff B)⁻¹) *
+    (A.isoConjCoeff B * (A.iso B <| x.val) * (A.isoConjCoeff B)⁻¹) *
       B.ι c *
-    (A.isoConjCoeff B * (A.iso B <| x.1⁻¹.1) * (A.isoConjCoeff B)⁻¹) := by
-  have eq1 := congr(A.iso B $(x.2 c))
+    (A.isoConjCoeff B * (A.iso B <| x.val⁻¹.val) * (A.isoConjCoeff B)⁻¹) := by
+  have eq1 := congr(A.iso B $(x.property c))
   have eq2 := A.isoConjCoeff_spec B (σ c)
   simp only [eq1, map_mul] at eq2
   simp only [eq2, _root_.mul_assoc, Units.mul_right_inj]
@@ -398,8 +399,8 @@ lemma isoConjCoeff_spec'' (c : K) (x : A.conjFactor σ) :
 
 def pushConjFactor (x : A.conjFactor σ) : B.conjFactor σ where
   val :=
-  { val := A.isoConjCoeff B * (A.iso B <| x.1) * (A.isoConjCoeff B)⁻¹
-    inv := A.isoConjCoeff B * (A.iso B <| x.1⁻¹.1) * (A.isoConjCoeff B)⁻¹
+  { val := A.isoConjCoeff B * (A.iso B <| x.val) * (A.isoConjCoeff B)⁻¹
+    inv := A.isoConjCoeff B * (A.iso B <| x.val⁻¹.val) * (A.isoConjCoeff B)⁻¹
     val_inv := by
       simp only [← _root_.mul_assoc, Units.inv_mul_cancel_right, Units.mul_inv_eq_one]
       simp only [_root_.mul_assoc, ← map_mul, Units.mul_inv, map_one, _root_.mul_one]
@@ -411,14 +412,14 @@ def pushConjFactor (x : A.conjFactor σ) : B.conjFactor σ where
     rw [isoConjCoeff_spec'']
 
 @[simp] lemma pushConjFactor_coe (x : A.conjFactor σ) :
-    (A.pushConjFactor B x).1.1 = A.isoConjCoeff B * (A.iso B <| x.1) * (A.isoConjCoeff B)⁻¹ :=
+    (A.pushConjFactor B x).val.val = A.isoConjCoeff B * (A.iso B <| x.val) * (A.isoConjCoeff B)⁻¹ :=
     rfl
 
 def pushConjFactorCoeff (x : A.conjFactor σ) (y : B.conjFactor σ) : K :=
 σ (conjFactorTwistCoeff y (A.pushConjFactor B x))
 
 lemma pushConjFactorCoeff_spec (x : A.conjFactor σ) (y : B.conjFactor σ) :
-    y.1 = B.ι (A.pushConjFactorCoeff B x y) * (A.pushConjFactor B x).1 :=
+    y.val = B.ι (A.pushConjFactorCoeff B x y) * (A.pushConjFactor B x).val :=
   conjFactorTwistCoeff_spec' y (A.pushConjFactor B x)
 
 lemma pushConjFactorCoeff_spec' (x : A.conjFactor σ) (y : B.conjFactor σ) :
@@ -444,22 +445,22 @@ lemma compare_conjFactorCompCoeff
     σ (A.pushConjFactorCoeff B xτ yτ) *
     A.conjFactorCompCoeff xσ xτ xστ := by
   have eq1 := B.conjFactorCompCoeff_spec yσ yτ yστ
-  have eq2 : yσ.1.1 * yτ.1.1 =
+  have eq2 : yσ.val.val * yτ.val.val =
       (A.isoConjCoeff B) *
       A.iso B
         (A.ι (A.pushConjFactorCoeff B xσ yσ) *
-          xσ.1 *
+          xσ.val *
           A.ι (A.pushConjFactorCoeff B xτ yτ) *
-          xτ.1) *
+          xτ.val) *
       (A.isoConjCoeff B)⁻¹ := by
     rw [A.pushConjFactorCoeff_spec B xσ yσ, A.pushConjFactorCoeff_spec B xτ yτ,
     pushConjFactorCoeff_spec', pushConjFactorCoeff_spec',
     pushConjFactor_coe, pushConjFactor_coe]
     simp only [_root_.mul_assoc, Units.inv_mul_cancel_left, map_mul]
   rw [eq2] at eq1; clear eq2
-  have eq2 : yστ.1.1 =
+  have eq2 : yστ.val.val =
     A.isoConjCoeff B *
-      (A.iso B <| A.ι (A.pushConjFactorCoeff B xστ yστ) * xστ.1) *
+      (A.iso B <| A.ι (A.pushConjFactorCoeff B xστ yστ) * xστ.val) *
     (A.isoConjCoeff B)⁻¹ := by
     rw [A.pushConjFactorCoeff_spec B xστ yστ, pushConjFactorCoeff_spec']
     simp only [_root_.mul_assoc, AlgEquiv.mul_apply, pushConjFactor_coe, map_mul,
@@ -468,13 +469,13 @@ lemma compare_conjFactorCompCoeff
   rw [A.isoConjCoeff_spec B] at eq1
   simp only [← _root_.mul_assoc] at eq1
   conv_rhs at eq1 =>
-    rw [_root_.mul_assoc _ _ (A.isoConjCoeff B).1, Units.inv_mul, _root_.mul_one,
+    rw [_root_.mul_assoc _ _ (A.isoConjCoeff B).val, Units.inv_mul, _root_.mul_one,
       _root_.mul_assoc _ _ (A.iso B _), ← map_mul]
   rw [Units.mul_left_inj, Units.mul_right_inj] at eq1
   replace eq1 := (A.iso B).injective eq1
-  have eq2 : xσ.1.1 * A.ι (A.pushConjFactorCoeff B xτ yτ) * xτ.1.1 =
-      A.ι (σ <| A.pushConjFactorCoeff B xτ yτ) * xσ.1.1 * xτ.1.1 := by
-    have := xσ.2 (A.pushConjFactorCoeff B xτ yτ)
+  have eq2 : xσ.val.val * A.ι (A.pushConjFactorCoeff B xτ yτ) * xτ.val.val =
+      A.ι (σ <| A.pushConjFactorCoeff B xτ yτ) * xσ.val.val * xτ.val.val := by
+    have := xσ.property (A.pushConjFactorCoeff B xτ yτ)
     rw [this]
     simp [_root_.mul_assoc]
   apply_fun (A.ι (A.pushConjFactorCoeff B xσ yσ) * ·) at eq2
@@ -546,8 +547,8 @@ lemma mem_relativeBrGroup_iff_nonempty_goodRep {X : BrauerGroup F} :
   · rintro ⟨⟨A, eq, i, dim⟩⟩
     exact ⟨A, eq.symm, i, dim.symm⟩
 
-def RelativeBrGroup.goodRep (X : RelativeBrGroup K F) : GoodRep K X.1 :=
-  mem_relativeBrGroup_iff_nonempty_goodRep.1 X.2 |>.some
+def RelativeBrGroup.goodRep (X : RelativeBrGroup K F) : GoodRep K X.val :=
+  mem_relativeBrGroup_iff_nonempty_goodRep.1 X.property |>.some
 
 open groupCohomology
 
@@ -566,7 +567,7 @@ def RelativeBrGroup.toSnd :  RelativeBrGroup K F → groupCohomology.H2 (galAct 
 
 set_option backward.isDefEq.respectTransparency false in
 lemma RelativeBrGroup.toSnd_wd (X : RelativeBrGroup K F)
-    (A : GoodRep K X.1) (x_ : Π σ, A.conjFactor σ) :
+    (A : GoodRep K X.val) (x_ : Π σ, A.conjFactor σ) :
     toSnd X = A.toH2 x_ := by
   simp only [toSnd, GoodRep.toH2]
   change H2π _ _ = H2π _ _
@@ -575,7 +576,7 @@ lemma RelativeBrGroup.toSnd_wd (X : RelativeBrGroup K F)
   set lhs := _; change lhs ∈ _
   have : IsMulCoboundary₂ (G := Gal(K/F)) (M := Kˣ) (lhs) := by
     apply GoodRep.compare_toCocycles₂'
-  exact coboundariesOfIsMulCoboundary₂ this |>.2
+  exact coboundariesOfIsMulCoboundary₂ this |>.property
 
 namespace GoodRep
 
@@ -586,10 +587,10 @@ variable {X : BrauerGroup F} (A : GoodRep K X)
 omit [FiniteDimensional F K] in
 set_option backward.isDefEq.respectTransparency false in
 lemma conjFactor_linearIndependent (x_ : Π σ, A.conjFactor σ) :
-    LinearIndependent K (v := fun (i : Gal(K/F)) => (x_ i).1.1) := by
+    LinearIndependent K (v := fun (i : Gal(K/F)) => (x_ i).val.val) := by
   classical
   by_contra rid
-  obtain ⟨J, LI, maximal⟩ := exists_maximal_linearIndepOn K (fun (i : Gal(K/F)) => (x_ i).1.1)
+  obtain ⟨J, LI, maximal⟩ := exists_maximal_linearIndepOn K (fun (i : Gal(K/F)) => (x_ i).val.val)
   have ne : J ≠ Set.univ := by
     rintro rfl
     refine rid ?_
@@ -603,57 +604,58 @@ lemma conjFactor_linearIndependent (x_ : Π σ, A.conjFactor σ) :
   replace hc := Submodule.smul_mem _ c⁻¹ hc
   rw [← mul_smul, inv_mul_cancel₀ c_ne_zero, one_smul] at hc
   clear c c_ne_zero
-  have mem1 : (x_ σ).1.1 ∈ Submodule.span K (Set.range fun (σ : J) ↦ (x_ σ.1).1.1) := by
+  have mem1 : (x_ σ).val.val ∈ Submodule.span K (Set.range fun (σ : J) ↦ (x_ σ.val).val.val) := by
     convert! hc; aesop
-  have eq0 : (⟨(x_ σ).1.1, mem1⟩ : Submodule.span K (Set.range fun (σ : J) ↦ (x_ σ.1).1.1)) =
-      ∑ τ ∈ (B.repr ⟨_, mem1⟩).support, B.repr ⟨_, mem1⟩ τ • (x_ τ).1.1 := by
-    conv_lhs => rw [← B.linearCombination_repr ⟨(x_ σ).1.1, mem1⟩, Finsupp.linearCombination_apply,
-      Finsupp.sum]
+  have eq0 :
+      (⟨(x_ σ).val.val, mem1⟩ : Submodule.span K (Set.range fun (σ : J) ↦ (x_ σ.val).val.val)) =
+      ∑ τ ∈ (B.repr ⟨_, mem1⟩).support, B.repr ⟨_, mem1⟩ τ • (x_ τ).val.val := by
+    conv_lhs => rw [← B.linearCombination_repr ⟨(x_ σ).val.val, mem1⟩,
+      Finsupp.linearCombination_apply, Finsupp.sum]
     rw [AddSubmonoidClass.coe_finsetSum]
     refine Finset.sum_congr rfl fun i _ => ?_
     simp only [SetLike.val_smul, smul_def]
     congr 1
     simp only [B, Basis.span_apply]
   simp only [smul_def] at eq0
-  have eq1 (c : K) := calc A.ι (σ c) * (x_ σ).1.1
-      _ = (x_ σ).1.1 * A.ι c := by
-        rw [(x_ σ).2 c]; simp [_root_.mul_assoc]
+  have eq1 (c : K) := calc A.ι (σ c) * (x_ σ).val.val
+      _ = (x_ σ).val.val * A.ι c := by
+        rw [(x_ σ).property c]; simp [_root_.mul_assoc]
       _ = ∑ τ ∈ (B.repr ⟨_, mem1⟩).support,
-            A.ι (B.repr ⟨_, mem1⟩ τ) * (x_ τ).1.1 * A.ι c := by
+            A.ι (B.repr ⟨_, mem1⟩ τ) * (x_ τ).val.val * A.ι c := by
         conv_lhs => rw [eq0, Finset.sum_mul]
       _ = ∑ τ ∈ (B.repr ⟨_, mem1⟩).support,
-            A.ι (B.repr ⟨_, mem1⟩ τ) * A.ι (τ.1 c) * (x_ τ).1.1 :=
+            A.ι (B.repr ⟨_, mem1⟩ τ) * A.ι (τ.val c) * (x_ τ).val.val :=
         Finset.sum_congr rfl fun i _ => by
         simp only [_root_.mul_assoc]
         congr 1
-        rw [(x_ i).2 c]
+        rw [(x_ i).property c]
         simp [_root_.mul_assoc, Units.inv_mul, _root_.mul_one]
       _ = ∑ τ ∈ (B.repr ⟨_, mem1⟩).support,
-            A.ι (B.repr ⟨_, mem1⟩ τ * τ.1 c) * (x_ τ).1.1 :=
+            A.ι (B.repr ⟨_, mem1⟩ τ * τ.val c) * (x_ τ).val.val :=
         Finset.sum_congr rfl fun i _ => by rw [map_mul]
-  have eq2 (c : K) := calc A.ι (σ c) * (x_ σ).1.1
+  have eq2 (c : K) := calc A.ι (σ c) * (x_ σ).val.val
       _ = ∑ τ ∈ (B.repr ⟨_, mem1⟩).support,
-          A.ι (σ c * (B.repr ⟨_, mem1⟩) τ) * (x_ τ).1.1 := by
+          A.ι (σ c * (B.repr ⟨_, mem1⟩) τ) * (x_ τ).val.val := by
         conv_lhs => rw [eq0, Finset.mul_sum]
         simp_rw [map_mul, _root_.mul_assoc]
   have eq3 (c : K) :
       ∑ τ ∈ (B.repr ⟨_, mem1⟩).support,
-            A.ι (B.repr ⟨_, mem1⟩ τ * τ.1 c) * (x_ τ).1.1 =
+            A.ι (B.repr ⟨_, mem1⟩ τ * τ.val c) * (x_ τ).val.val =
       ∑ τ ∈ (B.repr ⟨_, mem1⟩).support,
-          A.ι (σ c * (B.repr ⟨_, mem1⟩) τ) * (x_ τ).1.1 :=
+          A.ι (σ c * (B.repr ⟨_, mem1⟩) τ) * (x_ τ).val.val :=
     eq1 c |>.symm.trans <| eq2 c
   have eq4 (c : K) :
       ∑ τ ∈ (B.repr ⟨_, mem1⟩).support,
-          A.ι (B.repr ⟨_, mem1⟩ τ * τ.1 c - σ c * (B.repr ⟨_, mem1⟩) τ) * (x_ τ).1.1 = 0 := by
+          A.ι (B.repr ⟨_, mem1⟩ τ * τ.val c - σ c * (B.repr ⟨_, mem1⟩) τ) * (x_ τ).val.val = 0 := by
     simp only [map_sub, map_mul, sub_mul, Finset.sum_sub_distrib]
     simp only [← map_mul, eq3, sub_self]
   have eq5 (c : K) :
       ∑ τ ∈ (B.repr ⟨_, mem1⟩).support,
-          (B.repr ⟨_, mem1⟩ τ * τ.1 c - σ c * (B.repr ⟨_, mem1⟩) τ) • (x_ τ).1.1 = 0 := by
+          (B.repr ⟨_, mem1⟩ τ * τ.val c - σ c * (B.repr ⟨_, mem1⟩) τ) • (x_ τ).val.val = 0 := by
     rw [← eq4]
     rfl
   have eq6 (c : K) := linearIndependent_iff'' |>.1 LI (B.repr ⟨_, mem1⟩).support
-    (fun τ => B.repr ⟨_, mem1⟩ τ * τ.1 c - σ c * (B.repr ⟨_, mem1⟩) τ)
+    (fun τ => B.repr ⟨_, mem1⟩ τ * τ.val c - σ c * (B.repr ⟨_, mem1⟩) τ)
     (by
       intro i hi
       simp only [Finsupp.mem_support_iff, ne_eq, Decidable.not_not] at hi
@@ -665,18 +667,18 @@ lemma conjFactor_linearIndependent (x_ : Π σ, A.conjFactor σ) :
   obtain ⟨τ, τ_mem⟩ := Finset.nonempty_of_ne_empty this
   have eq7 : σ = τ := by
     ext c
-    specialize eq6 c τ τ.2
+    specialize eq6 c τ τ.property
     rw [mul_comm] at eq6
     simp only [Subtype.coe_eta, mul_eq_mul_right_iff] at eq6
     refine eq6.recOn Eq.symm fun rid ↦ ?_
     simp only [Finsupp.mem_support_iff, ne_eq] at τ_mem
     contradiction
   subst eq7
-  exact hσ τ.2
+  exact hσ τ.property
 variable [IsGalois F K] in
 def conjFactorBasis (x_ : Π σ, A.conjFactor σ) : Basis Gal(K/F) K A :=
   basisOfLinearIndependentOfCardEqFinrank
-    (b := fun (i : Gal(K/F)) => (x_ i).1.1)
+    (b := fun (i : Gal(K/F)) => (x_ i).val.val)
     (A.conjFactor_linearIndependent x_)
     (by rw [A.dim_eq', Fintype.card_eq_nat_card, IsGalois.card_aut_eq_finrank])
 
@@ -693,9 +695,9 @@ open CrossProductAlgebra
 variable [IsGalois F K] [DecidableEq Gal(K/F)]
 
 def fromCocycles₂ (f : cocycles₂ (galAct F K)) : RelativeBrGroup K F :=
-  haveI := groupCohomology.isMulCocycle₂_of_mem_cocycles₂ _ f.2
+  haveI := groupCohomology.isMulCocycle₂_of_mem_cocycles₂ _ f.property
   haveI : Fact (IsMulCocycle₂ (M := Kˣ) (Additive.toMul ∘ f)) := ⟨this⟩
-  ⟨Quotient.mk'' (asCSA (⇑Additive.toMul ∘ f.1)), mem_relativeBrGroup_iff_nonempty_goodRep.2 <|
+  ⟨Quotient.mk'' (asCSA (⇑Additive.toMul ∘ f.val)), mem_relativeBrGroup_iff_nonempty_goodRep.2 <|
     ⟨⟨asCSA (Additive.toMul ∘ f), rfl, incl (Additive.toMul ∘ f), dim_eq_sq⟩⟩⟩
 
 set_option backward.isDefEq.respectTransparency false in
@@ -750,7 +752,7 @@ def fromSnd :
     let φ2 : A ≃ₐ[F] B := AlgEquiv.ofLinearEquiv φ1
       (by
         change φ0 1 = 1
-        rw [show (1 : A) = (a (1, 1))⁻¹.1 • (CrossProductAlgebra.basis 1 : A) by
+        rw [show (1 : A) = (a (1, 1))⁻¹.val • (CrossProductAlgebra.basis 1 : A) by
           apply val_injective
           simp [CrossProductAlgebra.basis], map_smul]
         erw [Basis.equiv_apply]
@@ -822,7 +824,7 @@ def fromSnd :
               map_mul σ]
             congr 2
             field_simp at hc
-            rw [mul_comm (a (σ, τ)).1, ← hc]
+            rw [mul_comm (a (σ, τ)).val, ← hc]
             ring)
     apply IsBrauerEquivalent.iso_to_eqv (h := φ2)
 
@@ -831,7 +833,7 @@ end from_two
 variable [IsGalois F K]
 lemma fromSnd_wd (a : cocycles₂ (galAct F K)) :
     haveI : Fact (IsMulCocycle₂ (M := Kˣ) (Additive.toMul ∘ a)) :=
-      ⟨isMulCocycle₂_of_mem_cocycles₂ _ a.2⟩
+      ⟨isMulCocycle₂_of_mem_cocycles₂ _ a.property⟩
     (fromSnd F K <| Submodule.Quotient.mk a) =
     ⟨Quotient.mk'' (CrossProductAlgebra.asCSA (Additive.toMul ∘ a)),
       mem_relativeBrGroup_iff_nonempty_goodRep.2
@@ -848,7 +850,7 @@ lemma toSnd_fromSnd : toSnd ∘ fromSnd F K ∘ (H2Iso (galAct F K)).hom = id :=
   induction a using H2_induction_on with | h a =>
   let am := Additive.toMul ∘ Amelia.toAdditive _ _ ∘ a
   have ha : IsMulCocycle₂ am :=
-    isMulCocycle₂_of_mem_cocycles₂ _ (by simpa using! a.2)
+    isMulCocycle₂_of_mem_cocycles₂ _ (by simpa using! a.property)
   have : Fact (IsMulCocycle₂ am) := ⟨ha⟩
   simp only [Function.comp_apply, id_eq]
   let A : GoodRep K (Quotient.mk'' <| CrossProductAlgebra.asCSA am) :=
@@ -863,7 +865,7 @@ lemma toSnd_fromSnd : toSnd ∘ fromSnd F K ∘ (H2Iso (galAct F K)).hom = id :=
   rw [← sub_eq_zero, ← map_sub, H2π_eq_zero_iff]
   -- rw [Submodule.quotientRel_def]
   suffices H : IsMulCoboundary₂ _ from
-    (Amfix.coboundariesOfIsMulCoboundary₂ H).2
+    (Amfix.coboundariesOfIsMulCoboundary₂ H).property
   refine ⟨fun _ => 1, ?_⟩
   intro σ τ
   simp only [smul_one, div_self', _root_.mul_one, cocyclesOfIsMulCocycle₂_coe,
@@ -873,7 +875,7 @@ lemma toSnd_fromSnd : toSnd ∘ fromSnd F K ∘ (H2Iso (galAct F K)).hom = id :=
   ext : 1
   simp only [Units.val_one, Units.val_div_eq_div_val]
   field_simp
-  change (am (σ, τ)).1 = _
+  change (am (σ, τ)).val = _
   change _ = A.conjFactorCompCoeff (y_ σ) (y_ τ) (y_ (σ * τ))
   apply_fun A.ι using RingHom.injective _
   rw [conjFactorCompCoeff_spec'']
@@ -884,7 +886,7 @@ lemma toSnd_fromSnd : toSnd ∘ fromSnd F K ∘ (H2Iso (galAct F K)).hom = id :=
 
 lemma fromSnd_toSnd : (fromSnd F K ∘ (H2Iso (galAct F K)).hom) ∘ toSnd = id := by
   ext X
-  obtain ⟨A⟩ := mem_relativeBrGroup_iff_nonempty_goodRep.1 X.2
+  obtain ⟨A⟩ := mem_relativeBrGroup_iff_nonempty_goodRep.1 X.property
   simp only [Function.comp_apply, id_eq, SetLike.coe_eq_coe]
   rw [toSnd_wd (A := A) (x_ := A.arbitraryConjFactor)]
   ext : 1
@@ -899,7 +901,7 @@ lemma fromSnd_toSnd : (fromSnd F K ∘ (H2Iso (galAct F K)).hom) ∘ toSnd = id 
   haveI : Fact (IsMulCocycle₂ f) := by
     subst f
     exact ⟨isMulCocycle₂_of_mem_cocycles₂ _ (cocyclesOfIsMulCocycle₂
-      (GoodRep.isMulCocycle₂ A.arbitraryConjFactor)).2⟩
+      (GoodRep.isMulCocycle₂ A.arbitraryConjFactor)).property⟩
   change CrossProductAlgebra f ≃ₐ[F] A
   let φ0 : CrossProductAlgebra f ≃ₗ[K] A :=
     CrossProductAlgebra.basis.equiv (A.conjFactorBasis A.arbitraryConjFactor) (.refl _)
@@ -921,12 +923,12 @@ lemma fromSnd_toSnd : (fromSnd F K ∘ (H2Iso (galAct F K)).hom) ∘ toSnd = id 
   · have : Fact (IsMulCocycle₂ (M := Kˣ)
       (Additive.toMul ∘ cocyclesOfIsMulCocycle₂ (GoodRep.isMulCocycle₂ A.arbitraryConjFactor))) :=
       ⟨isMulCocycle₂_of_mem_cocycles₂ _ (cocyclesOfIsMulCocycle₂
-        (GoodRep.isMulCocycle₂ A.arbitraryConjFactor)).2⟩
+        (GoodRep.isMulCocycle₂ A.arbitraryConjFactor)).property⟩
     change φ0 1 = 1
     conv_lhs =>
       enter [2]
       rw [show (1 : CrossProductAlgebra f) =
-        ((A.toCocycles₂ A.arbitraryConjFactor) (1, 1))⁻¹.1 • (CrossProductAlgebra.basis 1) by
+        ((A.toCocycles₂ A.arbitraryConjFactor) (1, 1))⁻¹.val • (CrossProductAlgebra.basis 1) by
         apply CrossProductAlgebra.val_injective
         rw [← smul_one_mul, ← CrossProductAlgebra.incl_apply, CrossProductAlgebra.val_mul]
         simp only [CrossProductAlgebra.val_one, Units.val_inv_eq_inv_val,
@@ -979,7 +981,7 @@ lemma fromSnd_toSnd : (fromSnd F K ∘ (H2Iso (galAct F K)).hom) ∘ toSnd = id 
     simp only [CrossProductAlgebra.mulLinearMap_single_single, *]
     rw [← mul_one (a * σ b * _), ← smul_eq_mul _ 1, ← Finsupp.smul_single,
       show (⟨_ • .single _ 1⟩ : CrossProductAlgebra _) =
-        (a * σ b * (f (σ, τ)).1) • (CrossProductAlgebra.basis (σ * τ)) by
+        (a * σ b * (f (σ, τ)).val) • (CrossProductAlgebra.basis (σ * τ)) by
         apply CrossProductAlgebra.val_injective; simp [CrossProductAlgebra.basis],
       show (⟨.single σ a⟩ : CrossProductAlgebra _) = a • (CrossProductAlgebra.basis σ) by
         apply CrossProductAlgebra.val_injective; simp [CrossProductAlgebra.basis],
@@ -998,7 +1000,7 @@ lemma fromSnd_toSnd : (fromSnd F K ∘ (H2Iso (galAct F K)).hom) ∘ toSnd = id 
     congr 1
     simp only [_root_.mul_assoc]
     congr 1
-    rw [(A.arbitraryConjFactor _).2 b]
+    rw [(A.arbitraryConjFactor _).property b]
     simp [-GoodRep.conjFactor_prop]
 
 @[simp]

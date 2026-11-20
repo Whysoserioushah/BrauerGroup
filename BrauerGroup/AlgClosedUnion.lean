@@ -55,7 +55,7 @@ def intermediateTensorEquiv (L : IntermediateField K K_bar) :
 omit [IsAlgClosure K K_bar] in
 @[simp]
 lemma intermediateTensorEquiv_apply_tmul (L : IntermediateField K K_bar)
-      (x : L) (a : A) (h : x.1 ⊗ₜ[K] a ∈ intermediateTensor K K_bar A L) :
+      (x : L) (a : A) (h : x.val ⊗ₜ[K] a ∈ intermediateTensor K K_bar A L) :
     intermediateTensorEquiv K K_bar A L ⟨_, h⟩ =
     x ⊗ₜ a := by
   simp only [intermediateTensorEquiv]
