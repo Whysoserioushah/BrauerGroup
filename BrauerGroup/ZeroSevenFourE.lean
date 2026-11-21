@@ -572,7 +572,7 @@ def toEndEnd (M : Type v) [AddCommGroup M] [Module A M] :
 
 def toEndEndAlgHom (M : Type v) [AddCommGroup M] [Module A M] [Module k M] [IsScalarTower k A M] :
     A →ₐ[k] Module.End (Module.End A M) M where
-  __ := toEndEnd A M
+  __ := (toEndEnd A M).toAddHom
   map_one' := by ext; simp
   map_mul' a b := by ext; simp [mul_smul]
   map_zero' := by ext; simp

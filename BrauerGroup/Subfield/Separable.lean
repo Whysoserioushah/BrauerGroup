@@ -386,9 +386,9 @@ theorem exists_sep_masSubfield' : ∃ (a : D), IsMax (SubField.bot_adjoin K D a)
           (K := SubField.adjoin K D L a.val a.property)
           (x := ⟨a.val, Algebra.subset_adjoin hx1⟩) <| by
             let f : SubField.adjoin K D L a.val a.property →ₐ[L] centralizer K (L : Set D) :=
-              ⟨(Subalgebra.inclusion
-                (SubField.adjoin_le_centralizer K D L a.val a.property)).toRingHom,
-                fun r ↦ rfl⟩
+              { toRingHom := (Subalgebra.inclusion
+                  (SubField.adjoin_le_centralizer K D L a.val a.property)).toRingHom
+                commutes' r := rfl }
             exact asep.of_algHom _ f
       · simp only [Algebra.isSeparable_def, Subtype.forall] at hLsep
         have := IsSeparable.map (F := K) (K := L) (L := SubField.adjoin K D L a.val a.property)
