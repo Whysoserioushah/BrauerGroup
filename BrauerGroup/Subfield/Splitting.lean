@@ -29,7 +29,8 @@ lemma exists_embedding_of_isSplit [FiniteDimensional F K] (A : CSA F) (split : i
         map_mul' := by intros; ext; rfl
         map_zero' := by ext; rfl
         map_add' := by intros; ext; rfl
-        commutes' := by intros; ext; rfl } <| iso'.toAlgHom.restrictScalars F) <|
+        commutes' := by intros; ext; rfl
+        map_smul' := by intros; ext; rfl } <| iso'.toAlgHom.restrictScalars F) <|
       Algebra.TensorProduct.includeRight (R := F) (A := K) (B := A)
   let B := Subalgebra.centralizer F (AlgHom.range emb : Set (Module.End F (Fin n → K)))
   let e : A ≃ₐ[F] (AlgHom.range emb) :=

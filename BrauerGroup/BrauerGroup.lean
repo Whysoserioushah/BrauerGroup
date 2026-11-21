@@ -536,7 +536,7 @@ def e2 :
 
 def e3Aux0 : E ⊗[K] A →ₐ[E] E ⊗[K] (A ⊗[K] Matrix (Fin m) (Fin m) K) :=
   AlgHom.comp
-    { (Algebra.TensorProduct.assoc K K K E A (Matrix (Fin m) (Fin m) K)).toAlgHom with
+    { (Algebra.TensorProduct.assoc K K K E A (Matrix (Fin m) (Fin m) K)).toAlgHom.toRingHom with
       commutes' e := by
         simp only [AlgHom.toRingHom_eq_coe, AlgEquiv.toAlgHom_toRingHom, RingHom.toMonoidHom_eq_coe,
           Algebra.TensorProduct.algebraMap_apply, Algebra.algebraMap_self, RingHom.id_apply,
@@ -552,7 +552,7 @@ def e3Aux10 : (E ⊗[K] Matrix (Fin m) (Fin m) K) ⊗[K] A ≃ₐ[K]
 
 def e3Aux1 : E ⊗[K] Matrix (Fin m) (Fin m) K →ₐ[E] E ⊗[K] (A ⊗[K] Matrix (Fin m) (Fin m) K) :=
   AlgHom.comp
-    { (e3Aux10 (K := K) (E := E) A m).toAlgHom with
+    { (e3Aux10 (K := K) (E := E) A m).toAlgHom.toRingHom with
       commutes' e := by
         simp only [e3Aux10, AlgHom.toRingHom_eq_coe, AlgEquiv.toAlgHom_toRingHom,
           RingHom.toMonoidHom_eq_coe, Algebra.TensorProduct.algebraMap_apply,
