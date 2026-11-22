@@ -148,7 +148,7 @@ def absorb_eqv : L ⊗[k] A ≃ₐ[L] L ⊗[K] (K ⊗[k] A) where
     rw [TensorProduct.smul_tmul, TensorProduct.smul_tmul', smul_eq_mul, mul_one]
   map_mul' := map_mul _
   map_add' := map_add _
-  commutes' := release k K L A|>.commutes
+  map_smul' := map_smul (release k K L A)
 
 theorem absorb_eqv_apply (l : L) (a : A) : absorb_eqv k K L A (l ⊗ₜ a) = l ⊗ₜ[K] (1 ⊗ₜ a) :=
   rfl

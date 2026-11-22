@@ -367,9 +367,9 @@ noncomputable def matrixModuleEndAlgEquivMop {n : ℕ} [NeZero n]
   map_add' f g := by
     apply MulOpposite.unop_injective
     simp
-  commutes' a := by
+  map_smul' a f := by
     apply MulOpposite.unop_injective
-    simp [Pi.single, Algebra.smul_def]
+    simp
 
 @[stacks 074E "(3) first part"]
 def end_simple_mod_of_wedderburn (n : ℕ) (hn : n ≠ 0) (D : Type v) [DivisionRing D] [Algebra k D]
@@ -467,73 +467,6 @@ instance end_simple_mod_finite
 --   rw [show x = (MulOpposite.op x : Dᵐᵒᵖ) • 1 by simp]
 --   exact Submodule.smul_mem _ _ <| Submodule.subset_span rfl
 
-instance (M : Type v) [AddCommGroup M] [Module A M] [Module k M] [IsScalarTower k A M] :
-    Algebra k (Module.End (Module.End A M) M) where
-  algebraMap := {
-    toFun a :=
-    { toFun m := a • m
-      map_add' := by simp only [smul_add, implies_true]
-      map_smul' := by
-        simp only [Module.End.smul_def, RingHom.id_apply, LinearMap.map_smul_of_tower,
-          implies_true] }
-    map_one' := by ext; simp
-    map_mul' _ _ := by ext; simp [mul_comm, ← mul_smul]
-    map_zero' := by ext; simp
-    map_add' _ _ := by ext; simp [add_smul]
-  }
-  commutes' := by
-    intros r f
-    ext m
-    simp only [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, mul_apply_eq_comp,
-      LinearMap.coe_mk, AddHom.coe_mk]
-    let s : Module.End A M :=
-    { toFun x := r • x
-      map_add' := by simp
-      map_smul' := fun a x => by
-        simp only [RingHom.id_apply]
-        rw [algebra_compatible_smul A, ← mul_smul, algebra_compatible_smul A, ← mul_smul]
-        congr 1
-        exact Algebra.commutes r a }
-    rw [show r • m = s • m by rfl, f.map_smul]
-    rfl
-  smul r f :=
-  { toFun m := f <| r • m
-    map_add' := by simp
-    map_smul' := by
-      intro g m
-      simp only [Module.End.smul_def, RingHom.id_apply]
-      let s : Module.End A M :=
-      { toFun x := r • x
-        map_add' := by simp
-        map_smul' := fun a x => by
-          simp only [RingHom.id_apply]
-          rw [algebra_compatible_smul A, ← mul_smul, algebra_compatible_smul A, ← mul_smul]
-          congr 1
-          exact Algebra.commutes r a }
-      change f (s • g m) = g (f <| s • m)
-      rw [f.map_smul, f.map_smul]
-      simp only [Module.End.smul_def, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.map_smul_of_tower,
-        s]
-      change r • f (g • m) = _
-      rw [f.map_smul]
-      simp }
-  smul_def' := by
-    intro r f
-    ext m
-    simp only [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, mul_apply_eq_comp,
-      LinearMap.coe_mk, AddHom.coe_mk]
-    let s : Module.End A M :=
-      { toFun x := r • x
-        map_add' := by simp
-        map_smul' := fun a x => by
-          simp only [RingHom.id_apply]
-          rw [algebra_compatible_smul A, ← mul_smul, algebra_compatible_smul A, ← mul_smul]
-          congr 1
-          exact Algebra.commutes r a }
-    change _ = s • f m
-    rw [← f.map_smul]
-    rfl
-
 omit [IsSimpleRing A] in
 lemma exists_gen (M : Type v) [AddCommGroup M]
     [Module A M] [IsSimpleModule A M] :
@@ -576,7 +509,7 @@ def toEndEndAlgHom (M : Type v) [AddCommGroup M] [Module A M] [Module k M] [IsSc
   map_one' := by ext; simp
   map_mul' a b := by ext; simp [mul_smul]
   map_zero' := by ext; simp
-  commutes' a := by ext; simp; rfl
+  commutes' a := by ext; simp
 
 instance (M : Type v) [AddCommGroup M] [Module A M] [IsSimpleModule A M] :
     Nontrivial (Module.End (Module.End A M) M) where

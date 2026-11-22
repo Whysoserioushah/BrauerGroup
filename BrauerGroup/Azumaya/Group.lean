@@ -93,7 +93,7 @@ private abbrev ee : Module.End R R ≃ₐ[R] R where
   right_inv r := by simp
   map_mul' _ _ := by simp
   map_add' _ _ := rfl
-  commutes' _ := by simp
+  map_smul' _ _ := by simp
 
 lemma Azumaya.inv_mul (A : Azumaya R) :
     IsMoritaEquivalent R (Azumaya.mul R (Azumaya.Inv R A) A) 1 := by

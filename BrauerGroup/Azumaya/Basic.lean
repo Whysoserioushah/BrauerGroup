@@ -174,8 +174,8 @@ instance (n : ℕ) [NeZero n] : FaithfulSMul R (Matrix (Fin n) (Fin n) R) where
 open MulOpposite in
 abbrev matrixAlgEquivMatrixMop (n : ℕ) :
   Matrix (Fin n) (Fin n) R ≃ₐ[R] (Matrix (Fin n) (Fin n) R)ᵐᵒᵖ :=
-  (AlgEquiv.toOpposite R R).mapMatrix.trans <| AlgEquiv.ofRingEquiv
-  (f := matrixEquivMatrixMop n R) <|
+  (AlgEquiv.toOpposite R R).mapMatrix.trans <| .ofCommutes
+  (matrixEquivMatrixMop n R) <|
   fun r ↦ by
     simp only [matrixEquivMatrixMop_apply, MulOpposite.algebraMap_apply, op_inj]
     ext i j
@@ -184,8 +184,7 @@ abbrev matrixAlgEquivMatrixMop (n : ℕ) :
 
 set_option backward.isDefEq.respectTransparency false in
 noncomputable abbrev mopAlgEquivEnd : Rᵐᵒᵖ ≃ₐ[R] Module.End R R :=
-  AlgEquiv.ofRingEquiv (f := mopEquivEnd R) fun r ↦ by
-    ext; simp [mopEquivEnd]
+  .ofCommutes (mopEquivEnd R) fun r ↦ by ext; simp [mopEquivEnd]
 
 noncomputable abbrev tensorEquivEnd : R ⊗[R] Rᵐᵒᵖ ≃ₐ[R] Module.End R R :=
   Algebra.TensorProduct.lid R Rᵐᵒᵖ|>.trans <| mopAlgEquivEnd R

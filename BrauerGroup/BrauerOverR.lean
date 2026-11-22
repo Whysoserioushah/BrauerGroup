@@ -48,7 +48,7 @@ set_option backward.isDefEq.respectTransparency false in
 instance : Algebra.IsCentral ℝ ℍ[ℝ] := ⟨fun q hq ↦ by
   rw [Subalgebra.mem_center_iff] at hq
   change ∃(_ : _), _ = _
-  use q.1
+  use q.re
   have eq1 := hq ⟨0, 1, 0, 0⟩
   have eq2 := hq ⟨0, 0, 1, 0⟩
   have eq3 := hq ⟨0, 0, 0, 1⟩
@@ -60,7 +60,7 @@ instance : Algebra.IsCentral ℝ ℍ[ℝ] := ⟨fun q hq ↦ by
     imI_mul, zero_add, add_zero, imJ_mul, sub_self, imK_mul, AlgHom.toRingHom_eq_coe,
     RingHom.coe_coe] at *
   simp only [neg_eq_self, self_eq_neg, Algebra.ofId_apply, algebraMap_def] at *
-  change (⟨q.1, 0, 0, 0⟩ : ℍ[ℝ]) = ⟨q.1, q.2,q.3,q.4⟩
+  change (⟨q.re, 0, 0, 0⟩ : ℍ[ℝ]) = ⟨q.re, q.imI, q.imJ, q.imK⟩
   ext <;> simp_all⟩
 
 instance : IsSimpleRing (ℍ[ℝ] ⊗[ℝ] ℍ[ℝ]) := IsCentralSimple.TensorProduct.simple _ _ _
@@ -119,7 +119,7 @@ lemma BrauerOverR (A : CSA.{0, 0} ℝ) :
           rw [← e'.symm_apply_apply d, ← e'.symm_apply_apply d']
           conv_lhs => rw [← _root_.map_mul e'.symm, mul_comm, map_mul]
       rw [this]
-      exact IsConcreteLE.lt_iff_le_and_exists.2 ⟨fun _ _ ↦ ⟨⟩, ⟨e'.symm Complex.I, ⟨⟨⟩, by
+      exact lt_iff_le_and_exists_mem_notMem.2 ⟨fun _ _ ↦ ⟨⟩, ⟨e'.symm Complex.I, ⟨⟨⟩, by
         by_contra mem
         change ∃(_ : _), _ = _ at mem
         obtain ⟨r, eq⟩ := mem

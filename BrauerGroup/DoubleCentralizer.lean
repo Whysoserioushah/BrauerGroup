@@ -610,9 +610,6 @@ noncomputable def auxLeft (B : Subalgebra F A) (C : Type u) [Ring C] [Algebra F 
       apply Module.Flat.rTensor_preserves_injective_linearMap
       exact Subtype.val_injective)
     (by
-      ext
-      erw [LinearEquiv.ofInjective_apply])
-    (by
       intro x y
       ext
       erw [LinearEquiv.ofInjective_apply]
@@ -627,9 +624,6 @@ noncomputable def auxRight (B : Subalgebra F A) (C : Type u) [Ring C] [Algebra F
       change Function.Injective <| LinearMap.lTensor _ _
       apply Module.Flat.lTensor_preserves_injective_linearMap
       exact Subtype.val_injective)
-    (by
-      ext
-      erw [LinearEquiv.ofInjective_apply])
     (by
       intro x y
       ext

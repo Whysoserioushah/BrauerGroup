@@ -522,8 +522,8 @@ lemma Wedderburn_Artin_algebra_version' (R : Type u) (A : Type v) [CommRing R] [
     right_inv := by intro f; ext; simp
     map_add' := by intros f g; ext; simp
     map_mul' := by intros f g; ext; simp }
-  refine ⟨n, hn, (Module.End A I)ᵐᵒᵖ, inferInstance, inferInstance, ⟨AlgEquiv.ofRingEquiv
-    (f := equivEndMop A |>.trans <| endEquiv.op.trans <| (endPowEquivMatrix A I n).op.trans
+  refine ⟨n, hn, (Module.End A I)ᵐᵒᵖ, inferInstance, inferInstance, ⟨.ofCommutes
+    (equivEndMop A |>.trans <| endEquiv.op.trans <| (endPowEquivMatrix A I n).op.trans
     (matrixEquivMatrixMop n (Module.End A I)).symm) ?_⟩⟩
   intro r
   rw [Matrix.algebraMap_eq_diagonal]
