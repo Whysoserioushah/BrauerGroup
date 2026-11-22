@@ -333,9 +333,8 @@ abbrev e2 (A B : Azumaya R) := (Algebra.TensorProduct.congr
     (AlgEquiv.ofBijective (AlgHom.mulLeftRight R B) B.isAzumaya.bij))
 
 lemma top_square_comm_apply (A B : Azumaya R) (x : (A ⊗[R] Aᵐᵒᵖ) ⊗[R] (B ⊗[R] Bᵐᵒᵖ)) :
-    (e1 R A B) (e2 R A B x) = (AlgHom.mulLeftRight R (A ⊗[R] B)) (e.toAlgHom x) := by
-  erw [← AlgHom.comp_apply, AlgHom.coe_comp, ← top_square_comm]
-  rfl
+    (e1 R A B) (e2 R A B x) = (AlgHom.mulLeftRight R (A ⊗[R] B)) (e x) :=
+  congr_fun (top_square_comm R A B) x
 
 lemma bij_mulLeftRight (A B : Azumaya.{v} R) :
     Function.Bijective (AlgHom.mulLeftRight R (A ⊗[R] B)) :=

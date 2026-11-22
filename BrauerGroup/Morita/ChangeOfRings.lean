@@ -242,7 +242,7 @@ noncomputable def mopAlgEquivEnd : Aᵐᵒᵖ ≃ₐ[R] End (ModuleCat.of A A) :
 
 example : End (ModuleCat.of A A) ≃ₐ[R] Module.End A A :=
   mopAlgEquivEnd R A|>.symm.trans <|
-    {__ := RingEquiv.moduleEndSelf A, commutes' r := by ext; simp [Algebra.smul_def]}
+    .ofCommutes (RingEquiv.moduleEndSelf A) fun r ↦ by ext; simp [Algebra.smul_def]
 
 variable (e : MoritaEquivalence R A B)
 
@@ -255,7 +255,7 @@ def aux1 : End (ModuleCat.of A A) ≃ₐ[R] End (e.eqv.functor.obj <| .of A A) w
   right_inv g := by ext; simp
   map_mul' x y := by apply End.ext; simp
   map_add' x y := by apply End.ext; simp
-  commutes' r := by ext; simp [Algebra.algebraMap_eq_smul_one]
+  map_smul' r f := by ext; simp
 
 -- instance (M : Type*) [AddCommGroup M] [Module B M] : Algebra R (Module.End B M) :=
 -- {
@@ -301,12 +301,7 @@ def aux2 (M N : ModuleCat B) (f : M ≅ N) : End M ≃ₐ[R] End N where
   right_inv x := by ext; simp
   map_mul' x y := by ext; simp
   map_add' x y := by ext; simp
-  commutes' r := by
-    ext n
-    change f.hom.hom ((ModuleCat.ofHom _).hom (f.inv.hom n)) = (ModuleCat.ofHom _).hom n
-    erw [map_smul f.hom.hom]
-    simp
-    rfl
+  map_smul' r x := by ext n; simp
 
 noncomputable def toRingMopEquiv : Aᵐᵒᵖ ≃ₐ[R] Bᵐᵒᵖ :=
   mopAlgEquivEnd R A |>.trans <|
@@ -321,10 +316,7 @@ noncomputable def toRingEquiv : A ≃ₐ[R] B where
   right_inv s := by simp [MulOpposite.op_unop, MulOpposite.unop_op]
   map_mul' a b := by simp only [MulOpposite.op_mul, _root_.map_mul, MulOpposite.unop_mul]
   map_add' a b := by simp only [MulOpposite.op_add, map_add, MulOpposite.unop_add]
-  commutes' r := by
-    rw [show (MulOpposite.op <| algebraMap R A r) = algebraMap R Aᵐᵒᵖ r by rfl]
-    rw [AlgEquiv.commutes]
-    rfl
+  map_smul' r a := by simp [MulOpposite.op_smul]
 
 -- end division_ring
 

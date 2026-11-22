@@ -719,12 +719,11 @@ section C_iso
 
 set_option backward.isDefEq.respectTransparency false in
 def isoDagger (m : ℕ) [NeZero m] :
-    Module.End C (Fin m → SM) ≃ₐ[F] Matrix (Fin m) (Fin m) (Module.End C SM) where
-  __ := endPowEquivMatrix C SM m
-  commutes' f := by
+    Module.End C (Fin m → SM) ≃ₐ[F] Matrix (Fin m) (Fin m) (Module.End C SM) :=
+  .ofCommutes (endPowEquivMatrix C SM m) fun f ↦ by
     ext i j x
     simp only [endPowEquivMatrix, endVecAlgEquivMatrixEnd, endVecRingEquivMatrixEnd,
-      RingEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe, RingEquiv.coe_mk,
+      RingEquiv.toEquiv_eq_coe, EquivLike.coe_coe, RingEquiv.coe_mk,
       Equiv.coe_fn_mk, LinearMap.coe_mk, AddHom.coe_mk, Matrix.algebraMap_matrix_apply]
     split_ifs with h
     · simp only [h, algebraMap_end_apply, Pi.smul_apply, Pi.single_eq_same]
@@ -733,7 +732,7 @@ def isoDagger (m : ℕ) [NeZero m] :
 
 set_option backward.isDefEq.respectTransparency false in
 def mopEquivEnd' : Cᵐᵒᵖ ≃ₐ[F] Module.End C C :=
-  .ofRingEquiv (f := mopEquivEnd C) fun f ↦ by
+  .ofCommutes (mopEquivEnd C) fun f ↦ by
   ext x
   simp [mopEquivEnd, Algebra.algebraMap_eq_smul_one]
 
@@ -770,7 +769,7 @@ def C_iso_aux'' :
   right_inv m := by simp only [op_unop, AlgEquiv.apply_symm_apply]
   map_mul' c c' := by simp [op_mul, map_mul]
   map_add' c c' := by simp [op_add, map_add]
-  commutes' f := by simp [Algebra.algebraMap_eq_smul_one]
+  map_smul' f c := by simp [MulOpposite.op_smul]
 
 def C_iso : C ≃ₐ[F] (Matrix (Fin (Fintype.card ι)) (Fin (Fintype.card ι)) (Module.End C SM)ᵐᵒᵖ) :=
   C_iso_aux''.trans AlgEquiv.mopMatrix.symm
@@ -885,13 +884,11 @@ def endCMIso :
       LinearEquiv.refl_toLinearMap, LinearMap.comp_id]
   map_mul' x y := by ext; simp
   map_add' x y := by ext; simp
-  commutes' f := by
+  map_smul' f x := by
     refine DFunLike.ext _ _ fun z ↦ ?_
-    simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
-      Module.algebraMap_end_apply]
-    change  (M_iso_pow' α β) (f • (M_iso_pow' α β).symm z) = _
+    change (M_iso_pow' α β) (f • x ((M_iso_pow α β).symm z)) = f • (M_iso_pow' α β) _
     rw [map_smul]
-    simp [LinearEquiv.apply_symm_apply]
+    rfl
 
 instance : NeZero (finrank F K * Fintype.card ι) := by
   constructor
@@ -942,11 +939,7 @@ def φ2 : (A ⊗[F] B) ≃ₐ[F] (Module.End C (M α β))ᵐᵒᵖ where
   right_inv x := by simp
   map_mul' := by intros; simp
   map_add' := by intros; simp
-  commutes' f := by
-    simp only [Algebra.TensorProduct.algebraMap_apply, MulOpposite.algebraMap_apply, op_inj]
-    rw [Algebra.algebraMap_eq_smul_one, ← smul_tmul', op_smul, ← (φ0 (α := α) (β := β)).commutes f,
-      Algebra.algebraMap_eq_smul_one]
-    rfl
+  map_smul' f x := by simp [MulOpposite.op_smul]
 
 def φ3 :
     (A ⊗[F] B) ≃ₐ[F]

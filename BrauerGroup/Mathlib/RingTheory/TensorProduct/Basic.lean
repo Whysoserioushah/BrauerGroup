@@ -14,7 +14,7 @@ def Algebra.TensorProduct.assoc' (R S R' A B C : Type*) [CommSemiring R] [CommSe
     [IsScalarTower R' S A] [IsScalarTower R S A] :
     (A ⊗[R'] B) ⊗[R] C ≃ₐ[S] A ⊗[R'] (B ⊗[R] C) :=
   AlgEquiv.ofLinearEquiv (TensorProduct.AlgebraTensorModule.assoc _ _ _ _ _ _)
-    rfl (LinearMap.map_mul_iff _|>.2 <| by ext; simp)
+    (LinearMap.map_mul_iff _|>.2 <| by ext; simp)
 
 @[simp]
 lemma Algebra.TensorProduct.assoc'_apply (R S R' A B C : Type*) [CommSemiring R] [CommSemiring S]

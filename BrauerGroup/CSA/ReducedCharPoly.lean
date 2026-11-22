@@ -69,27 +69,22 @@ abbrev e1Aux (φ : F →ₐ[K] E) : Matrix (Fin n) (Fin n) φ.range ≃ₐ[K] (�
   right_inv _ := by simp
   map_mul' _ _ := by ext; simp [Matrix.mul_apply]
   map_add' _ _ := rfl
-  commutes' k := by
-    ext
-    simp only [Matrix.algebraMap_matrix_apply]
-    exact apply_ite Subtype.val _ ((algebraMap K ↥φ.range) k) 0
+  map_smul' _ _ := rfl
 
 abbrev e1 (φ : F →ₐ[K] E) : Matrix (Fin n) (Fin n) F ≃ₐ[K] φ_m n φ|>.range :=
   AlgEquiv.ofBijective (φ_m n φ).rangeRestrict ⟨AlgHom.injective_codRestrict _ _
     (φ_m n φ).mem_range_self|>.2 <| φ_m_inj n φ, AlgHom.rangeRestrict_surjective _⟩
 
 abbrev e1' (φ : F →ₐ[K] E) : φ.range ⊗[K] A ≃ₐ[K] Matrix (Fin n) (Fin n) φ.range :=
-  Algebra.TensorProduct.congr (AlgEquiv.ofInjectiveField φ).symm AlgEquiv.refl|>.trans <| ({
-    __ := e
-    commutes' r := by simpa using! e.commutes (algebraMap K F r)}
-    : _ ≃ₐ[K] Matrix (Fin n) (Fin n) F).trans <| e1 _ _ _ _ φ|>.trans (e1Aux n φ).symm
+  Algebra.TensorProduct.congr (AlgEquiv.ofInjectiveField φ).symm AlgEquiv.refl|>.trans <|
+    (.ofCommutes e.toRingEquiv fun r ↦ by simpa using! e.commutes (algebraMap K F r)
+      : _ ≃ₐ[K] Matrix (Fin n) (Fin n) F).trans <| e1 _ _ _ _ φ|>.trans (e1Aux n φ).symm
 
 set_option backward.isDefEq.respectTransparency false in
 variable {K F E} in
-abbrev e1'' (φ : F →ₐ[K] E) : φ.range ⊗[K] A ≃ₐ[φ.range] Matrix (Fin n) (Fin n) φ.range where
-  __ := e1' K F E A n e φ
-  commutes' := fun ⟨x, ⟨y, eq⟩⟩ ↦ Matrix.ext_iff.1 fun i j ↦ by
-    dsimp [AlgEquiv.ofInjectiveField]
+abbrev e1'' (φ : F →ₐ[K] E) : φ.range ⊗[K] A ≃ₐ[φ.range] Matrix (Fin n) (Fin n) φ.range :=
+  .ofCommutes (e1' K F E A n e φ).toRingEquiv fun ⟨x, ⟨y, eq⟩⟩ ↦ Matrix.ext_iff.1 fun i j ↦ by
+    dsimp [AlgEquiv.ofInjectiveField, AlgEquiv.coe_toRingEquiv]
     rw [← mul_one ((AlgEquiv.ofInjective φ _).symm ⟨x, _⟩), ← smul_eq_mul,
       ← TensorProduct.smul_tmul', map_smul, ← Algebra.TensorProduct.one_def, map_one]
     dsimp [Matrix.algebraMap_matrix_apply]
@@ -379,7 +374,7 @@ theorem invariant_algEquiv (A1 A2 L : Type u) [Field L] [Algebra K L] [Ring A1] 
     [IsSimpleRing A1] [IsSimpleRing A2] (e1 : F ⊗[K] A1 ≃ₐ[F] Matrix (Fin n) (Fin n) F)
     (f : A1 ≃ₐ[K] A2) (a : A1) :
     ReducedCharPoly e1 a = ReducedCharPoly (Algebra.TensorProduct.congr
-      AlgEquiv.refl f.symm|>.trans e1) (f a) := by
+      AlgEquiv.refl f.symm|>.trans e1 : F ⊗[K] A2 ≃ₐ[F] Matrix (Fin n) (Fin n) F) (f a) := by
   simp [ReducedCharPoly]
 
 end
@@ -453,7 +448,8 @@ theorem inv_under_algEquiv (A1 A2 L : Type u) [Field L] [Algebra K L] [Ring A1] 
     [IsSimpleRing A1] [IsSimpleRing A2] (e1 : F ⊗[K] A1 ≃ₐ[F] Matrix (Fin n) (Fin n) F)
     (f : A1 ≃ₐ[K] A2) (a : A1) :
     reducedNorm e1 a = reducedNorm
-    (Algebra.TensorProduct.congr AlgEquiv.refl f.symm|>.trans e1) (f a) := by
+    (Algebra.TensorProduct.congr AlgEquiv.refl f.symm|>.trans e1 :
+      F ⊗[K] A2 ≃ₐ[F] Matrix (Fin n) (Fin n) F) (f a) := by
   sorry
 
 -- mimic what I did above, write a version for reduced trace

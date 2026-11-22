@@ -187,22 +187,6 @@ def matrix_eqv' (n m : ℕ) (A : Type*) [Ring A] [Algebra K A] :
 { Matrix.reindexLinearEquiv K A finProdFinEquiv finProdFinEquiv with
   toFun := Matrix.reindex finProdFinEquiv finProdFinEquiv
   map_mul' := fun m n ↦ by simp only [Matrix.reindex_apply, Matrix.submatrix_mul_equiv]
-  commutes' := fun k ↦ by
-    ext i j
-    simp only [Matrix.reindex_apply, Matrix.submatrix_apply, finProdFinEquiv_symm_apply,
-      Matrix.algebraMap_matrix_apply, Prod.mk.injEq]
-    if h : i = j then aesop
-    else
-    simp only [h, ↓reduceIte, ite_eq_right_iff, and_imp]
-    intro h1 h2
-    have : i = j := by
-      have : (⟨i.divNat, i.modNat⟩ : Fin n × Fin m) = ⟨j.divNat, j.modNat⟩ := Prod.ext h1 h2
-      apply_fun finProdFinEquiv at this
-      rw [show ⟨i.divNat, i.modNat⟩ = finProdFinEquiv.symm i by rfl,
-        show ⟨j.divNat, _⟩ = finProdFinEquiv.symm j by rfl,
-        finProdFinEquiv.apply_symm_apply, finProdFinEquiv.apply_symm_apply] at this
-      exact this
-    tauto
 }
 
 lemma iso_to_eqv (A B : CSA K) (h : A ≃ₐ[K] B) : IsBrauerEquivalent A B :=
@@ -279,9 +263,7 @@ def dim_one_iso (R : Type*) [Ring R] [Algebra K R] : (Matrix (Fin 1) (Fin 1) R) 
     simp only [Fin.isValue, Matrix.mul_apply]
     exact Fin.sum_univ_one fun i ↦ m 0 i * n i 0
   map_add' m n := by simp only [Fin.isValue, Matrix.add_apply]
-  commutes' r := by
-    simp only [Fin.isValue, Algebra.algebraMap_eq_smul_one']
-    rw [Matrix.smul_apply]; rfl
+  map_smul' r m := rfl
 
 open IsBrauerEquivalent
 
@@ -502,10 +484,8 @@ def e2 :
     (E ⊗[K] A) ⊗[E] Matrix (Fin m) (Fin m) E ≃ₐ[E]
     (E ⊗[K] A) ⊗[E] (E ⊗[K] Matrix (Fin m) (Fin m) K) :=
   Algebra.TensorProduct.congr .refl <|
-    { __ := matrixEquivTensor (Fin m) K E
-      commutes' e := by
-        simp only [AlgEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe,
-          matrixEquivTensor_apply, Fintype.sum_prod_type,
+    .ofCommutes (matrixEquivTensor (Fin m) K E).toRingEquiv fun e ↦ by
+        simp only [AlgEquiv.coe_toRingEquiv, matrixEquivTensor_apply, Fintype.sum_prod_type,
           Algebra.TensorProduct.algebraMap_apply, Algebra.algebraMap_self, RingHom.id_apply]
         simp_rw [Matrix.algebraMap_eq_diagonal]
         simp_rw [Matrix.diagonal_apply]
@@ -532,7 +512,7 @@ def e2 :
           simp only [Finset.mem_univ, Matrix.single, Matrix.of_apply, ite_eq_right_iff,
             one_ne_zero, imp_false, not_and, forall_const]
           rintro rfl
-          exact h }
+          exact h
 
 def e3Aux0 : E ⊗[K] A →ₐ[E] E ⊗[K] (A ⊗[K] Matrix (Fin m) (Fin m) K) :=
   AlgHom.comp
@@ -552,15 +532,8 @@ def e3Aux10 : (E ⊗[K] Matrix (Fin m) (Fin m) K) ⊗[K] A ≃ₐ[K]
 
 def e3Aux1 : E ⊗[K] Matrix (Fin m) (Fin m) K →ₐ[E] E ⊗[K] (A ⊗[K] Matrix (Fin m) (Fin m) K) :=
   AlgHom.comp
-    { (e3Aux10 (K := K) (E := E) A m).toAlgHom.toRingHom with
-      commutes' e := by
-        simp only [e3Aux10, AlgHom.toRingHom_eq_coe, AlgEquiv.toAlgHom_toRingHom,
-          RingHom.toMonoidHom_eq_coe, Algebra.TensorProduct.algebraMap_apply,
-          Algebra.algebraMap_self, RingHom.id_apply, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
-          MonoidHom.coe_ofClass, RingHom.coe_coe, AlgEquiv.trans_apply,
-          Algebra.TensorProduct.assoc_tmul, Algebra.TensorProduct.congr_apply,
-          AlgEquiv.refl_toAlgHom, Algebra.TensorProduct.map_tmul, AlgHom.coe_id, id_eq]
-        rfl }
+    { (e3Aux10 (K := K) (E := E) A m).toRingEquiv.toRingHom with
+      commutes' _ := rfl }
     (Algebra.TensorProduct.includeLeft : E ⊗[K] Matrix (Fin m) (Fin m) K →ₐ[E]
       (E ⊗[K] Matrix (Fin m) (Fin m) K) ⊗[K] A)
 
@@ -602,7 +575,8 @@ def e3Aux4 :
   change _ = _
   simp only [e3Aux0, AlgHom.toRingHom_eq_coe, AlgEquiv.toAlgHom_toRingHom, AlgHom.coe_comp,
     AlgHom.coe_mk, RingHom.coe_coe, Function.comp_apply, Algebra.TensorProduct.includeLeft_apply,
-    e3Aux1, e3Aux10, AlgEquiv.coe_trans, Algebra.TensorProduct.congr_apply, AlgEquiv.refl_toAlgHom]
+    e3Aux1, e3Aux10, RingEquiv.toRingHom_eq_coe, AlgEquiv.coe_toRingEquiv, AlgEquiv.coe_trans,
+    Algebra.TensorProduct.congr_apply, AlgEquiv.refl_toAlgHom]
   induction x with
   | add e a he ha =>
     have := Distrib.leftDistribClass (E ⊗[K] (A ⊗[K] Matrix (Fin m) (Fin m) K))
@@ -836,8 +810,7 @@ def baseChange_idem.Aux' (F K E : Type u) [Field F] [Field K] [Field E]
     { smul_comm := fun a b c => by
         rw [Algebra.smul_def, Algebra.smul_def, ← _root_.mul_assoc, mul_comm (algebraMap _ _ a),
           Algebra.smul_def, Algebra.smul_def, _root_.mul_assoc] }
-  refine .ofLinearEquiv (baseChange_idem.Aux F K E A) ?_ fun x y ↦ ?_
-  · simp [Algebra.TensorProduct.one_def]
+  refine .ofLinearEquiv (baseChange_idem.Aux F K E A) fun x y ↦ ?_
   induction x with
   | add => simp only [add_mul, (Aux F K E A).map_add, *]
   | tmul =>

@@ -397,6 +397,6 @@ lemma isoRestrict_map_mul (x y : ℒ ⊗[k] A) :
 
 def isoRestrict : ℒ ⊗[k] A ≃ₐ[ℒ] Matrix (Fin n) (Fin n) ℒ :=
   AlgEquiv.ofLinearEquiv (isoRestrict' n k k⁻ A iso)
-    (isoRestrict_map_one n k k⁻ A iso) (isoRestrict_map_mul n k k⁻ A iso)
+    (isoRestrict_map_mul n k k⁻ A iso)
 
 end lemma_tto

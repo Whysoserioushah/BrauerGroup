@@ -224,32 +224,25 @@ def extension_over_split (A : CSA k) (L L' : Type u) [Field L] [Field L'] [Algeb
   n := deg k k_bar A
   iso := by
     obtain ⟨n, iso⟩ := hA
-    let e1 : L' ⊗[k] A ≃ₐ[L] L' ⊗[L] (L ⊗[k] A) := {
-      __ := absorb_eqv k L L' A
-      commutes' _ := rfl
-    }
+    let e1 : L' ⊗[k] A ≃ₐ[L] L' ⊗[L] (L ⊗[k] A) :=
+      .ofCommutes (absorb_eqv k L L' A).toRingEquiv fun _ ↦ by rfl
     let e2 := e1.trans <| Algebra.TensorProduct.congr .refl iso
-    let e3 : L' ⊗[k] A ≃ₐ[L'] L' ⊗[L] Matrix (Fin n) (Fin n) L := {
-      __ := e2
-      commutes' := fun l' => by
-        simp only [AlgEquiv.toEquiv_eq_coe, Algebra.TensorProduct.algebraMap_apply,
-          Algebra.algebraMap_self, RingHom.id_apply, Equiv.toFun_as_coe, EquivLike.coe_coe]
-        simp only [AlgEquiv.toEquiv_eq_coe, AlgEquiv.trans_apply, Algebra.TensorProduct.congr_apply,
-          AlgEquiv.refl_toAlgHom, e2, e1]
+    let e3 : L' ⊗[k] A ≃ₐ[L'] L' ⊗[L] Matrix (Fin n) (Fin n) L :=
+      .ofCommutes e2.toRingEquiv fun l' => by
+        simp only [Algebra.TensorProduct.algebraMap_apply, Algebra.algebraMap_self,
+          RingHom.id_apply]
+        simp only [AlgEquiv.trans_apply, Algebra.TensorProduct.congr_apply,
+          AlgEquiv.refl_toAlgHom, e2, e1, AlgEquiv.coe_toRingEquiv, AlgEquiv.ofCommutes_apply]
         erw [absorb_eqv_apply, Algebra.TensorProduct.map_tmul]
         simp only [AlgHom.coe_id, id_eq, Algebra.TensorProduct.one_def.symm, map_one]
-    }
-    let e4 : L' ⊗[L] Matrix (Fin n) (Fin n) L ≃ₐ[L'] Matrix (Fin n) (Fin n) L' := {
-      __ := matrixEquivTensor _ _ _|>.symm
-      commutes' := fun l' ↦ by
-        simp only [AlgEquiv.toEquiv_eq_coe, Algebra.TensorProduct.algebraMap_apply,
-          Algebra.algebraMap_self, RingHom.id_apply, Equiv.toFun_as_coe, EquivLike.coe_coe,
-          matrixEquivTensor_apply_symm, Matrix.map]
+    let e4 : L' ⊗[L] Matrix (Fin n) (Fin n) L ≃ₐ[L'] Matrix (Fin n) (Fin n) L' :=
+      .ofCommutes (matrixEquivTensor _ _ _|>.symm).toRingEquiv fun l' ↦ by
+        simp only [Algebra.TensorProduct.algebraMap_apply, Algebra.algebraMap_self,
+          RingHom.id_apply]
         ext i j
         obtain rfl | hij := eq_or_ne i j
         · simp [Matrix.one_apply_eq, Algebra.algebraMap_eq_smul_one, Matrix.smul_apply]
         · simp [hij, Matrix.one_apply_ne, Algebra.algebraMap_eq_smul_one]
-    }
     have e5 : n = deg k k_bar A := by
       have := deg_sq_eq_dim k k_bar A
       rw [pow_two] at this

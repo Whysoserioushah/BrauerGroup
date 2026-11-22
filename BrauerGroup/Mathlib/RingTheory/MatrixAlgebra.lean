@@ -9,7 +9,7 @@ open scoped TensorProduct
 def matrixEquivTensor' (n R A : Type*) [CommSemiring R] [CommSemiring A]
     [Algebra R A] [Fintype n] [DecidableEq n] :
     Matrix n n A ≃ₐ[A] A ⊗[R] Matrix n n R :=
-  .symm <| .ofRingEquiv (f := (matrixEquivTensor n R A).symm) fun a ↦ by
+  .symm <| .ofCommutes (matrixEquivTensor n R A).symm fun a ↦ by
     ext i j
     simp [matrixEquivTensor, Matrix.algebraMap_eq_diagonal, Matrix.diagonal_apply, Matrix.one_apply]
 
