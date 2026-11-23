@@ -21,7 +21,6 @@ public import BrauerGroup.LemmasAboutSimpleRing
 public import BrauerGroup.Mathlib.Algebra.Algebra.Subalgebra.Basic
 public import BrauerGroup.Mathlib.Algebra.Algebra.Subalgebra.Directed
 public import BrauerGroup.Mathlib.Algebra.Algebra.Subalgebra.Lattice
-public import BrauerGroup.Mathlib.Data.DFinsupp.Submonoid
 public import BrauerGroup.Mathlib.LinearAlgebra.LinearIndependent.Defs
 public import BrauerGroup.Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
 public import BrauerGroup.Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
