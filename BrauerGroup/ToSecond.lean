@@ -1,6 +1,6 @@
 module
 
-public import BrauerGroup.CrossProductAlgebra
+public import BrauerGroup.Mathlib.Algebra.CrossProduct.CentralSimple
 public import BrauerGroup.Mathlib.RingTheory.Congruence.Defs
 public import BrauerGroup.Subfield.Splitting
 public import Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree

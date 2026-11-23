@@ -1,4 +1,4 @@
-module  -- shake: keep-all --deprecated_module: ignore
+module -- shake: keep-all -- deprecated_module: ignore
 
 public import BrauerGroup.AbsoluteIsoH2
 public import BrauerGroup.AlgClosedUnion
@@ -10,7 +10,6 @@ public import BrauerGroup.BrauerOverR
 public import BrauerGroup.CSA.ReducedCharPoly
 public import BrauerGroup.CentralSimple
 public import BrauerGroup.Centralizer
-public import BrauerGroup.CrossProductAlgebra
 public import BrauerGroup.DoubleCentralizer
 public import BrauerGroup.ExtendScalar
 public import BrauerGroup.FieldCat
@@ -21,6 +20,8 @@ public import BrauerGroup.LemmasAboutSimpleRing
 public import BrauerGroup.Mathlib.Algebra.Algebra.Subalgebra.Basic
 public import BrauerGroup.Mathlib.Algebra.Algebra.Subalgebra.Directed
 public import BrauerGroup.Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import BrauerGroup.Mathlib.Algebra.CrossProduct.Basic
+public import BrauerGroup.Mathlib.Algebra.CrossProduct.CentralSimple
 public import BrauerGroup.Mathlib.LinearAlgebra.LinearIndependent.Defs
 public import BrauerGroup.Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
 public import BrauerGroup.Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
