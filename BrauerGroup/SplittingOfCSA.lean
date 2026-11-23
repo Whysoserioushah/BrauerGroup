@@ -2,7 +2,7 @@ module
 
 public import BrauerGroup.AlgClosedUnion
 public import BrauerGroup.ExtendScalar
-public import BrauerGroup.LemmasAboutSimpleRing
+public import BrauerGroup.CentralSimple
 public import Mathlib.Algebra.BrauerGroup.Defs
 public import Mathlib.Algebra.Central.Matrix
 public import Mathlib.Analysis.Normed.Ring.Lemmas
@@ -165,7 +165,8 @@ theorem CSA_iff_exist_split (k_bar : Type u) [Field k_bar] [Algebra k k_bar]
     exact ⟨_, _, inferInstance, ⟨lemma_tto.isoRestrict n k k_bar A iso⟩⟩
   · rintro ⟨n, hn, L, _, _, _, ⟨iso⟩⟩
     have : NeZero n := ⟨hn⟩
-    refine (centralsimple_over_extension_iff k A L).mpr <| ⟨iso.symm.isCentral, ⟨?_⟩⟩
+    refine (centralsimple_over_extension_iff k A L).mpr
+      ⟨.of_algEquiv _ _ _ iso.symm, ⟨?_⟩⟩
     rw [← TwoSidedIdeal.orderIsoOfRingEquiv iso.symm.toRingEquiv |>.isSimpleOrder_iff]
     exact IsSimpleRing.simple
 

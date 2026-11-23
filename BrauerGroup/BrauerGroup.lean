@@ -205,7 +205,7 @@ def CSA_Setoid : Setoid (CSA K) where
   r := IsBrauerEquivalent
   iseqv := IsBrauerEquivalent.Braur_is_eqv
 
-def mul (A B : CSA K) : CSA K where
+def mul (A B : CSA.{u, u} K) : CSA.{u, u} K where
   toAlgCat := .of K (A ⊗[K] B)
   fin_dim := Module.Finite.tensorProduct K A B
 
@@ -231,7 +231,7 @@ def mul_one_in (n : ℕ) [hn : NeZero n] (A : CSA K) : CSA K :=
 
 def eqv_in (A : CSA K) (A' : Type*) [Ring A'] [Algebra K A'] (e : A ≃ₐ[K] A') : CSA K where
   toAlgCat := .of K A'
-  isCentral := AlgEquiv.isCentral e
+  isCentral := .of_algEquiv _ _ _ e
   isSimple := ⟨TwoSidedIdeal.orderIsoOfRingEquiv e.toRingEquiv.symm |>.isSimpleOrder⟩
   fin_dim := LinearEquiv.finiteDimensional e.toLinearEquiv
 

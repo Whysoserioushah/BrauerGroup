@@ -210,9 +210,9 @@ instance tensor_is_simple (K A B M : Type u)
   have : NeZero n := ⟨hn⟩
   obtain ⟨e1⟩ := end_simple_mod_of_wedderburn' K A n hn D iso M
   have := CSA_implies_CSA K A n D _ iso
-  have : Algebra.IsCentral K (Module.End A M) := e1.symm.isCentral
+  have : Algebra.IsCentral K (Module.End A M) := .of_algEquiv K _ _ e1.symm
   classical
-  exact @IsCentralSimple.TensorProduct.simple K _ B (Module.End A M) _ _ _ _ _ this _
+  infer_instance
 
 variable (K A B M : Type u)
     [Field K] [Ring A] [Algebra K A] [FiniteDimensional K A]

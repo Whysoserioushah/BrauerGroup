@@ -63,8 +63,6 @@ instance : Algebra.IsCentral ℝ ℍ[ℝ] := ⟨fun q hq ↦ by
   change (⟨q.re, 0, 0, 0⟩ : ℍ[ℝ]) = ⟨q.re, q.imI, q.imJ, q.imK⟩
   ext <;> simp_all⟩
 
-instance : IsSimpleRing (ℍ[ℝ] ⊗[ℝ] ℍ[ℝ]) := IsCentralSimple.TensorProduct.simple _ _ _
-
 lemma toEnd_bij : Function.Bijective toEnd :=
   bijective_of_dim_eq_of_isCentralSimple ℝ (ℍ[ℝ] ⊗[ℝ] ℍ[ℝ]) (Module.End ℝ ℍ[ℝ]) toEnd <| by
     rw [show Module.finrank ℝ (Module.End ℝ _) =

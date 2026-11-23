@@ -35,7 +35,7 @@ lemma exists_embedding_of_isSplit [FiniteDimensional F K] (A : CSA F) (split : i
   let B := Subalgebra.centralizer F (AlgHom.range emb : Set (Module.End F (Fin n → K)))
   let e : A ≃ₐ[F] (AlgHom.range emb) :=
     AlgEquiv.ofInjective _ (IsSimpleRing.iff_injective_ringHom A|>.1 inferInstance emb.toRingHom)
-  have : Algebra.IsCentral F (AlgHom.range emb) := e.isCentral
+  have : Algebra.IsCentral F (AlgHom.range emb) := .of_algEquiv F _ _ e
   have : IsSimpleRing (AlgHom.range emb) := by
     constructor
     rw [← TwoSidedIdeal.orderIsoOfRingEquiv e.toRingEquiv |>.isSimpleOrder_iff]
@@ -46,7 +46,7 @@ lemma exists_embedding_of_isSplit [FiniteDimensional F K] (A : CSA F) (split : i
     omega
   have : Algebra.IsCentral F (Module.End F (Fin n → K)) := by
     have f := algEquivMatrix (R := F) (M := Fin n → K) (Module.finBasis _ _)
-    refine f.symm.isCentral
+    exact .of_algEquiv F _ _ f.symm
   have : IsSimpleRing (Module.End F (Fin n → K)) := by
     have f := algEquivMatrix (R := F) (M := Fin n → K) (Module.finBasis _ _)
     constructor
@@ -71,7 +71,7 @@ lemma exists_embedding_of_isSplit [FiniteDimensional F K] (A : CSA F) (split : i
       use r
       rw [Subtype.ext_iff, ← hr]
       rfl }
-  have : IsSimpleRing B := centralizer_isSimple _ (Module.Free.chooseBasis _ _)
+  have : IsSimpleRing B := centralizer_isSimple _
   refine ⟨⟨.of F B⟩, ?_,
     { toFun r :=
         ⟨{

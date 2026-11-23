@@ -1,7 +1,7 @@
 module
 
 public import BrauerGroup.BrauerGroup
-public import BrauerGroup.LemmasAboutSimpleRing
+public import BrauerGroup.CentralSimple
 public import BrauerGroup.Morita.ChangeOfRings
 
 @[expose] public section

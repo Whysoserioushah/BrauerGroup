@@ -160,7 +160,6 @@ lemma eq_pow_reducedCharpoly (g : F ⊗[K] A →ₐ[F] Matrix (Fin m) (Fin m) F)
   have ee := writeAsTensorProduct (F := F) (A := Matrix (Fin m) (Fin m) F) g.range
   haveI : IsSimpleRing (Subalgebra.centralizer (A := Matrix (Fin m) (Fin m) F) F g.range) :=
     centralizer_isSimple (A := Matrix (Fin m) (Fin m) F) g.range
-    (Module.finBasis F (Module.End F g.range))
   haveI : Algebra.IsCentral F (g.range ⊗[F] (Subalgebra.centralizer F (SetLike.coe g.range))) :=
     .of_algEquiv F _ (g.range ⊗[F] (Subalgebra.centralizer F (SetLike.coe g.range))) ee
   haveI : Algebra.IsCentral F (Subalgebra.centralizer (A := Matrix (Fin m) (Fin m) F) F g.range) :=

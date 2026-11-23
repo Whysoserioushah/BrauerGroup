@@ -5,7 +5,7 @@ Authors: Jujian Zhang
 -/
 module
 
-public import BrauerGroup.LemmasAboutSimpleRing
+public import BrauerGroup.CentralSimple
 public import BrauerGroup.SkolemNoether
 public import Mathlib.RingTheory.SimpleRing.Field
 
@@ -19,166 +19,6 @@ variable [FiniteDimensional F A] [Algebra.IsCentral F A] [IsSimpleRing A]
 variable (B : Subalgebra F A) [IsSimpleRing B]
 
 open Module TensorProduct
-
-section lemma1
-
-variable {F A A' : Type u}
-variable [Field F] [Ring A] [Algebra F A] [Ring A'] [Algebra F A']
-variable (B : Subalgebra F A) (B' : Subalgebra F A')
-variable {ι ι' : Type*} (𝒜 : Basis ι F A) (𝒜' : Basis ι' F A')
-
-include 𝒜' in
-lemma centralizer_inclusionLeft :
-    Subalgebra.centralizer F (A := A ⊗[F] A')
-      (Algebra.TensorProduct.includeLeft (R := F) (S := F) (A := A) (B := A') |>.comp
-        B.val).range =
-      (Algebra.TensorProduct.map (Subalgebra.centralizer F B).val (AlgHom.id F A')).range := by
-  classical
-  refine le_antisymm ?_ ?_
-  · rintro x hx
-    obtain ⟨s, rfl⟩ := TensorProduct.eq_repr_basis_right 𝒜' x
-    refine Subalgebra.sum_mem _ fun i hi => ?_
-    simp only [AlgHom.mem_range]
-    refine ⟨⟨s i, fun b hb => ?_⟩ ⊗ₜ 𝒜' i, by simp⟩
-    have eq := hx (b ⊗ₜ 1) (by simpa using ⟨b, hb, rfl⟩)
-    simp only [Finsupp.sum, Finset.mul_sum, Algebra.TensorProduct.tmul_mul_tmul, one_mul,
-      Finset.sum_mul, mul_one] at eq
-    rw [← sub_eq_zero, ← Finset.sum_sub_distrib] at eq
-    simp_rw [← sub_tmul] at eq
-    have := IsCentralSimple.TensorProduct.sum_tmul_basis_right_eq_zero' (h := eq)
-    specialize this i hi
-    rw [sub_eq_zero] at this
-    exact this
-  · rintro _ ⟨x, rfl⟩ _ ⟨y, rfl⟩
-    induction x with
-    | add x y hx hy =>
-      simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, AlgHom.coe_comp, Subalgebra.coe_val,
-        Function.comp_apply, Algebra.TensorProduct.includeLeft_apply, map_add] at hx hy ⊢
-      simp [mul_add, hx, hy, add_mul]
-    | tmul a b =>
-    simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, AlgHom.coe_comp, Subalgebra.coe_val,
-      Function.comp_apply, Algebra.TensorProduct.includeLeft_apply,
-      Algebra.TensorProduct.map_tmul, AlgHom.coe_id, id_eq,
-      Algebra.TensorProduct.tmul_mul_tmul, one_mul, mul_one]
-    congr 1
-    exact a.property _ y.property
-
-include 𝒜 in
-lemma centralizer_inclusionRight :
-    Subalgebra.centralizer F (A := A ⊗[F] A')
-      (Algebra.TensorProduct.includeRight (R := F) (A := A) (B := A') |>.comp
-        B'.val).range =
-      (Algebra.TensorProduct.map (AlgHom.id F A) (Subalgebra.centralizer F B').val).range := by
-  classical
-  refine le_antisymm ?_ ?_
-  · rintro x hx
-    obtain ⟨s, rfl⟩ := TensorProduct.eq_repr_basis_left 𝒜 x
-    refine Subalgebra.sum_mem _ fun i hi => ?_
-    simp only [AlgHom.mem_range]
-    refine ⟨𝒜 i ⊗ₜ ⟨s i, fun b hb => ?_⟩, by simp⟩
-    have eq := hx (1 ⊗ₜ b) (by simpa using ⟨b, hb, rfl⟩)
-    simp only [Finsupp.sum, Finset.mul_sum, Algebra.TensorProduct.tmul_mul_tmul, one_mul,
-      Finset.sum_mul, mul_one] at eq
-    rw [← sub_eq_zero, ← Finset.sum_sub_distrib] at eq
-    simp_rw [← tmul_sub] at eq
-    have := IsCentralSimple.TensorProduct.sum_tmul_basis_left_eq_zero' (h := eq)
-    specialize this i hi
-    rw [sub_eq_zero] at this
-    exact this
-  · rintro _ ⟨x, rfl⟩ _ ⟨y, rfl⟩
-    induction x with
-    | add x y hx hy =>
-      simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, AlgHom.coe_comp, Subalgebra.coe_val,
-        Function.comp_apply, Algebra.TensorProduct.includeRight_apply, map_add] at hx hy ⊢
-      simp [mul_add, hx, hy, add_mul]
-    | tmul a b =>
-    simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, AlgHom.coe_comp, Subalgebra.coe_val,
-      Function.comp_apply, Algebra.TensorProduct.includeRight_apply,
-      Algebra.TensorProduct.map_tmul, AlgHom.coe_id, id_eq,
-      Algebra.TensorProduct.tmul_mul_tmul, one_mul, mul_one]
-    congr 1
-    exact b.property _ y.property
-
-lemma centralizer_tensor_le_inf_centralizer :
-    Subalgebra.centralizer F (A := A ⊗[F] A')
-      ((Algebra.TensorProduct.map B.val B'.val).range :
-        Subalgebra F (A ⊗[F] A')) ≤
-    Subalgebra.centralizer F (A := A ⊗[F] A')
-      (Algebra.TensorProduct.includeLeft (R := F) (S := F) (A := A) (B := A') |>.comp
-        B.val).range ⊓
-    Subalgebra.centralizer F (A := A ⊗[F] A')
-      (Algebra.TensorProduct.includeRight (R := F) (A := A) (B := A') |>.comp
-        B'.val).range := by
-  intro x hx
-  rw [← Subalgebra.centralizer_sup]
-  intro y hy
-  apply hx
-  rw [Algebra.TensorProduct.map_range]
-  exact hy
-
-include 𝒜 𝒜' in
-lemma centralizer_tensor_centralizer :
-    Subalgebra.centralizer F (A := A ⊗[F] A')
-      ((Algebra.TensorProduct.map B.val B'.val).range :
-          Subalgebra F (A ⊗[F] A')) =
-    (Algebra.TensorProduct.map (Subalgebra.centralizer F B).val
-      (Subalgebra.centralizer F B').val).range := by
-  refine le_antisymm ?_ ?_
-  · have := Algebra.TensorProduct.includeLeft (R := F) (S := F) (A := A) (B := B') |>.comp B.val
-    have ineq1 :
-        Subalgebra.centralizer F (A := A ⊗[F] A')
-          ((Algebra.TensorProduct.map B.val B'.val).range :
-            Subalgebra F (A ⊗[F] A')) ≤
-        Subalgebra.centralizer F (A := A ⊗[F] A')
-          (Algebra.TensorProduct.includeLeft (R := F) (S := F) (A := A) (B := A') |>.comp
-            B.val).range ⊓
-        Subalgebra.centralizer F (A := A ⊗[F] A')
-          (Algebra.TensorProduct.includeRight (R := F) (A := A) (B := A') |>.comp
-            B'.val).range := by
-      apply centralizer_tensor_le_inf_centralizer
-    have eq1 : Subalgebra.centralizer F (A := A ⊗[F] A')
-          (Algebra.TensorProduct.includeLeft (R := F) (S := F) (A := A) (B := A') |>.comp
-            B.val).range =
-          (Algebra.TensorProduct.map (Subalgebra.centralizer F B).val (AlgHom.id F A')).range := by
-      apply centralizer_inclusionLeft (𝒜' := 𝒜')
-    have eq2 : Subalgebra.centralizer F (A := A ⊗[F] A')
-          (Algebra.TensorProduct.includeRight (R := F) (A := A) (B := A') |>.comp
-            B'.val).range =
-          (Algebra.TensorProduct.map (AlgHom.id F A) (Subalgebra.centralizer F B').val).range := by
-      apply centralizer_inclusionRight (𝒜 := 𝒜)
-    refine ineq1.trans ?_
-    rw [eq1, eq2]
-    have := IsCentralSimple.TensorProduct.submodule_tensor_inf_tensor_submodule F A A'
-      (Subalgebra.toSubmodule <| Subalgebra.centralizer F (B : Set A))
-      (Subalgebra.toSubmodule <| Subalgebra.centralizer F (B' : Set A'))
-    intro x (hx : x ∈ Subalgebra.toSubmodule (_ ⊓ _))
-    suffices x ∈
-      (LinearMap.range <| TensorProduct.map
-        (Subalgebra.toSubmodule <| Subalgebra.centralizer F (B : Set A)).subtype
-        (Subalgebra.toSubmodule <| Subalgebra.centralizer F (B' : Set A')).subtype) by
-      exact this
-    rw [← this]
-    exact hx
-  · rintro _ ⟨x, rfl⟩
-    induction x with
-    | add x y hx hy =>
-      rw [RingHom.map_add]
-      exact Subalgebra.add_mem _ hx hy
-    | tmul a b =>
-    simp only [AlgHom.coe_range, AlgHom.toRingHom_eq_coe, RingHom.coe_coe,
-      Algebra.TensorProduct.map_tmul, Subalgebra.coe_val, Subalgebra.mem_centralizer_iff,
-      Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff]
-    intro x
-    induction x with
-    | add x y hx hy => simp only [map_add, add_mul, hx, hy, mul_add]
-    | tmul x y =>
-    simp only [Algebra.TensorProduct.map_tmul, Subalgebra.coe_val,
-      Algebra.TensorProduct.tmul_mul_tmul]
-    congr 1
-    · exact a.property x x.property
-    · exact b.property y y.property
-
-end lemma1
 
 section lemma2
 
@@ -590,7 +430,7 @@ instance :
   infer_instance
 
 instance : Algebra.IsCentral F (Module.End F B) :=
-  algEquivMatrix (Module.finBasis F B) |>.symm.isCentral
+  .of_algEquiv F _ _ (algEquivMatrix (Module.finBasis F B)).symm
 
 instance : IsSimpleRing (Module.End F B) := by
   have : NeZero (Module.finrank F B) := by
@@ -643,9 +483,9 @@ instance : IsSimpleRing (A ⊗[F] Module.End.rightMul F B) := by
     constructor
     rw [← TwoSidedIdeal.opOrderIso.isSimpleOrder_iff]
     exact IsSimpleRing.simple
-  apply (IsCentralSimple.TensorProduct.simple F _ _).simple
+  exact IsSimpleRing.simple
 
-lemma step1 {ι : Type*} (ℬ : Basis ι F <| Module.End F B) :
+lemma step1 :
     ∃ (x : (A ⊗[F] Module.End F B)ˣ),
     Nonempty <|
       ((Subalgebra.centralizer F (B : Set A)) ⊗[F] (Module.End F B)) ≃ₐ[F]
@@ -721,12 +561,12 @@ lemma step1 {ι : Type*} (ℬ : Basis ι F <| Module.End F B) :
       refine ⟨z, hz, ?_⟩
       exact hx ⟨z, hz⟩
   have eq2 := congr(Subalgebra.centralizer F $(eq1).carrier)
-  erw [centralizer_inclusionLeft (𝒜' := ℬ)] at eq2
+  erw [Subalgebra.centralizer_coe_image_includeLeft_eq_center_tensorProduct'] at eq2
   have temp := Subalgebra.conj_centralizer' (F := F) (A := A ⊗[F] Module.End F B)
     (B := (Algebra.TensorProduct.includeRight (R := F) (A := A) (B := Module.End F B) |>.comp
           (Module.End.leftMul F B).val).range) (x := x)
   rw [temp] at eq2; clear temp
-  rw [centralizer_inclusionRight (𝒜 := Module.finBasis F A)] at eq2
+  rw [Subalgebra.centralizer_coe_image_includeRight_eq_center_tensorProduct'] at eq2
   rw [centralizer_mulLeft] at eq2
   rw [← eq2]
   refine ⟨?_⟩
@@ -745,9 +585,9 @@ lemma finrank_mop (B : Type*) [Ring B] [Algebra F B] : Module.finrank F Bᵐᵒ�
 end centralizer_isSimple.aux
 
 open centralizer_isSimple.aux in
-lemma centralizer_isSimple {ι : Type*} (ℬ : Basis ι F <| Module.End F B) :
+lemma centralizer_isSimple :
     IsSimpleRing (Subalgebra.centralizer F (B : Set A)) := by
-  obtain ⟨x, ⟨eqv⟩⟩ := step1 B ℬ
+  obtain ⟨x, ⟨eqv⟩⟩ := step1 B
   have : IsSimpleRing (Subalgebra.centralizer F (B : Set A) ⊗[F] Module.End F B) := by
     have := TwoSidedIdeal.orderIsoOfRingEquiv eqv.toRingEquiv
     constructor
@@ -758,8 +598,8 @@ lemma centralizer_isSimple {ι : Type*} (ℬ : Basis ι F <| Module.End F B) :
     rw [← OrderIso.isSimpleOrder_iff this]
     infer_instance
   exact IsSimpleRing.left_of_tensor (K := F)
-    (B := Subalgebra.centralizer F (B : Set A))
-    (C := Module.End F B)
+    (A := Subalgebra.centralizer F (B : Set A))
+    (B := Module.End F B)
 
 open centralizer_isSimple.aux in
 variable (F) in
@@ -768,7 +608,7 @@ lemma dim_centralizer :
     Module.finrank F B = Module.finrank F A := by
   have : Module.Free F (Module.End.rightMul F B) := Module.Free.of_divisionRing F
     ↥(Module.End.rightMul F ↥B)
-  obtain ⟨x, ⟨eqv⟩⟩ := step1 B (Module.finBasis _ _)
+  obtain ⟨x, ⟨eqv⟩⟩ := step1 B
   let leqv := eqv.toLinearEquiv
   have : Module.finrank F (Subalgebra.centralizer F (B : Set A) ⊗[F] Module.End F B) =
     Module.finrank F _ := LinearEquiv.finrank_eq leqv
@@ -794,7 +634,7 @@ lemma double_centralizer :
   apply Subalgebra.eq_of_le_of_finrank_eq
   · intro x hx y hy
     exact hy x hx |>.symm
-  · have := centralizer_isSimple B (Module.finBasis F _)
+  · have := centralizer_isSimple B
     have eq1 := dim_centralizer F B
     have eq2 := dim_centralizer F (A := A) (Subalgebra.centralizer F B)
     have eq3 := eq1.trans eq2.symm
@@ -807,7 +647,7 @@ lemma double_centralizer :
 noncomputable def writeAsTensorProduct [Algebra.IsCentral F B] :
     A ≃ₐ[F] B ⊗[F] Subalgebra.centralizer F (B : Set A) :=
   haveI s1 : IsSimpleRing (Subalgebra.centralizer F (B : Set A)) :=
-    centralizer_isSimple B (Module.Free.chooseBasis _ _)
+    centralizer_isSimple B
   haveI s2 : IsSimpleRing (B ⊗[F] Subalgebra.centralizer F (B : Set A)) :=
     ⟨TwoSidedIdeal.orderIsoOfRingEquiv
       (Algebra.TensorProduct.comm F B (Subalgebra.centralizer F (B : Set A))).toRingEquiv
