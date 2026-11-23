@@ -36,10 +36,9 @@ public import BrauerGroup.Mathlib.RingTheory.NonUnitalSubring.Defs
 public import BrauerGroup.Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 public import BrauerGroup.Mathlib.RingTheory.NonUnitalSubsemiring.Defs
 public import BrauerGroup.Mathlib.RingTheory.TensorProduct.Basic
-public import BrauerGroup.Mathlib.RingTheory.TwoSidedIdeal.Basic
-public import BrauerGroup.Mathlib.RingTheory.TwoSidedIdeal.Kernel
 public import BrauerGroup.Mathlib.RingTheory.TwoSidedIdeal.Lattice
 public import BrauerGroup.Mathlib.RingTheory.TwoSidedIdeal.Operations
+public import BrauerGroup.Mathlib.RingTheory.TwoSidedIdeal.SpanAsSum
 public import BrauerGroup.MatrixCenterEquiv
 public import BrauerGroup.MatrixEquivTensor
 public import BrauerGroup.Morita.ChangeOfRings

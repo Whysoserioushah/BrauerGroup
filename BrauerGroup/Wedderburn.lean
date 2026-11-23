@@ -1,6 +1,7 @@
 module
 
 public import BrauerGroup.MatrixCenterEquiv
+public import BrauerGroup.Mathlib.RingTheory.TwoSidedIdeal.SpanAsSum
 public import BrauerGroup.TwoSidedIdeal
 public import Mathlib.Algebra.Azumaya.Basic
 public import Mathlib.Algebra.Central.Defs
@@ -278,9 +279,8 @@ lemma Wedderburn_Artin.aux.one_eq
     aesop)
   have one_mem_I' : 1 ∈ I' := by rw [I'_is_everything]; trivial
   rw [TwoSidedIdeal.mem_span_ideal_iff_exists_fin] at one_mem_I'
-  obtain ⟨n, finn, x, y, hy⟩ := one_mem_I'
-  exact ⟨Fintype.card n, x ∘ (Fintype.equivFin _).symm, y ∘ (Fintype.equivFin _).symm, hy ▸
-    Fintype.sum_bijective (Fintype.equivFin _).symm (Equiv.bijective _) _ _ fun k ↦ rfl⟩
+  obtain ⟨n, x, y, hy⟩ := one_mem_I'
+  exact ⟨n, x, y, hy.symm⟩
 
 noncomputable abbrev Wedderburn_Artin.aux.n
     {A : Type u} [Ring A] [simple : IsSimpleRing A]
