@@ -25,6 +25,9 @@ public import BrauerGroup.Mathlib.Algebra.Central.TensorProduct
 public import BrauerGroup.Mathlib.Algebra.CrossProduct.Basic
 public import BrauerGroup.Mathlib.Algebra.CrossProduct.CentralSimple
 public import BrauerGroup.Mathlib.Algebra.CrossProduct.Cyclic
+public import BrauerGroup.Mathlib.Algebra.Module.LinearMap.End
+public import BrauerGroup.Mathlib.CategoryTheory.Endomorphism
+public import BrauerGroup.Mathlib.Data.Matrix.Composition
 public import BrauerGroup.Mathlib.GroupTheory.CyclicIndex
 public import BrauerGroup.Mathlib.LinearAlgebra.LinearIndependent.Defs
 public import BrauerGroup.Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
@@ -33,11 +36,16 @@ public import BrauerGroup.Mathlib.LinearAlgebra.Quotient.Basic
 public import BrauerGroup.Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
 public import BrauerGroup.Mathlib.RingTheory.Congruence.Basic
 public import BrauerGroup.Mathlib.RingTheory.Congruence.Defs
+public import BrauerGroup.Mathlib.RingTheory.Finiteness.Basic
 public import BrauerGroup.Mathlib.RingTheory.Flat.TorsionFree
 public import BrauerGroup.Mathlib.RingTheory.MatrixAlgebra
+public import BrauerGroup.Mathlib.RingTheory.Morita.End
+public import BrauerGroup.Mathlib.RingTheory.Morita.Matrix
+public import BrauerGroup.Mathlib.RingTheory.Morita.SimpleRing
 public import BrauerGroup.Mathlib.RingTheory.NonUnitalSubring.Defs
 public import BrauerGroup.Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 public import BrauerGroup.Mathlib.RingTheory.NonUnitalSubsemiring.Defs
+public import BrauerGroup.Mathlib.RingTheory.SimpleModule.WedderburnArtin
 public import BrauerGroup.Mathlib.RingTheory.SimpleRing.TensorProduct
 public import BrauerGroup.Mathlib.RingTheory.TensorProduct.Basic
 public import BrauerGroup.Mathlib.RingTheory.TwoSidedIdeal.Lattice
@@ -47,7 +55,6 @@ public import BrauerGroup.MatrixCenterEquiv
 public import BrauerGroup.MatrixEquivTensor
 public import BrauerGroup.Morita.ChangeOfRings
 public import BrauerGroup.Morita.TensorProduct
-public import BrauerGroup.MoritaEquivalence
 public import BrauerGroup.RelativeBrauer
 public import BrauerGroup.SkolemNoether
 public import BrauerGroup.SplittingOfCSA
@@ -59,4 +66,3 @@ public import BrauerGroup.Subfield.Subfield
 public import BrauerGroup.ToSecond
 public import BrauerGroup.TwoSidedIdeal
 public import BrauerGroup.Wedderburn
-public import BrauerGroup.ZeroSevenFourE

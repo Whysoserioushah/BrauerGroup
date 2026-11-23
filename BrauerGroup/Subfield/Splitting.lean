@@ -272,8 +272,8 @@ theorem isSplit_if_equiv (A B : CSA F) (hAB : IsBrauerEquivalent A B) (hA : isSp
   have : NeZero (m * q) := ⟨by aesop⟩
   have : NeZero (n * p) := ⟨by aesop⟩
   exact ⟨q, ⟨hq⟩, ⟨e'.trans <|
-    Wedderburn_Artin_uniqueness₀ K (Matrix (Fin (m * q)) (Fin (m * q)) D) (m * q) (n * p)
-      D AlgEquiv.refl K ee |>.some.mapMatrix⟩⟩
+    IsSimpleRing.wedderburn_artin_divisionRing_unique K
+      (Matrix (Fin (m * q)) (Fin (m * q)) D) AlgEquiv.refl ee |>.some.mapMatrix⟩⟩
 
 end CSA2
 

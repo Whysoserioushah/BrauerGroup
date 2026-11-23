@@ -2,6 +2,7 @@ module
 
 public import BrauerGroup.BrauerGroup
 public import BrauerGroup.CentralSimple
+public import BrauerGroup.Mathlib.Data.Matrix.Composition
 public import BrauerGroup.Morita.ChangeOfRings
 
 @[expose] public section
@@ -129,24 +130,22 @@ lemma IsMorita_iff_IsBrauer' (R : Type u) [CommRing R] (A B : Type v) [Ring A] [
     let e2 := MoritaEquivalence.ofAlgEquiv e'
     have : NeZero m := ⟨hm⟩
     have : NeZero n := ⟨hn⟩
-    have := MoritaEquivalence.matrix' R D n |>.symm
+    have := moritaEquivalenceMatrix D R (0 : Fin n) |>.symm
     have ww := MoritaEquivalence.trans R e1 this |>.symm
-    have := MoritaEquivalence.matrix' R E m |>.symm
+    have := moritaEquivalenceMatrix E R (0 : Fin m) |>.symm
     have ww' := MoritaEquivalence.trans R e2 this
     have h := MoritaEquivalence.trans R ww hAB.cond.some
     have h' := MoritaEquivalence.trans R h ww'
     have := MoritaEquivalence.algEquivOfDivisionRing R D E h'
-    refine ⟨m, n, hm, hn, ⟨e.mapMatrix.trans <| Matrix.compAlgEquiv _ _ _ _ |>.trans <|
-      Matrix.reindexAlgEquiv _ _ finProdFinEquiv |>.trans <| this.mapMatrix.trans <|
-      Matrix.reindexAlgEquiv _ _ finswap|>.trans <| Matrix.reindexAlgEquiv _ _
-      finProdFinEquiv.symm |>.trans <| Matrix.compAlgEquiv _ _ _ _|>.symm.trans
-      e'.symm.mapMatrix⟩⟩,
+    refine ⟨m, n, hm, hn, ⟨e.mapMatrix.trans <| Matrix.compFinAlgEquiv _ _ _ _ |>.trans <|
+      this.mapMatrix.trans <| Matrix.reindexAlgEquiv _ _ finswap|>.trans <|
+      (Matrix.compFinAlgEquiv _ _ _ _).symm.trans e'.symm.mapMatrix⟩⟩,
   fun ⟨n, m, hn, hm, ⟨e⟩⟩ ↦
   letI : NeZero n := ⟨hn⟩
   letI : NeZero m := ⟨hm⟩
   ⟨⟨MoritaEquivalence.trans R (MoritaEquivalence.trans R
-    (MoritaEquivalence.matrix' R A n) (MoritaEquivalence.ofAlgEquiv e))
-      (MoritaEquivalence.matrix' R B m).symm⟩⟩⟩
+    (moritaEquivalenceMatrix A R (0 : Fin n)) (MoritaEquivalence.ofAlgEquiv e))
+      (moritaEquivalenceMatrix B R (0 : Fin m)).symm⟩⟩⟩
 
 open ModuleCat in
 theorem IsMorita_iff_IsBrauer (A B : CSA.{u, v} K) :
@@ -175,16 +174,14 @@ open MulOpposite in
 abbrev matrixAlgEquivMatrixMop (n : ℕ) :
   Matrix (Fin n) (Fin n) R ≃ₐ[R] (Matrix (Fin n) (Fin n) R)ᵐᵒᵖ :=
   (AlgEquiv.toOpposite R R).mapMatrix.trans <| .ofCommutes
-  (matrixEquivMatrixMop n R) <|
+  RingEquiv.mopMatrix <|
   fun r ↦ by
-    simp only [matrixEquivMatrixMop_apply, MulOpposite.algebraMap_apply, op_inj]
+    simp only [RingEquiv.mopMatrix_apply, MulOpposite.algebraMap_apply, op_inj]
     ext i j
     simp [Matrix.algebraMap_matrix_apply]
     split_ifs with h1 h2 h3 <;> tauto
 
-set_option backward.isDefEq.respectTransparency false in
-noncomputable abbrev mopAlgEquivEnd : Rᵐᵒᵖ ≃ₐ[R] Module.End R R :=
-  .ofCommutes (mopEquivEnd R) fun r ↦ by ext; simp [mopEquivEnd]
+noncomputable abbrev mopAlgEquivEnd : Rᵐᵒᵖ ≃ₐ[R] Module.End R R := AlgEquiv.moduleEndSelf R
 
 noncomputable abbrev tensorEquivEnd : R ⊗[R] Rᵐᵒᵖ ≃ₐ[R] Module.End R R :=
   Algebra.TensorProduct.lid R Rᵐᵒᵖ|>.trans <| mopAlgEquivEnd R
@@ -192,7 +189,7 @@ noncomputable abbrev tensorEquivEnd : R ⊗[R] Rᵐᵒᵖ ≃ₐ[R] Module.End R
 set_option backward.isDefEq.respectTransparency false in
 lemma equal_mulLeftRight : tensorEquivEnd R = AlgHom.mulLeftRight R R := by
   ext r
-  simp [mopEquivEnd, AlgHom.mulLeftRight_apply]
+  simp [AlgHom.mulLeftRight_apply]
 
 lemma bij_Rtensor : Function.Bijective (AlgHom.mulLeftRight R R) := by
   rw [← equal_mulLeftRight]

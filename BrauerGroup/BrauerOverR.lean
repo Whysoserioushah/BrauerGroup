@@ -1,6 +1,7 @@
 module
 
 public import BrauerGroup.FrobeniusTheorem
+public import BrauerGroup.Mathlib.RingTheory.SimpleModule.WedderburnArtin
 
 @[expose] public section
 
@@ -82,8 +83,8 @@ lemma QuaternionNotEquivR : ¬ IsBrauerEquivalent (K := ℝ) ⟨.of ℝ ℍ[ℝ]
   obtain ⟨n, m, hn, hm, ⟨e⟩⟩ := h
   have : NeZero n := ⟨hn⟩
   have : NeZero m := ⟨hm⟩
-  obtain ⟨e'⟩ := Wedderburn_Artin_uniqueness₀ ℝ (Matrix (Fin n) (Fin n) ℍ[ℝ])
-    n m ℍ[ℝ] AlgEquiv.refl ℝ e
+  obtain ⟨e'⟩ := IsSimpleRing.wedderburn_artin_divisionRing_unique ℝ
+    (Matrix (Fin n) (Fin n) ℍ[ℝ]) AlgEquiv.refl e
   have eq2 := e'.toLinearEquiv.finrank_eq
   simp only [Module.finrank_self] at eq2
   have := eq2.symm.trans <| Quaternion.finrank_eq_four (R := ℝ)

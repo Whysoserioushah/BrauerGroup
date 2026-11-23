@@ -1,7 +1,7 @@
 module
 
 public import BrauerGroup.BrauerGroup
-public import BrauerGroup.ZeroSevenFourE
+public import BrauerGroup.Mathlib.RingTheory.Morita.End
 
 @[expose] public section
 
@@ -10,7 +10,7 @@ suppress_compilation
 universe u v w
 
 open MulOpposite
-open scoped TensorProduct
+open scoped TensorProduct Matrix.Module
 
 variable (K : Type u) [Field K]
 
@@ -178,7 +178,8 @@ instance module_inst_findim (K A B M : Type u)
     [AddCommGroup M] [Module K M] [Module A M] [IsScalarTower K A M]
     [IsSimpleModule A M] (f : B →ₐ[K] A) :
     Module.Finite (B ⊗[K] Module.End A M) (module_inst K A B M f) := by
-  have : Module.Finite A M := ⟨⟨{gen A M}, eq_top_iff.2 fun x _ => by
+  have : Module.Finite A M :=
+    ⟨⟨{Submodule.IsPrincipal.generator (⊤ : Submodule A M)}, eq_top_iff.2 fun x _ => by
     obtain ⟨a, rfl⟩ := gen_spec A M x
     apply Submodule.smul_mem
     refine Submodule.subset_span ?_
@@ -208,7 +209,7 @@ instance tensor_is_simple (K A B M : Type u)
     IsSimpleRing (B ⊗[K] Module.End A M) := by
   obtain ⟨n, hn, D, hD1, hD2, ⟨iso⟩⟩ := Wedderburn_Artin_algebra_version K A
   have : NeZero n := ⟨hn⟩
-  obtain ⟨e1⟩ := end_simple_mod_of_wedderburn' K A n hn D iso M
+  obtain ⟨e1⟩ := end_simple_mod_of_wedderburn' K A n D iso M
   have := CSA_implies_CSA K A n D _ iso
   have : Algebra.IsCentral K (Module.End A M) := .of_algEquiv K _ _ e1.symm
   classical
@@ -321,8 +322,9 @@ theorem SkolemNoether' (K A B : Type u)
     [Algebra K B] [hB : IsSimpleRing B] (f g : B →ₐ[K] A) :
     ∃ (x : Aˣ), ∀(b : B), g b = x * f b * x⁻¹ := by
   obtain ⟨n, hn, S, _, _, ⟨e⟩⟩ := Wedderburn_Artin_algebra_version K A
+  have : NeZero n := ⟨hn⟩
   let := Module.compHom (Fin n → S) e.toRingEquiv.toRingHom
-  have : IsSimpleModule A (Fin n → S) := simple_mod_of_wedderburn K A hn S e
+  have : IsSimpleModule A (Fin n → S) := simple_mod_of_wedderburn K A S e
   have : IsScalarTower K A (Fin n → S) := by
     constructor
     intro a b c

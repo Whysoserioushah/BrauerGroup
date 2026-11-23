@@ -600,7 +600,8 @@ lemma exists_simple_module_directSum [IsGalois F K] :
   ∃ (S : Type) (_ : AddCommGroup S) (_ : Module C S) (_ : IsSimpleModule C S)
     (ι : Type) (_ : Fintype ι),
     Nonempty (C ≃ₗ[C] ι →₀ S) := by
-  obtain ⟨S, _, _, _, ι, ⟨iso⟩⟩ := directSum_simple_module_over_simple_ring F C C
+  have : IsArtinianRing C := IsArtinianRing.of_finite F C
+  obtain ⟨S, _, _, _, ι, ⟨iso⟩⟩ := directSum_simple_module_over_simple_ring C C
   refine ⟨S, inferInstance, inferInstance, inferInstance, ι, ?_, ⟨iso⟩⟩
   haveI infinite : Module.Finite C (ι →₀ S) := Module.Finite.equiv iso
   letI : Module F S := Module.compHom S (algebraMap F C)
@@ -720,21 +721,16 @@ section C_iso
 set_option backward.isDefEq.respectTransparency false in
 def isoDagger (m : ℕ) [NeZero m] :
     Module.End C (Fin m → SM) ≃ₐ[F] Matrix (Fin m) (Fin m) (Module.End C SM) :=
-  .ofCommutes (endPowEquivMatrix C SM m) fun f ↦ by
+  .ofCommutes (endVecRingEquivMatrixEnd (Fin m) C SM) fun f ↦ by
     ext i j x
-    simp only [endPowEquivMatrix, endVecAlgEquivMatrixEnd, endVecRingEquivMatrixEnd,
-      RingEquiv.toEquiv_eq_coe, EquivLike.coe_coe, RingEquiv.coe_mk,
-      Equiv.coe_fn_mk, LinearMap.coe_mk, AddHom.coe_mk, Matrix.algebraMap_matrix_apply]
+    simp only [endVecRingEquivMatrixEnd, RingEquiv.coe_mk, Equiv.coe_fn_mk, LinearMap.coe_mk,
+      AddHom.coe_mk, Matrix.algebraMap_matrix_apply]
     split_ifs with h
     · simp only [h, algebraMap_end_apply, Pi.smul_apply, Pi.single_eq_same]
     · simp only [algebraMap_end_apply, Pi.smul_apply, Pi.single_eq_of_ne h, smul_zero,
       LinearMap.zero_apply]
 
-set_option backward.isDefEq.respectTransparency false in
-def mopEquivEnd' : Cᵐᵒᵖ ≃ₐ[F] Module.End C C :=
-  .ofCommutes (mopEquivEnd C) fun f ↦ by
-  ext x
-  simp [mopEquivEnd, Algebra.algebraMap_eq_smul_one]
+def mopEquivEnd' : Cᵐᵒᵖ ≃ₐ[F] Module.End C C := AlgEquiv.moduleEndSelf F
 
 def C_iso_aux : Cᵐᵒᵖ ≃ₐ[F] Module.End C (Fin (Fintype.card ι) → SM) :=
   mopEquivEnd'.trans <| (isoιSMPow' α β).conjAlgEquiv F
@@ -778,7 +774,8 @@ end C_iso
 
 variable (α β) in
 lemma M_directSum : ∃ (ιM : Type) (_ : Fintype ιM), Nonempty (M α β ≃ₗ[C] ιM →₀ SM) := by
-  obtain ⟨ιM, ⟨iso⟩⟩ := directSum_simple_module_over_simple_ring' F C (M α β) SM
+  have : IsArtinianRing C := IsArtinianRing.of_finite F C
+  obtain ⟨ιM, ⟨iso⟩⟩ := directSum_simple_module_over_simple_algebra' C (M α β) SM
   refine ⟨ιM, ?_, ⟨iso⟩⟩
   haveI : LinearMap.CompatibleSMul C (ιM →₀ SM) F C := by
     constructor
