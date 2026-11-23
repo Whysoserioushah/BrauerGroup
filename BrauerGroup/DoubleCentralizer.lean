@@ -654,7 +654,6 @@ noncomputable def writeAsTensorProduct [Algebra.IsCentral F B] :
       |>.isSimpleOrder⟩
   AlgEquiv.symm <| AlgEquiv.ofBijective (Algebra.TensorProduct.lift B.val (Subalgebra.val _)
     fun x y => show _ = _ by simpa using y.property x x.property) <|
-      bijective_of_dim_eq_of_isCentralSimple F (B ⊗[F] Subalgebra.centralizer F (B : Set A)) A
-        _ <| by
+      AlgHom.bijective_of_finrank_eq _ <| by
         rw [Module.finrank_tensorProduct]
         rw [← dim_centralizer (B := B), mul_comm]

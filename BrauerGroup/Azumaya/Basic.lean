@@ -107,8 +107,7 @@ theorem IsAzumaya_iff_CentralSimple [Nontrivial A] : IsAzumaya K A ↔ FiniteDim
         rw [← Algebra.algebraMap_eq_smul_one, ← Algebra.algebraMap_eq_smul_one] at ha
         exact FaithfulSMul.algebraMap_injective _ _ ha
       fg_top := fin.fg_top
-      bij := bijective_of_dim_eq_of_isCentralSimple K _ _
-        (AlgHom.mulLeftRight K A) <| tensor_self_op.dim_eq _ _
+      bij := (AlgHom.mulLeftRight K A).bijective_of_finrank_eq <| tensor_self_op.dim_eq _ _
     }⟩
 
 def finswap {n m : ℕ} : Fin (n * m) ≃ Fin (m * n) where

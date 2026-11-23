@@ -7,6 +7,7 @@ public import BrauerGroup.Mathlib.RingTheory.MatrixAlgebra
 public import BrauerGroup.Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
 public import BrauerGroup.Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
 public import Mathlib.Algebra.Central.TensorProduct
+public import Mathlib.FieldTheory.Galois.Basic
 public import Mathlib.RingTheory.SimpleRing.Congr
 
 @[expose] public section

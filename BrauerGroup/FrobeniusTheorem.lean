@@ -3,6 +3,8 @@ module
 public import BrauerGroup.Subfield.FiniteDimensional
 public import BrauerGroup.Subfield.Subfield
 public import Mathlib.Algebra.QuaternionBasis
+public import Mathlib.Analysis.Complex.Polynomial.Basic
+public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 public import Mathlib.Analysis.Quaternion
 public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 
@@ -50,11 +52,11 @@ lemma RealExtension_is_RorC (K : Type) [Field K] [Algebra ℝ K] [FiniteDimensio
   rcases dim_eq3 with ⟨h1⟩ | ⟨h2⟩
   · left
     exact Nonempty.intro <| AlgEquiv.symm <| AlgEquiv.ofBijective (Algebra.ofId _ _)
-      (bijective_of_dim_eq_of_isCentralSimple _ _ _ _ <| by simp [h1])
+      (AlgHom.bijective_of_finrank_eq _ <| by simp [h1])
   · right
     exact Nonempty.intro <| AlgEquiv.ofBijective
       (e.symm.toAlgHom.comp <| Algebra.ofId K CC |>.restrictScalars ℝ)
-      (bijective_of_dim_eq_of_isCentralSimple _ _ _ _ <| by simp [h2])
+      (AlgHom.bijective_of_finrank_eq _ <| by simp [h2])
 
 end prerequisites
 

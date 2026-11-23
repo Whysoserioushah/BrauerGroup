@@ -237,7 +237,7 @@ theorem isSplit_iff_dimension [FiniteDimensional F K] (A : CSA F) :
     rw [split_sound' K F A B (Quotient.eq''.1 eq)]
     refine ⟨Module.finrank K B, ⟨fun r => by have := Module.finrank_pos (R := K) (M := B); omega⟩,
       ⟨AlgEquiv.trans (AlgEquiv.ofBijective μAlg ?_) e⟩⟩
-    apply bijective_of_dim_eq_of_isCentralSimple
+    apply AlgHom.bijective_of_finrank_eq
     rw [show Module.finrank K (K ⊗[F] B) = n^2 by simp [dim_eq]]
     rw [show Module.finrank K (Module.End K B) = n^2 by
       rw [Module.finrank_linearMap]

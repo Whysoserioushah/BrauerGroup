@@ -11,7 +11,6 @@ public import BrauerGroup.CSA.ReducedCharPoly
 public import BrauerGroup.CentralSimple
 public import BrauerGroup.DoubleCentralizer
 public import BrauerGroup.ExtendScalar
-public import BrauerGroup.FieldCat
 public import BrauerGroup.FiniteField
 public import BrauerGroup.FrobeniusTheorem
 public import BrauerGroup.IsoSecond
@@ -21,6 +20,11 @@ public import BrauerGroup.Mathlib.Algebra.Algebra.Subalgebra.Centralizer
 public import BrauerGroup.Mathlib.Algebra.Algebra.Subalgebra.Directed
 public import BrauerGroup.Mathlib.Algebra.Algebra.Subalgebra.Lattice
 public import BrauerGroup.Mathlib.Algebra.BigOperators.GroupWithZero.Action
+public import BrauerGroup.Mathlib.Algebra.BrauerGroup.AlgClosed
+public import BrauerGroup.Mathlib.Algebra.BrauerGroup.BaseChange
+public import BrauerGroup.Mathlib.Algebra.BrauerGroup.Basic
+public import BrauerGroup.Mathlib.Algebra.BrauerGroup.FiniteField
+public import BrauerGroup.Mathlib.Algebra.Central.Matrix
 public import BrauerGroup.Mathlib.Algebra.Central.TensorProduct
 public import BrauerGroup.Mathlib.Algebra.CrossProduct.Basic
 public import BrauerGroup.Mathlib.Algebra.CrossProduct.CentralSimple
@@ -46,6 +50,7 @@ public import BrauerGroup.Mathlib.RingTheory.NonUnitalSubring.Defs
 public import BrauerGroup.Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 public import BrauerGroup.Mathlib.RingTheory.NonUnitalSubsemiring.Defs
 public import BrauerGroup.Mathlib.RingTheory.SimpleModule.WedderburnArtin
+public import BrauerGroup.Mathlib.RingTheory.SimpleRing.Basic
 public import BrauerGroup.Mathlib.RingTheory.SimpleRing.TensorProduct
 public import BrauerGroup.Mathlib.RingTheory.TensorProduct.Basic
 public import BrauerGroup.Mathlib.RingTheory.TwoSidedIdeal.Lattice
