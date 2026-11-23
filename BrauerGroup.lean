@@ -52,6 +52,7 @@ public import BrauerGroup.Mathlib.RingTheory.NonUnitalSubsemiring.Defs
 public import BrauerGroup.Mathlib.RingTheory.SimpleModule.WedderburnArtin
 public import BrauerGroup.Mathlib.RingTheory.SimpleRing.Basic
 public import BrauerGroup.Mathlib.RingTheory.SimpleRing.TensorProduct
+public import BrauerGroup.Mathlib.RingTheory.SkolemNoether
 public import BrauerGroup.Mathlib.RingTheory.TensorProduct.Basic
 public import BrauerGroup.Mathlib.RingTheory.TwoSidedIdeal.Lattice
 public import BrauerGroup.Mathlib.RingTheory.TwoSidedIdeal.Operations
@@ -61,7 +62,6 @@ public import BrauerGroup.MatrixEquivTensor
 public import BrauerGroup.Morita.ChangeOfRings
 public import BrauerGroup.Morita.TensorProduct
 public import BrauerGroup.RelativeBrauer
-public import BrauerGroup.SkolemNoether
 public import BrauerGroup.SplittingOfCSA
 public import BrauerGroup.Subfield.Defs
 public import BrauerGroup.Subfield.FiniteDimensional

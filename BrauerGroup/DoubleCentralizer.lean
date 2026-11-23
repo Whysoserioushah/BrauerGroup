@@ -6,7 +6,8 @@ Authors: Jujian Zhang
 module
 
 public import BrauerGroup.CentralSimple
-public import BrauerGroup.SkolemNoether
+public import BrauerGroup.BrauerGroup
+public import BrauerGroup.Mathlib.RingTheory.SkolemNoether
 public import Mathlib.RingTheory.SimpleRing.Field
 
 @[expose] public section
@@ -531,7 +532,7 @@ lemma step1 :
       congr
       ext
       simp }
-  obtain ⟨x, hx⟩ := SkolemNoether' F (A ⊗[F] Module.End F B) B g f
+  obtain ⟨x, hx⟩ := skolemNoether F (A ⊗[F] Module.End F B) B g f
   use x
   have eq1 :
       ((Algebra.TensorProduct.includeLeft (R := F) (S := F) (A := A) (B := Module.End F B)).comp
