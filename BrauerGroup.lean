@@ -20,8 +20,11 @@ public import BrauerGroup.LemmasAboutSimpleRing
 public import BrauerGroup.Mathlib.Algebra.Algebra.Subalgebra.Basic
 public import BrauerGroup.Mathlib.Algebra.Algebra.Subalgebra.Directed
 public import BrauerGroup.Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import BrauerGroup.Mathlib.Algebra.BigOperators.GroupWithZero.Action
 public import BrauerGroup.Mathlib.Algebra.CrossProduct.Basic
 public import BrauerGroup.Mathlib.Algebra.CrossProduct.CentralSimple
+public import BrauerGroup.Mathlib.Algebra.CrossProduct.Cyclic
+public import BrauerGroup.Mathlib.GroupTheory.CyclicIndex
 public import BrauerGroup.Mathlib.LinearAlgebra.LinearIndependent.Defs
 public import BrauerGroup.Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
 public import BrauerGroup.Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
