@@ -25,8 +25,8 @@ def LinearEquiv.conj' (f : Module.End (Module.End R M) M) :
     simp only [Module.End.smul_def, RingHom.id_apply]
     let L := l.symm.toLinearMap ∘ₗ g ∘ₗ l.toLinearMap
     have := f.map_smul L (l.symm x)
-    simp only [Module.End.smul_def, LinearMap.coe_comp, coe_coe, Function.comp_apply,
-      apply_symm_apply, L] at this
+    simp only [Module.End.smul_def, LinearMap.coe_comp, LinearEquiv.coe_toLinearMap,
+      Function.comp_apply, apply_symm_apply, L] at this
     simp [this]
   map_add' := by simp
 

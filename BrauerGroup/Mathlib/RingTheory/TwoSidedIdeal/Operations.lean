@@ -22,14 +22,14 @@ lemma comap_injective (f : F) (hf : Surjective f) : Injective (comap f) := by
 @[simp]
 def orderIsoOfRingEquiv {F : Type*} [EquivLike F R S] [RingEquivClass F R S] (f : F) :
     TwoSidedIdeal R ≃o TwoSidedIdeal S where
-  toFun := comap (RingEquivClass.toRingEquiv f).symm
-  invFun := comap (RingEquivClass.toRingEquiv f)
+  toFun := comap (RingEquiv.ofClass f).symm
+  invFun := comap (RingEquiv.ofClass f)
   left_inv I := by
     have := TwoSidedIdeal.comap_comap (R := R) (S := S) I
-        (RingEquivClass.toRingEquiv f) (RingEquivClass.toRingEquiv f).symm
+        (RingEquiv.ofClass f) (RingEquiv.ofClass f).symm
     simp at this
-    erw [TwoSidedIdeal.comap_comap _ (RingEquivClass.toRingEquiv f).toRingHom
-      (RingEquivClass.toRingEquiv f).symm.toRingHom]
+    erw [TwoSidedIdeal.comap_comap _ (RingEquiv.ofClass f).toRingHom
+      (RingEquiv.ofClass f).symm.toRingHom]
     simp only [RingEquiv.toRingHom_eq_coe, RingEquiv.symm_comp]
     rfl
   right_inv I := SetLike.ext fun x ↦ by simp only [mem_comap, RingEquiv.apply_symm_apply]
@@ -38,8 +38,9 @@ def orderIsoOfRingEquiv {F : Type*} [EquivLike F R S] [RingEquivClass F R S] (f 
     rw [le_iff, le_iff]
     constructor
     · rintro h x hx
-      specialize @h (RingEquivClass.toRingEquiv f x) (by simpa [TwoSidedIdeal.mem_comap])
-      simpa [TwoSidedIdeal.mem_comap] using h
+      specialize @h (RingEquiv.ofClass f x) (by
+        simpa only [Equiv.coe_fn_mk, SetLike.mem_coe, mem_comap, RingEquiv.symm_apply_apply])
+      simpa only [Equiv.coe_fn_mk, SetLike.mem_coe, mem_comap, RingEquiv.symm_apply_apply] using h
     · intro h x hx
       simp only [Equiv.coe_fn_mk, SetLike.mem_coe, mem_comap] at hx ⊢
       exact h hx
