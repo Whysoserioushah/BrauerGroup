@@ -6,6 +6,7 @@ public import BrauerGroup.Mathlib.RingTheory.Congruence.Basic
 public import BrauerGroup.Mathlib.RingTheory.TwoSidedIdeal.Lattice
 public import Mathlib.Algebra.BrauerGroup.Defs
 public import Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
+public import Mathlib.RingTheory.TwoSidedIdeal.Kernel
 
 /-!
 # The cross product algebra of a 2-cocycle is central simple
