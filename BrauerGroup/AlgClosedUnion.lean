@@ -272,8 +272,9 @@ lemma comm_triangle :
     (inclusion n k k_bar A iso).toLinearMap := by
   ext a
   simp only [AlgebraTensorModule.curry_apply, curry_apply, LinearMap.coe_restrictScalars,
-    LinearMap.coe_comp, Submodule.coe_subtype, LinearEquiv.coe_coe, Function.comp_apply, inclusion,
-    AlgHom.toLinearMap_apply, Algebra.TensorProduct.map_tmul, _root_.map_one, AlgHom.coe_id, id_eq]
+    LinearMap.coe_comp, Submodule.coe_subtype, LinearEquiv.coe_toLinearMap, Function.comp_apply,
+    inclusion, AlgHom.toLinearMap_apply, Algebra.TensorProduct.map_tmul, _root_.map_one,
+    AlgHom.coe_id, id_eq]
   simp only [intermediateTensorEquiv', intermediateTensorEquiv, LinearEquiv.symm_symm,
     LinearEquiv.coe_symm_mk]
   rfl
@@ -296,9 +297,10 @@ lemma comm_square' :
   conv_lhs => simp only [AlgEquiv.toLinearEquiv_toLinearMap, e_hat,
     basisOfLinearIndependentOfCardEqFinrank,
     Basis.coe_mk, e_hat', LinearMap.coe_comp, LinearMap.coe_restrictScalars, Submodule.coe_subtype,
-    Function.comp_apply, AlgEquiv.toLinearMap_apply, LinearEquiv.coe_coe, AlgHom.toLinearMap_apply]
-  simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, Basis.equiv_apply,
-    Equiv.refl_apply, AlgHom.toLinearMap_apply]
+    Function.comp_apply, AlgEquiv.toLinearMap_apply, LinearEquiv.coe_toLinearMap,
+    AlgHom.toLinearMap_apply]
+  simp only [LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply,
+    Basis.equiv_apply, Equiv.refl_apply, AlgHom.toLinearMap_apply]
   change iso (e i) = (inclusion' n k k_bar A iso) ((Matrix.stdBasis ℒ (Fin n) (Fin n)) i)
   rw [ee_apply n k k_bar A iso i]
   rw [Matrix.stdBasis_eq_single]
@@ -377,8 +379,9 @@ lemma isoRestrict_map_mul (x y : ℒ ⊗[k] A) :
     erw [_root_.map_mul (f := inclusion n k k_bar A iso), _root_.map_mul (f := iso)]
   have eq₁ := congr($(comm_square n k k_bar A iso) x)
   have eq₂ := congr($(comm_square n k k_bar A iso) y)
-  simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, AlgHom.toLinearMap_apply,
-    AlgEquiv.toLinearEquiv_toLinearMap, LinearMap.coe_restrictScalars] at eq₁ eq₂
+  simp only [LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply,
+    AlgHom.toLinearMap_apply, AlgEquiv.toLinearEquiv_toLinearMap,
+    LinearMap.coe_restrictScalars] at eq₁ eq₂
   apply inclusion'_injective n k k_bar A iso
   calc
     (inclusion' n k k_bar A iso) ((isoRestrict' n k k_bar A iso) (x * y)) =

@@ -183,8 +183,8 @@ lemma comm_square4 :
   simp only [LinearMap.comp_apply]
   apply tensor_inclusion2_inj
   rw [← comm_square2_apply, LinearEquiv.coe_toLinearMap, comm_square3_apply]
-  simp only [LinearMap.coe_mk, AddHom.coe_mk, LinearEquiv.coe_coe, LinearEquiv.apply_symm_apply,
-    LinearMap.comp_assoc, LinearMap.id_coe, id_eq]
+  simp only [LinearMap.coe_mk, AddHom.coe_mk, LinearEquiv.coe_toLinearMap,
+    LinearEquiv.apply_symm_apply, LinearMap.comp_assoc, LinearMap.id_coe, id_eq]
   apply LinearMap.ext
   simp [projection2_inclusion2_apply]
 
@@ -466,8 +466,9 @@ lemma tensor_projection_inclusion1' : tensor_projection1' R M ∘ₗ tensor_incl
   ext f g
   simp only [TensorProduct.AlgebraTensorModule.curry_apply, LinearMap.restrictScalars_self,
     TensorProduct.curry_apply, LinearMap.coe_comp, comp_apply, TensorProduct.map_tmul,
-    LinearMap.coe_mk, AddHom.coe_mk, LinearEquiv.coe_coe, coe_opLinearEquiv, coe_opLinearEquiv_symm,
-    LinearMap.comp_assoc, fg, LinearMap.comp_id, unop_op, LinearMap.id_coe, id_eq]
+    LinearMap.coe_mk, AddHom.coe_mk, LinearEquiv.coe_toLinearMap, coe_opLinearEquiv,
+    coe_opLinearEquiv_symm, LinearMap.comp_assoc, fg, LinearMap.comp_id, unop_op, LinearMap.id_coe,
+    id_eq]
   rw [← LinearMap.comp_assoc, fg, LinearMap.id_comp, ← LinearMap.comp_assoc,
     fg, LinearMap.id_comp, op_unop]
 
@@ -513,7 +514,7 @@ lemma comm_square_endend :
   simp only [TensorProduct.AlgebraTensorModule.curry_apply, LinearMap.restrictScalars_comp,
     TensorProduct.curry_apply, LinearMap.coe_comp, LinearMap.coe_restrictScalars, LinearMap.coe_mk,
     AddHom.coe_mk, Function.comp_apply, AlgHom.toLinearMap_apply,
-    TensorProduct.map_tmul, LinearEquiv.coe_coe, coe_opLinearEquiv, coe_opLinearEquiv_symm,
+    TensorProduct.map_tmul, LinearEquiv.coe_toLinearMap, coe_opLinearEquiv, coe_opLinearEquiv_symm,
     AlgHom.mulLeftRight_apply, unop_op]
   ext i j
   simp
@@ -527,8 +528,8 @@ lemma comm_square_endend' :
   simp only [TensorProduct.AlgebraTensorModule.curry_apply, LinearMap.restrictScalars_comp,
     TensorProduct.curry_apply, LinearMap.coe_comp, LinearMap.coe_restrictScalars,
     Function.comp_apply, TensorProduct.map_tmul, LinearMap.coe_mk, AddHom.coe_mk,
-    LinearEquiv.coe_coe, coe_opLinearEquiv, coe_opLinearEquiv_symm, AlgHom.toLinearMap_apply,
-    AlgHom.mulLeftRight_apply, unop_op]
+    LinearEquiv.coe_toLinearMap, coe_opLinearEquiv, coe_opLinearEquiv_symm,
+    AlgHom.toLinearMap_apply, AlgHom.mulLeftRight_apply, unop_op]
   ext m
   simp
 
