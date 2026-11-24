@@ -9,7 +9,6 @@ public import BrauerGroup.BrauerGroup
 public import BrauerGroup.BrauerOverR
 public import BrauerGroup.CSA.ReducedCharPoly
 public import BrauerGroup.CentralSimple
-public import BrauerGroup.DoubleCentralizer
 public import BrauerGroup.ExtendScalar
 public import BrauerGroup.FiniteField
 public import BrauerGroup.FrobeniusTheorem
@@ -17,6 +16,7 @@ public import BrauerGroup.IsoSecond
 public import BrauerGroup.Mathlib.Algebra.Algebra.Opposite
 public import BrauerGroup.Mathlib.Algebra.Algebra.Subalgebra.Basic
 public import BrauerGroup.Mathlib.Algebra.Algebra.Subalgebra.Centralizer
+public import BrauerGroup.Mathlib.Algebra.Algebra.Subalgebra.Conj
 public import BrauerGroup.Mathlib.Algebra.Algebra.Subalgebra.Directed
 public import BrauerGroup.Mathlib.Algebra.Algebra.Subalgebra.Lattice
 public import BrauerGroup.Mathlib.Algebra.BigOperators.GroupWithZero.Action
@@ -35,7 +35,7 @@ public import BrauerGroup.Mathlib.Data.Matrix.Composition
 public import BrauerGroup.Mathlib.GroupTheory.CyclicIndex
 public import BrauerGroup.Mathlib.LinearAlgebra.LinearIndependent.Defs
 public import BrauerGroup.Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
-public import BrauerGroup.Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
+public import BrauerGroup.Mathlib.LinearAlgebra.Matrix.ToLin
 public import BrauerGroup.Mathlib.LinearAlgebra.Quotient.Basic
 public import BrauerGroup.Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
 public import BrauerGroup.Mathlib.RingTheory.Congruence.Basic
@@ -51,9 +51,11 @@ public import BrauerGroup.Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 public import BrauerGroup.Mathlib.RingTheory.NonUnitalSubsemiring.Defs
 public import BrauerGroup.Mathlib.RingTheory.SimpleModule.WedderburnArtin
 public import BrauerGroup.Mathlib.RingTheory.SimpleRing.Basic
+public import BrauerGroup.Mathlib.RingTheory.SimpleRing.Center
+public import BrauerGroup.Mathlib.RingTheory.SimpleRing.Centralizer
+public import BrauerGroup.Mathlib.RingTheory.SimpleRing.End
 public import BrauerGroup.Mathlib.RingTheory.SimpleRing.TensorProduct
 public import BrauerGroup.Mathlib.RingTheory.SkolemNoether
-public import BrauerGroup.Mathlib.RingTheory.TensorProduct.Basic
 public import BrauerGroup.Mathlib.RingTheory.TwoSidedIdeal.Lattice
 public import BrauerGroup.Mathlib.RingTheory.TwoSidedIdeal.Operations
 public import BrauerGroup.Mathlib.RingTheory.TwoSidedIdeal.SpanAsSum

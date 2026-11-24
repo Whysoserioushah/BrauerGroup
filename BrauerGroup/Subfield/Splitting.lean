@@ -57,7 +57,7 @@ lemma exists_embedding_of_isSplit [FiniteDimensional F K] (A : CSA F) (split : i
       rw [Algebra.mem_bot]
       rw [Subalgebra.mem_center_iff] at hx
       have hx' : ⟨x, by
-          rw [← double_centralizer (B := emb.range)]
+          rw [← emb.range.centralizer_centralizer]
           intro y hy
           specialize hx ⟨y, hy⟩
           simpa [Subtype.ext_iff] using hx⟩ ∈ Subalgebra.center F emb.range := by
@@ -71,7 +71,7 @@ lemma exists_embedding_of_isSplit [FiniteDimensional F K] (A : CSA F) (split : i
       use r
       rw [Subtype.ext_iff, ← hr]
       rfl }
-  have : IsSimpleRing B := centralizer_isSimple _
+  have : IsSimpleRing B := emb.range.centralizer_isSimple
   refine ⟨⟨.of F B⟩, ?_,
     { toFun r :=
         ⟨{
@@ -96,17 +96,17 @@ lemma exists_embedding_of_isSplit [FiniteDimensional F K] (A : CSA F) (split : i
         AddHom.coe_mk, LinearMap.coe_single, Function.comp_apply, Pi.smul_apply,
         SubalgebraClass.coe_algebraMap, Module.algebraMap_end_apply] }, ?_⟩
   · change Quotient.mk'' _ = Quotient.mk'' (⟨AlgCat.of F F⟩ : CSA F)
-    have := writeAsTensorProduct (B := emb.range)
+    have := emb.range.tensorCentralizerEquiv
     have iso : A ⊗[F] B ≃ₐ[F] Matrix (Fin (Module.finrank F (Fin n → K)))
       (Fin (Module.finrank F (Fin n → K))) F :=
       AlgEquiv.symm <|
         AlgEquiv.trans (algEquivMatrix (R := F) (M := Fin n → K) (Module.finBasis _ _)).symm
-        (writeAsTensorProduct (B := emb.range) |>.trans <|
+        (emb.range.tensorCentralizerEquiv |>.trans <|
           Algebra.TensorProduct.congr e.symm AlgEquiv.refl)
     apply Quotient.sound'
     exact ⟨1, Module.finrank F (Fin n → K), one_ne_zero, by aesop, ⟨(dim_one_iso _).trans iso⟩⟩
   · change Module.finrank F K ^ 2 = Module.finrank F B
-    have dim_eq1 : Module.finrank F B * _ = _ := dim_centralizer F emb.range
+    have dim_eq1 : Module.finrank F B * _ = _ := emb.range.finrank_centralizer_mul_finrank
     rw [Module.finrank_linearMap, show Module.finrank F (Fin n → K) =
       Module.finrank F K * Module.finrank K (Fin n → K) from
       (Module.finrank_mul_finrank F K (Fin n → K)).symm, Module.finrank_fin_fun,

@@ -1,6 +1,6 @@
 module
 
-public import BrauerGroup.DoubleCentralizer
+public import BrauerGroup.Mathlib.RingTheory.SimpleRing.Centralizer
 public import BrauerGroup.Mathlib.Algebra.Algebra.Subalgebra.Basic
 public import BrauerGroup.Subfield.Defs
 
@@ -16,7 +16,7 @@ variable (K D : Type u) [Field K] [DivisionRing D] [Algebra K D] [FiniteDimensio
 theorem dim_max_subfield (k : SubField K D) (hk : IsMax k) :
     Module.finrank K D = Module.finrank K k * Module.finrank K k := by
   let : Field k.toSubalgebra := inferInstanceAs <| Field k
-  have dimdim := dim_centralizer K (A := D) k.toSubalgebra |>.symm
+  have dimdim := k.toSubalgebra.finrank_centralizer_mul_finrank |>.symm
   have := Subalgebra.le_centralizer_self.2 k.mul_comm
   have eq : k.toSubalgebra = Subalgebra.centralizer K (A := D) k.toSubalgebra := by
     by_contra! hneq
@@ -90,12 +90,12 @@ lemma cor_two_1to2 (A : Type u) [Ring A] [Algebra K A] [FiniteDimensional K A]
       Module.finrank K A = Module.finrank K L * Module.finrank K L where
   mp h := by
     let : Field L.toSubalgebra := inferInstanceAs <| Field L
-    have := dim_centralizer K (A := A) L.toSubalgebra
+    have := L.toSubalgebra.finrank_centralizer_mul_finrank
     rw [h] at this
     exact this.symm
   mpr h := by
     let : Field L.toSubalgebra := inferInstanceAs <| Field L
-    have := dim_centralizer K (A := A) L.toSubalgebra
+    have := L.toSubalgebra.finrank_centralizer_mul_finrank
     rw [h] at this
     erw [mul_eq_mul_right_iff] at this
     obtain h1 | h2 := this
@@ -111,7 +111,7 @@ lemma cor_two_2to3 (A : Type u) [Ring A] [Algebra K A] [FiniteDimensional K A]
       L.toSubalgebra ≤ L' → L.toSubalgebra = L') :=
   fun hrank L' hL' hLL ↦ by
   let : Field L.toSubalgebra := inferInstanceAs <| Field L
-  have := dim_centralizer K (A := A) L.toSubalgebra |>.symm
+  have := L.toSubalgebra.finrank_centralizer_mul_finrank |>.symm
   simp only [this, SubField.coe_toSubalgebra] at hrank
   erw [mul_eq_mul_right_iff] at hrank
   obtain h1 | h2 := hrank

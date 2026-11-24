@@ -35,33 +35,6 @@ instance st : IsScalarTower K K (Module.End K A) where
     change (k₁ * k₂) • f a = k₁ • (k₂ • f a)
     rw [mul_smul]
 
-def toEnd : A ⊗[K] Aᵐᵒᵖ →ₐ[K] Module.End K A :=
-  Algebra.TensorProduct.lift
-    { toFun a :=
-        { toFun x := a * x
-          map_add' := mul_add _
-          map_smul' := by simp }
-      map_one' := by aesop
-      map_mul' := by intros; ext; simp [mul_assoc]
-      map_zero' := by aesop
-      map_add' := by intros; ext; simp [add_mul]
-      commutes' k := DFunLike.ext _ _ fun a ↦ show (algebraMap K A) k * a = k • _ from
-        (Algebra.smul_def _ _).symm }
-    { toFun a :=
-        { toFun x := x * a.unop
-          map_add' := fun x y => by simp [add_mul]
-          map_smul' := by simp }
-      map_one' := by aesop
-      map_mul' := by intros; ext; simp [mul_assoc]
-      map_zero' := by aesop
-      map_add' := by intros; ext; simp [mul_add]
-      commutes' k := DFunLike.ext _ _ fun a ↦
-        show a * (algebraMap K A) k = k • _ by
-          rw [Algebra.smul_def, Algebra.commutes]
-          rfl }
-    fun a a' => show _ = _ from DFunLike.ext _ _ fun x ↦ show a * (x * a'.unop) = a * x * a'.unop
-      from mul_assoc _ _ _ |>.symm
-
 omit [Algebra.IsCentral K A] hA in
 lemma dim_eq :
     Module.finrank K (A ⊗[K] Aᵐᵒᵖ) = Module.finrank K (Module.End K A) := by
@@ -72,9 +45,6 @@ lemma dim_eq :
   rw [Module.finrank_matrix, Fintype.card_fin]
   rw [(MulOpposite.opLinearEquiv K : A ≃ₗ[K] Aᵐᵒᵖ).symm.finrank_eq]
   simp only [Module.finrank_self, mul_one]
-
-def equivEnd : A ⊗[K] Aᵐᵒᵖ ≃ₐ[K] Module.End K A :=
-  AlgEquiv.ofBijective (toEnd K A) <| AlgHom.bijective_of_finrank_eq _ <| dim_eq K A
 
 end tensor_self_op
 

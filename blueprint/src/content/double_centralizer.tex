@@ -156,7 +156,7 @@ central simple $F$-algebra.
    Let $S\subseteq A$ be a simple $F$-subalgebra, then
    $C_{A}(S)$ is simple as well.
    \leanok
-   \lean{centralizer_isSimple}
+   \lean{Subalgebra.centralizer_isSimple}
    % \uses{lem:centralizer-tensor-end-eq-conj-tensor-mul-right, lem:tensor-mul-right-simple, thm:tensor-simple-implies-simple}
  \end{lemma}
 
@@ -176,7 +176,7 @@ central simple $F$-algebra.
      \dim_{F}C_{A}(S)\cdot\dim_{F}S=\dim_{F}A.
    \]
    \leanok
-   \lean{dim_centralizer}
+   \lean{Subalgebra.finrank_centralizer_mul_finrank}
    % \uses{lem:centralizer-tensor-end-eq-conj-tensor-mul-right, lem:mul-right-iso-opp}
  \end{lemma}
  \begin{proof}
@@ -192,7 +192,7 @@ central simple $F$-algebra.
     A \cong B \ox_{F} C_{A}(B).
   \]
   \leanok
-  \lean{writeAsTensorProduct}
+  \lean{Subalgebra.tensorCentralizerEquiv}
   % \uses{lem:simple-centralizer, thm:tensor-csa, cor:alghom-bijective-of-dim-eq, lem:dim-centralizer}
 \end{corollary}
 
@@ -206,7 +206,7 @@ central simple $F$-algebra.
      C_{A}\left(C_{A}(S)\right) = S.
    \]
    \leanok
-   \lean{double_centralizer}
+   \lean{Subalgebra.centralizer_centralizer}
    % \uses{lem:simple-centralizer, lem:dim-centralizer}
  \end{theorem}
  \begin{proof}

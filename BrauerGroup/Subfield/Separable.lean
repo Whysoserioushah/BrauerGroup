@@ -2,6 +2,7 @@ module
 
 public import BrauerGroup.Mathlib.Algebra.Algebra.Subalgebra.Lattice
 public import BrauerGroup.Subfield.Splitting
+public import BrauerGroup.Mathlib.RingTheory.SimpleRing.Center
 public import Mathlib.FieldTheory.JacobsonNoether
 
 @[expose] public section
@@ -12,6 +13,16 @@ variable (K D : Type u) [Field K] [DivisionRing D] [Algebra K D] [Algebra.IsCent
   [FiniteDimensional K D]
 
 open Polynomial
+open scoped Subalgebra.center
+
+noncomputable local instance (F B : Type*) [Field F] [Ring B] [Algebra F B] [IsSimpleRing B] :
+    Field (Subalgebra.center F B) :=
+  IsField.toField <| IsSimpleRing.isField_center _
+
+local instance (F B : Type*) [Field F] [Ring B] [Algebra F B] [IsSimpleRing B]
+    [FiniteDimensional F B] :
+    FiniteDimensional (Subalgebra.center F B) B :=
+  .right F (Subalgebra.center F B) B
 
 omit [Algebra.IsCentral K D] [FiniteDimensional K D] in
 lemma SubField.adjoin_centralizer_mul_comm (L : SubField K D) (a : D)
@@ -307,7 +318,7 @@ theorem exists_sep_masSubfield' : ∃ (a : D), IsMax (SubField.bot_adjoin K D a)
   let CCL := Subalgebra.centralizer K (A := D) CL
   let : Field L.val := inferInstance
   have sim : IsSimpleRing L.val.toSubalgebra := inferInstance
-  have eq1 := double_centralizer (F := K) (A := D) L.val.toSubalgebra
+  have eq1 := L.val.toSubalgebra.centralizer_centralizer
   change CCL = L.val.toSubalgebra at eq1
   have eq2 : CCL = ZCL.map (Subalgebra.val _) := by
     dsimp [CCL, ZCL, CL] at *

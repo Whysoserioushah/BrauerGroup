@@ -1,14 +1,13 @@
 module
 
 public import BrauerGroup.SplittingOfCSA
-public import BrauerGroup.DoubleCentralizer
-public import BrauerGroup.Mathlib.RingTheory.TensorProduct.Basic
+public import BrauerGroup.Mathlib.RingTheory.SimpleRing.Centralizer
 public import BrauerGroup.Mathlib.RingTheory.MatrixAlgebra
 public import BrauerGroup.Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
-public import BrauerGroup.Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
 public import Mathlib.Algebra.Central.TensorProduct
 public import Mathlib.FieldTheory.Galois.Basic
 public import Mathlib.RingTheory.SimpleRing.Congr
+public import Mathlib.RingTheory.TensorProduct.Maps
 
 @[expose] public section
 
@@ -103,7 +102,7 @@ set_option maxSynthPendingDepth 2 in
 variable {K F E A n} in
 abbrev g (φ : F →ₐ[K] E) : E ⊗[K] A ≃ₐ[E] Matrix (Fin n) (Fin n) E :=
   Algebra.TensorProduct.congr (Algebra.TensorProduct.rid φ.range E E|>.symm) AlgEquiv.refl |>.trans
-  <| Algebra.TensorProduct.assoc' K E φ.range E φ.range A|>.trans <|
+  <| Algebra.TensorProduct.assoc _ _ _ _ _ _|>.trans <|
   Algebra.TensorProduct.congr AlgEquiv.refl (e1'' A n e φ) |>.trans <|
   (matrixEquivTensor' _ _ _ ).symm
 
@@ -118,7 +117,7 @@ lemma mat_over_extension (φ : F →ₐ[K] E) (a : A) :
   use g e φ
   simp only [AlgEquiv.trans_apply, Algebra.TensorProduct.congr_apply, AlgEquiv.refl_toAlgHom,
     Algebra.TensorProduct.map_tmul, map_one, Algebra.TensorProduct.one_def, AlgHom.coe_id, id_eq,
-    Algebra.TensorProduct.assoc'_apply, matrixEquivTensor'_symm_apply, one_smul,
+    Algebra.TensorProduct.assoc_tmul, matrixEquivTensor'_symm_apply, one_smul,
     AlgHom.mapMatrix_apply]
   ext i j
   simp [Matrix.map_apply]
@@ -158,9 +157,9 @@ lemma eq_pow_reducedCharpoly (g : F ⊗[K] A →ₐ[F] Matrix (Fin m) (Fin m) F)
   have iso: F ⊗[K] A ≃ₐ[F] g.range := AlgEquiv.ofInjective _ <| RingHom.injective _
   haveI : Algebra.IsCentral F g.range := .of_algEquiv F _ _ iso
   haveI : IsSimpleRing g.range := .of_ringEquiv iso.toRingEquiv inferInstance
-  have ee := writeAsTensorProduct (F := F) (A := Matrix (Fin m) (Fin m) F) g.range
+  have ee := g.range.tensorCentralizerEquiv
   haveI : IsSimpleRing (Subalgebra.centralizer (A := Matrix (Fin m) (Fin m) F) F g.range) :=
-    centralizer_isSimple (A := Matrix (Fin m) (Fin m) F) g.range
+    g.range.centralizer_isSimple
   haveI : Algebra.IsCentral F (g.range ⊗[F] (Subalgebra.centralizer F (SetLike.coe g.range))) :=
     .of_algEquiv F _ (g.range ⊗[F] (Subalgebra.centralizer F (SetLike.coe g.range))) ee
   haveI : Algebra.IsCentral F (Subalgebra.centralizer (A := Matrix (Fin m) (Fin m) F) F g.range) :=
@@ -207,7 +206,7 @@ lemma eq_pow_reducedCharpoly (g : F ⊗[K] A →ₐ[F] Matrix (Fin m) (Fin m) F)
     obtain ⟨u, hu⟩ := skolemNoether F _ _ h g
     specialize hu (1 ⊗ₜ a)
     delta ReducedCharPoly
-    rw [Matrix.charpoly.similar_eq m u _ _ hu]
+    rw [hu, Matrix.coe_units_inv, Matrix.charpoly_units_conj u]
     simp only [h, AlgHom.coe_mk, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
     exact Matrix.reindex_diagonal_charpoly _ _ _ eq.symm (e (1 ⊗ₜ[K] a))⟩
 
@@ -361,7 +360,7 @@ theorem invariant_extend_scalars (L L_bar : Type u) [Field L] [Field L_bar] [Alg
     (ReducedCharPoly e a).mapAlgHom (Algebra.ofId F L) = ReducedCharPoly e0 (1 ⊗ₜ a) := by
   let e0' : L ⊗[K] A ≃ₐ[L] Matrix (Fin n) (Fin n) L := Algebra.TensorProduct.congr
     (Algebra.TensorProduct.rid F L L).symm AlgEquiv.refl|>.trans <|
-    Algebra.TensorProduct.assoc' _ _ _ _ _ _ |>.trans e0
+    Algebra.TensorProduct.assoc _ _ _ _ _ _ |>.trans e0
   obtain ⟨g, hg⟩ :=
     ReducedCharPoly.over_extension K F L A n e ((Algebra.ofId F L).restrictScalars K) a
   have : ReducedCharPoly e0' a = ReducedCharPoly e0 (1 ⊗ₜ a) := by simp [ReducedCharPoly, e0']
