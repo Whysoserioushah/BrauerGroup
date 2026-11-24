@@ -36,6 +36,7 @@ public import BrauerGroup.Mathlib.Algebra.Central.TensorProduct
 public import BrauerGroup.Mathlib.Algebra.CrossProduct.Basic
 public import BrauerGroup.Mathlib.Algebra.CrossProduct.CentralSimple
 public import BrauerGroup.Mathlib.Algebra.CrossProduct.Cyclic
+public import BrauerGroup.Mathlib.Algebra.Group.Subgroup.Directed
 public import BrauerGroup.Mathlib.Algebra.Module.LinearMap.End
 public import BrauerGroup.Mathlib.Algebra.Split.Basic
 public import BrauerGroup.Mathlib.Algebra.Split.DivisionRing
@@ -71,6 +72,7 @@ public import BrauerGroup.Mathlib.RingTheory.SkolemNoether
 public import BrauerGroup.Mathlib.RingTheory.TwoSidedIdeal.Lattice
 public import BrauerGroup.Mathlib.RingTheory.TwoSidedIdeal.Operations
 public import BrauerGroup.Mathlib.RingTheory.TwoSidedIdeal.SpanAsSum
+public import BrauerGroup.Mathlib.Topology.Instances.AddCircle.Rat
 public import BrauerGroup.MatrixCenterEquiv
 public import BrauerGroup.MatrixEquivTensor
 public import BrauerGroup.Morita.ChangeOfRings
