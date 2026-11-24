@@ -24,9 +24,13 @@ public import BrauerGroup.Mathlib.Algebra.BigOperators.GroupWithZero.Action
 public import BrauerGroup.Mathlib.Algebra.BrauerGroup.AlgClosed
 public import BrauerGroup.Mathlib.Algebra.BrauerGroup.BaseChange
 public import BrauerGroup.Mathlib.Algebra.BrauerGroup.Basic
+public import BrauerGroup.Mathlib.Algebra.BrauerGroup.Cyclic
 public import BrauerGroup.Mathlib.Algebra.BrauerGroup.FiniteField
 public import BrauerGroup.Mathlib.Algebra.BrauerGroup.Galois
 public import BrauerGroup.Mathlib.Algebra.BrauerGroup.Relative.Basic
+public import BrauerGroup.Mathlib.Algebra.BrauerGroup.Relative.Cohomology.FactorSet
+public import BrauerGroup.Mathlib.Algebra.BrauerGroup.Relative.Cohomology.Maps
+public import BrauerGroup.Mathlib.Algebra.BrauerGroup.Relative.Cohomology.Structure
 public import BrauerGroup.Mathlib.Algebra.Central.Matrix
 public import BrauerGroup.Mathlib.Algebra.Central.TensorProduct
 public import BrauerGroup.Mathlib.Algebra.CrossProduct.Basic
