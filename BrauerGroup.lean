@@ -2,6 +2,7 @@ module -- shake: keep-all -- deprecated_module: ignore
 
 public import BrauerGroup.AbsoluteIsoH2
 public import BrauerGroup.AlgClosedUnion
+public import BrauerGroup.Algebra.test
 public import BrauerGroup.Azumaya.Basic
 public import BrauerGroup.Azumaya.Group
 public import BrauerGroup.Azumaya.Mul
