@@ -1,13 +1,13 @@
 module
 
 public import BrauerGroup.SplittingOfCSA
-public import Mathlib.FieldTheory.Galois.Basic
-public import BrauerGroup.RingTheory.SimpleRing.Centralizer
-public import Mathlib.RingTheory.TensorProduct.Maps
+public import BrauerGroup.Mathlib.RingTheory.SimpleRing.Centralizer
 public import BrauerGroup.Mathlib.RingTheory.MatrixAlgebra
 public import BrauerGroup.Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
 public import Mathlib.Algebra.Central.TensorProduct
+public import Mathlib.FieldTheory.Galois.Basic
 public import Mathlib.RingTheory.SimpleRing.Congr
+public import Mathlib.RingTheory.TensorProduct.Maps
 
 @[expose] public section
 
@@ -40,8 +40,8 @@ variable (K F E K_bar F_bar A : Type*) [Field K] [Field F] [Field E] [Field F_ba
 
 section defs
 
-set_option backward.isDefEq.respectTransparency false in
 variable {K F E} in
+set_option backward.isDefEq.respectTransparency false in
 @[simps]
 def φ_m (φ : F →ₐ[K] E) : Matrix (Fin n) (Fin n) F →ₐ[K] Matrix (Fin n) (Fin n) E where
   toFun M := fun i j ↦ φ (M i j)
@@ -59,36 +59,32 @@ variable {K F E} in
 lemma φ_m_inj (φ : F →ₐ[K] E) : Function.Injective (φ_m n φ) := fun M N h ↦ funext fun i ↦
   funext fun j ↦ by rw [← Matrix.ext_iff] at h; exact φ.injective (h i j)
 
-set_option backward.isDefEq.respectTransparency false in
 variable {K F E} in
+set_option backward.isDefEq.respectTransparency false in
 abbrev e1Aux (φ : F →ₐ[K] E) : Matrix (Fin n) (Fin n) φ.range ≃ₐ[K] (φ_m n φ).range where
-  toFun M := ⟨(M · · |>.1), fun i j ↦ M i j |>.2.choose, by ext i j; exact M i j|>.2.choose_spec⟩
+  toFun M := ⟨(M · · |>.val), fun i j ↦ M i j |>.property.choose,
+    by ext i j; exact M i j |>.property.choose_spec⟩
   invFun := fun ⟨M, h⟩ i j ↦ ⟨M i j, h.choose i j, Matrix.ext_iff.2 h.choose_spec i j⟩
   left_inv _ := by simp
   right_inv _ := by simp
   map_mul' _ _ := by ext; simp [Matrix.mul_apply]
   map_add' _ _ := rfl
-  commutes' k := by
-    ext
-    simp only [Matrix.algebraMap_matrix_apply]
-    exact apply_ite Subtype.val _ ((algebraMap K ↥φ.range) k) 0
+  map_smul' _ _ := rfl
 
 abbrev e1 (φ : F →ₐ[K] E) : Matrix (Fin n) (Fin n) F ≃ₐ[K] φ_m n φ|>.range :=
   AlgEquiv.ofBijective (φ_m n φ).rangeRestrict ⟨AlgHom.injective_codRestrict _ _
     (φ_m n φ).mem_range_self|>.2 <| φ_m_inj n φ, AlgHom.rangeRestrict_surjective _⟩
 
 abbrev e1' (φ : F →ₐ[K] E) : φ.range ⊗[K] A ≃ₐ[K] Matrix (Fin n) (Fin n) φ.range :=
-  Algebra.TensorProduct.congr (AlgEquiv.ofInjectiveField φ).symm AlgEquiv.refl|>.trans <| ({
-    __ := e
-    commutes' r := by simpa using! e.commutes (algebraMap K F r)}
-    : _ ≃ₐ[K] Matrix (Fin n) (Fin n) F).trans <| e1 _ _ _ _ φ|>.trans (e1Aux n φ).symm
+  Algebra.TensorProduct.congr (AlgEquiv.ofInjectiveField φ).symm AlgEquiv.refl|>.trans <|
+    (.ofCommutes e.toRingEquiv fun r ↦ by simpa using! e.commutes (algebraMap K F r)
+      : _ ≃ₐ[K] Matrix (Fin n) (Fin n) F).trans <| e1 _ _ _ _ φ|>.trans (e1Aux n φ).symm
 
 set_option backward.isDefEq.respectTransparency false in
 variable {K F E} in
-abbrev e1'' (φ : F →ₐ[K] E) : φ.range ⊗[K] A ≃ₐ[φ.range] Matrix (Fin n) (Fin n) φ.range where
-  __ := e1' K F E A n e φ
-  commutes' := fun ⟨x, ⟨y, eq⟩⟩ ↦ Matrix.ext_iff.1 fun i j ↦ by
-    dsimp [AlgEquiv.ofInjectiveField]
+abbrev e1'' (φ : F →ₐ[K] E) : φ.range ⊗[K] A ≃ₐ[φ.range] Matrix (Fin n) (Fin n) φ.range :=
+  .ofCommutes (e1' K F E A n e φ).toRingEquiv fun ⟨x, ⟨y, eq⟩⟩ ↦ Matrix.ext_iff.1 fun i j ↦ by
+    dsimp [AlgEquiv.ofInjectiveField, AlgEquiv.coe_toRingEquiv]
     rw [← mul_one ((AlgEquiv.ofInjective φ _).symm ⟨x, _⟩), ← smul_eq_mul,
       ← TensorProduct.smul_tmul', map_smul, ← Algebra.TensorProduct.one_def, map_one]
     dsimp [Matrix.algebraMap_matrix_apply]
@@ -96,12 +92,13 @@ abbrev e1'' (φ : F →ₐ[K] E) : φ.range ⊗[K] A ≃ₐ[φ.range] Matrix (Fi
     · subst h
       simp only [AlgEquiv.ofInjective, AlgEquiv.ofLeftInverse_symm_apply, Subtype.mk.injEq]
       set ψ := Classical.choose _ with ψ_eq
-      let hψ := Classical.choose_spec φ.injective.hasLeftInverse
+      have hψ := Classical.choose_spec φ.injective.hasLeftInverse
       simp only [Function.LeftInverse, ← ψ_eq] at hψ
       rw [← eq, hψ y]
       simp
     · simp [h, Subtype.ext_iff]
 
+set_option maxSynthPendingDepth 2 in
 variable {K F E A n} in
 abbrev g (φ : F →ₐ[K] E) : E ⊗[K] A ≃ₐ[E] Matrix (Fin n) (Fin n) E :=
   Algebra.TensorProduct.congr (Algebra.TensorProduct.rid φ.range E E|>.symm) AlgEquiv.refl |>.trans
@@ -111,9 +108,9 @@ abbrev g (φ : F →ₐ[K] E) : E ⊗[K] A ≃ₐ[E] Matrix (Fin n) (Fin n) E :=
 
 end defs
 
-set_option backward.isDefEq.respectTransparency false in
 variable {K E F} in
 omit [NeZero n] [Algebra.IsCentral K A] [IsSimpleRing A] in
+set_option backward.isDefEq.respectTransparency false in
 lemma mat_over_extension (φ : F →ₐ[K] E) (a : A) :
     ∃ g : E ⊗[K] A ≃ₐ[E] Matrix (Fin n) (Fin n) E, g (1 ⊗ₜ a) =
     φ.mapMatrix (e (1 ⊗ₜ a)) := by
@@ -160,9 +157,9 @@ lemma eq_pow_reducedCharpoly (g : F ⊗[K] A →ₐ[F] Matrix (Fin m) (Fin m) F)
   have iso: F ⊗[K] A ≃ₐ[F] g.range := AlgEquiv.ofInjective _ <| RingHom.injective _
   haveI : Algebra.IsCentral F g.range := .of_algEquiv F _ _ iso
   haveI : IsSimpleRing g.range := .of_ringEquiv iso.toRingEquiv inferInstance
-  have ee := Subalgebra.tensorCentralizerEquiv (F := F) (A := Matrix (Fin m) (Fin m) F) g.range
+  have ee := g.range.tensorCentralizerEquiv
   haveI : IsSimpleRing (Subalgebra.centralizer (A := Matrix (Fin m) (Fin m) F) F g.range) :=
-    Subalgebra.centralizer_isSimple (A := Matrix (Fin m) (Fin m) F) g.range
+    g.range.centralizer_isSimple
   haveI : Algebra.IsCentral F (g.range ⊗[F] (Subalgebra.centralizer F (SetLike.coe g.range))) :=
     .of_algEquiv F _ (g.range ⊗[F] (Subalgebra.centralizer F (SetLike.coe g.range))) ee
   haveI : Algebra.IsCentral F (Subalgebra.centralizer (A := Matrix (Fin m) (Fin m) F) F g.range) :=
@@ -249,12 +246,11 @@ lemma mem_Kx (a : A) : ∃ f : K[X], ReducedCharPoly e a = f.mapAlgHom (Algebra.
     rw [Matrix.charpoly_map] at hg
     simp only [RingEquiv.toRingHom_eq_coe, AlgEquiv.toRingEquiv_toRingHom] at hg
     exact hr.symm.trans hg
-  simp only [ext_iff, coeff_map, RingHom.coe_coe] at fixed
+  simp only [AddMonoidAlgebra.ext_iff, DFunLike.ext_iff, coeff_map, RingHom.coe_coe] at fixed
   have fixed2 : ∀ m : ℕ, (e (1 ⊗ₜ a)).charpoly.coeff m ∈ (Algebra.ofId K F).range := fun m ↦
     fixedpoints K F _ fun φ ↦ fixed φ m |>.symm
   rw [ReducedCharPoly]
-  use ⟨⟨(⟨(e (1 ⊗ₜ[K] a)).charpoly.support, fun m ↦ fixed2 m|>.choose, ?_⟩ : ℕ →₀ K)⟩⟩
-  pick_goal 2
+  refine ⟨⟨⟨(e (1 ⊗ₜ[K] a)).charpoly.support, fun m ↦ fixed2 m|>.choose, ?_⟩⟩, ?_⟩
   · simp only [mem_support_iff, ne_eq, AlgHom.toRingHom_eq_coe, Algebra.toRingHom_ofId]
     intro k
     constructor
@@ -273,7 +269,7 @@ lemma mem_Kx (a : A) : ∃ f : K[X], ReducedCharPoly e a = f.mapAlgHom (Algebra.
       rw [FaithfulSMul.algebraMap_eq_zero_iff] at this
       exact h1 <| by convert! this
   ext k
-  simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, coe_mapAlgHom, coeff_map, coeff_ofFinsupp,
+  simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, coe_mapAlgHom, coeff_map,
     Finsupp.coe_mk]
   exact fixed2 k|>.choose_spec.symm
 
@@ -294,9 +290,6 @@ end field_ext
 -- ∀ a : A, reduced charpoly of `a` using `e` is the same as using `e'`.
 include F_bar in
 set_option maxSynthPendingDepth 3 in
-set_option synthInstance.maxHeartbeats 80000 in
--- FIXME: Get rid of the raised heartbeats
-set_option maxHeartbeats 1600000 in
 lemma unique_onver_split (L L_bar : Type u) [Field L] [Field L_bar] [Algebra K L] [Algebra L L_bar]
     [FiniteDimensional K L] [IsGalois K L] [hL : IsAlgClosure L L_bar]
     (e' : L ⊗[K] A ≃ₐ[L] Matrix (Fin n) (Fin n) L) (a : A) :
@@ -308,7 +301,7 @@ lemma unique_onver_split (L L_bar : Type u) [Field L] [Field L_bar] [Algebra K L
   let E := (F ⊗[K] L) ⧸ (Ideal.exists_maximal (F ⊗[K] L)).choose
   have : IsField E :=
     Ideal.Quotient.maximal_ideal_iff_isField_quotient _|>.1 (Ideal.exists_maximal _).choose_spec
-  letI alg : Algebra K E := Ideal.Quotient.algebra K
+  let alg : Algebra K E := Ideal.Quotient.algebra K
   let φ : F →ₐ[K] E := {
     toFun m := Ideal.Quotient.mk _ (m ⊗ₜ 1)
     map_one' := by simp [← Algebra.TensorProduct.one_def]
@@ -337,7 +330,7 @@ lemma unique_onver_split (L L_bar : Type u) [Field L] [Field L_bar] [Algebra K L
       simp only [AlgHom.coe_mk, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, φ]
       induction m using Submodule.Quotient.induction_on with
       | H m =>
-      induction m using TensorProduct.induction_on with
+      induction m with
       | tmul x y =>
         simp only [Ideal.Quotient.mk_eq_mk]
         rw [← map_mul, Algebra.TensorProduct.tmul_mul_tmul, one_mul, ← smul_eq_mul,
@@ -345,15 +338,13 @@ lemma unique_onver_split (L L_bar : Type u) [Field L] [Field L_bar] [Algebra K L
         rfl
       | add x y hx hy =>
         change _ * Ideal.Quotient.mk _ _ = r • Ideal.Quotient.mk _ _ at hx hy
-        simp [map_add, mul_add, hx, hy]
-      | zero => simp) _
+        simp [map_add, mul_add, hx, hy]) _
   have algclo : IsAlgClosed F_bar := IsAlgClosure.isAlgClosed F
   have tow : IsScalarTower F E F_bar := {
     smul_assoc f e f0 := by
       induction e using Submodule.Quotient.induction_on with
       | H z =>
-      induction z using TensorProduct.induction_on with
-      | zero => simp
+      induction z with
       | tmul x y =>
         -- change _ = f • (IsAlgClosed.lift (S := E) (M := F_bar) _)
         sorry
@@ -382,7 +373,7 @@ theorem invariant_algEquiv (A1 A2 L : Type u) [Field L] [Algebra K L] [Ring A1] 
     [IsSimpleRing A1] [IsSimpleRing A2] (e1 : F ⊗[K] A1 ≃ₐ[F] Matrix (Fin n) (Fin n) F)
     (f : A1 ≃ₐ[K] A2) (a : A1) :
     ReducedCharPoly e1 a = ReducedCharPoly (Algebra.TensorProduct.congr
-      AlgEquiv.refl f.symm|>.trans e1) (f a) := by
+      AlgEquiv.refl f.symm|>.trans e1 : F ⊗[K] A2 ≃ₐ[F] Matrix (Fin n) (Fin n) F) (f a) := by
   simp [ReducedCharPoly]
 
 end
@@ -456,7 +447,8 @@ theorem inv_under_algEquiv (A1 A2 L : Type u) [Field L] [Algebra K L] [Ring A1] 
     [IsSimpleRing A1] [IsSimpleRing A2] (e1 : F ⊗[K] A1 ≃ₐ[F] Matrix (Fin n) (Fin n) F)
     (f : A1 ≃ₐ[K] A2) (a : A1) :
     reducedNorm e1 a = reducedNorm
-    (Algebra.TensorProduct.congr AlgEquiv.refl f.symm|>.trans e1) (f a) := by
+    (Algebra.TensorProduct.congr AlgEquiv.refl f.symm|>.trans e1 :
+      F ⊗[K] A2 ≃ₐ[F] Matrix (Fin n) (Fin n) F) (f a) := by
   sorry
 
 -- mimic what I did above, write a version for reduced trace

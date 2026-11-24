@@ -90,7 +90,7 @@ def algebraMapEndIdealMop (I : Ideal B) : K →+* (Module.End B I)ᵐᵒᵖ wher
 instance (I : Ideal B) : Algebra K (Module.End B I)ᵐᵒᵖ where
   algebraMap := algebraMapEndIdealMop K I
   commutes' := fun r ⟨x⟩ => MulOpposite.unop_injective <| DFunLike.ext _ _ fun ⟨i, hi⟩ =>
-    Subtype.ext <| show (x (r • ⟨i, hi⟩)).1 = r • (x ⟨i, hi⟩).1 by
+    Subtype.ext <| show (x (r • ⟨i, hi⟩)).val = r • (x ⟨i, hi⟩).val by
       convert Subtype.ext_iff.mp (x.map_smul (algebraMap K B r) ⟨i, hi⟩) using 1 <;> aesop
   smul k x := .op <| (algebraMapEndIdealMop K I k).unop * x.unop
   smul_def' := fun r ⟨x⟩ => MulOpposite.unop_injective <| DFunLike.ext _ _ fun ⟨i, hi⟩ =>

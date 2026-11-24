@@ -5,6 +5,7 @@ public import Mathlib.Algebra.Azumaya.Matrix
 public import Mathlib.Algebra.Module.CharacterModule
 public import Mathlib.LinearAlgebra.Contraction
 public import Mathlib.LinearAlgebra.TensorProduct.Opposite
+public import Mathlib.LinearAlgebra.TensorProduct.Projective
 
 @[expose] public section
 
@@ -332,9 +333,8 @@ abbrev e2 (A B : Azumaya R) := (Algebra.TensorProduct.congr
     (AlgEquiv.ofBijective (AlgHom.mulLeftRight R B) B.isAzumaya.bij))
 
 lemma top_square_comm_apply (A B : Azumaya R) (x : (A ⊗[R] Aᵐᵒᵖ) ⊗[R] (B ⊗[R] Bᵐᵒᵖ)) :
-    (e1 R A B) (e2 R A B x) = (AlgHom.mulLeftRight R (A ⊗[R] B)) (e.toAlgHom x) := by
-  erw [← AlgHom.comp_apply, AlgHom.coe_comp, ← top_square_comm]
-  rfl
+    (e1 R A B) (e2 R A B x) = (AlgHom.mulLeftRight R (A ⊗[R] B)) (e x) :=
+  congr_fun (top_square_comm R A B) x
 
 lemma bij_mulLeftRight (A B : Azumaya.{v} R) :
     Function.Bijective (AlgHom.mulLeftRight R (A ⊗[R] B)) :=
@@ -357,7 +357,14 @@ instance : Mul (Azumaya R) where
 lemma mul_coe (A B : Azumaya.{v} R) : (A * B) = ⟨.of R (A ⊗[R] B), ⟨bij_mulLeftRight R A B⟩⟩ := rfl
 
 instance : One (Azumaya R) where
-  one := ⟨.of R R, IsAzumaya.id R⟩
+  one := ⟨.of R R, IsAzumaya_R R⟩
+
+instance : FaithfulSMul R Rᵐᵒᵖ where
+  eq_of_smul_eq_smul {r1 r2} hr := by
+    specialize hr 1
+    change op _ = op _ at hr
+    simp only [unop_one, smul_eq_mul, mul_one, op_inj] at hr
+    exact hr
 
 /--
 A ⊗ Aᵐᵒᵖ  ------------> B ⊗ Bᵐᵒᵖ
@@ -372,12 +379,20 @@ lemma small_comm_square (e : A ≃ₐ[R] B) :
       (e.toLinearEquiv.conjAlgEquiv R).toAlgHom.comp (AlgHom.mulLeftRight R A) := by
   apply AlgHom.ext
   intro a
-  induction a using TensorProduct.induction_on with
-  | zero => simp
+  induction a with
   | tmul a a' =>
     ext
     simp [AlgHom.mulLeftRight_apply, LinearEquiv.conjAlgEquiv]
   | add _ _ _ _ => simp_all [map_add]
+
+lemma _root_.IsAzumaya.ofAlgEquiv (e : A ≃ₐ[R] B) (hA : IsAzumaya R A) : IsAzumaya R B :=
+  have : Module.Projective R B := .of_equiv e.toLinearEquiv
+  have : FaithfulSMul R B := .of_injective e e.injective
+  have : Module.Finite R B := .equiv e.toLinearEquiv
+  ⟨Function.Bijective.of_comp_iff (AlgHom.mulLeftRight R B)
+    (Algebra.TensorProduct.congr e e.op).bijective |>.1 <| by
+    erw [← AlgHom.coe_comp, small_comm_square]
+    simp [hA.bij]⟩
 
 abbrev inclusion' (M : Type v) [AddCommGroup M] [Module R M] [Module.Finite R M]
     [Module.Projective R M] : Module.End R M →ₗ[R] Module.End R (Fin (nn R M) → R) where
@@ -418,7 +433,7 @@ instance (M : Type v) [AddCommGroup M] [Module R M] [FaithfulSMul R M] :
   eq_of_smul_eq_smul {r1 r2} h12 := by
     specialize h12 1
     rw [LinearMap.ext_iff] at h12
-    simp only [LinearMap.smul_apply, Module.End.one_apply] at h12
+    simp only [LinearMap.smul_apply, one_apply_eq_self] at h12
     exact eq_of_smul_eq_smul h12
 
 abbrev MatrixAlg (n : ℕ) [NeZero n] : Azumaya R := {
@@ -427,9 +442,8 @@ abbrev MatrixAlg (n : ℕ) [NeZero n] : Azumaya R := {
 
 abbrev EndRn (n : ℕ) [NeZero n] : Azumaya R := {
   __ := AlgCat.of R (Module.End R (Fin n → R))
-  isAzumaya :=
-    haveI := IsAzumaya.matrix R (Fin n)
-    IsAzumaya.of_AlgEquiv R _ _ LinearMap.toMatrixAlgEquiv'.symm
+  isAzumaya := IsAzumaya.ofAlgEquiv R _ _
+    LinearMap.toMatrixAlgEquiv'.symm <| IsAzumaya.matrix R (Fin n)
 }
 
 variable (M : Type v) [AddCommGroup M] [Module R M] [Module.Finite R M]
@@ -521,7 +535,7 @@ lemma comm_square_endend' :
 variable [Nontrivial M]
 
 instance : NeZero (nn R M) := ⟨by
-  by_contra! hn
+  by_contra hn
   have : Subsingleton (Fin (nn R M) → R) := by
     rw [hn]
     exact Unique.instSubsingleton

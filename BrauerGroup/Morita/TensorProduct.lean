@@ -34,7 +34,7 @@ noncomputable abbrev aux0 (N : ModuleCat A) : Module.End A N →ₐ[R] Module.En
   commutes' r := by
     ext n
     simp only [ModuleCat.of_coe, Algebra.algebraMap_eq_smul_one, LinearMap.smul_apply,
-      Module.End.one_apply]
+      one_apply_eq_self]
     rw [show ModuleCat.ofHom (r • 1) = r • ModuleCat.ofHom 1 by ext; simp,
       e1.map_smul, Module.End.one_eq_id, ModuleCat.ofHom_id, e1.map_id, ModuleCat.hom_smul]
     rfl
@@ -222,10 +222,9 @@ abbrev toModuleOverTensor : TensorModule R A C ⥤ ModuleCat (A ⊗[R] C) where
   map {M N} f := ModuleCat.ofHom {
     __ := f.hom.hom
     map_smul' ac m := by
-      induction ac using TensorProduct.induction_on with
-      | zero => simp
-      | tmul a c => simp
+      induction ac with
       | add _ _ _ _ => simp_all [add_smul]
+      | tmul a c => simp
   }
   map_id M := by ext; simp
   map_comp _ _ := by ext; simp
@@ -282,27 +281,23 @@ abbrev e02 (M : ModuleCat (A ⊗[R] C)) :
   · apply (config := {allowSynthFailures := true, newGoals := .all}) @LinearMap.mk
     · exact AddHom.id _
     · intro ac m
-      induction ac using TensorProduct.induction_on with
-      | zero =>
-      conv_lhs => erw [AddHom.toFun_eq_coe, AddHom.id_apply]
-      rw [RingHom.id_apply, zero_smul]
-      rfl
+      induction ac with
+      | add x y h1 h2 =>
+        rw [RingHom.id_apply, AddHom.toFun_eq_coe]
+        erw [AddHom.id_apply, AddHom.id_apply]
+        conv_rhs => rw [add_smul]
+        erw [AddHom.toFun_eq_coe, AddHom.id_apply] at h1 h2
+        simp only [RingHom.id_apply] at h1 h2
+        erw [AddHom.id_apply] at h1 h2
+        rw [← h1, ← h2]
+        rw [smul_tensormod, map_add]
+        rfl
       | tmul a c =>
       conv_lhs => erw [AddHom.toFun_eq_coe, AddHom.id_apply]
       rw [RingHom.id_apply, AddHom.toFun_eq_coe]
       conv_rhs => erw [AddHom.id_apply]
       rw [smul_tensormod]
       simp [smul_smul]
-      | add x y h1 h2 =>
-      rw [RingHom.id_apply, AddHom.toFun_eq_coe]
-      erw [AddHom.id_apply, AddHom.id_apply]
-      conv_rhs => rw [add_smul]
-      erw [AddHom.toFun_eq_coe, AddHom.id_apply] at h1 h2
-      simp only [RingHom.id_apply] at h1 h2
-      erw [AddHom.id_apply] at h1 h2
-      rw [← h1, ← h2]
-      rw [smul_tensormod, map_add]
-      rfl
   · exact id
   · exact congrFun rfl
   · exact congrFun rfl
@@ -338,8 +333,8 @@ instance : (equivModuleOverTensor R A C).inverse.Linear R where
 abbrev toBCfunctor (F : ModuleCat A ⥤ ModuleCat B) [F.Additive] [F.Linear R] :
     TensorModule R A C ⥤ TensorModule R B C where
   obj M := {
-    carrier := F.obj M.1
-    morphism := (Morita.aux0 R A B F M.1).comp M.morphism
+    carrier := F.obj M.carrier
+    morphism := (Morita.aux0 R A B F M.carrier).comp M.morphism
   }
   map {M N} f := {
     hom := F.map f.hom
@@ -352,7 +347,7 @@ abbrev toBCfunctor (F : ModuleCat A ⥤ ModuleCat B) [F.Additive] [F.Linear R] :
       congr 1
       exact f.commutes c
   }
-  map_id M := by ext : 1; exact F.map_id M.1
+  map_id M := by ext : 1; exact F.map_id M.carrier
   map_comp f g := by ext1; exact F.map_comp f.hom g.hom
 
 set_option backward.isDefEq.respectTransparency false in
@@ -362,7 +357,7 @@ abbrev MoritaTensorAux0 (e : ModuleCat A ≌ ModuleCat B) [e.functor.Additive] [
   inverse := toBCfunctor R B A C e.inverse
   unitIso := NatIso.ofComponents
     (fun M ↦ TensorModule.Iso_mk _ _ _
-      (e.unitIso.app M.1) fun c ↦ by
+      (e.unitIso.app M.carrier) fun c ↦ by
         change (e.unitIso.app M.carrier).hom ≫
             e.inverse.map (e.functor.map (ModuleCat.ofHom (M.morphism c))) =
           ModuleCat.ofHom (M.morphism c) ≫ (e.unitIso.app M.carrier).hom
@@ -376,7 +371,7 @@ abbrev MoritaTensorAux0 (e : ModuleCat A ≌ ModuleCat B) [e.functor.Additive] [
         (e.unitIso.hom.naturality f.hom)) x)
   counitIso := NatIso.ofComponents
     (fun M ↦ TensorModule.Iso_mk _ _ _
-      (e.counitIso.app M.1) fun c ↦ by
+      (e.counitIso.app M.carrier) fun c ↦ by
         change (e.counitIso.app M.carrier).hom ≫ ModuleCat.ofHom (M.morphism c) =
           e.functor.map (e.inverse.map (ModuleCat.ofHom (M.morphism c))) ≫
             (e.counitIso.app M.carrier).hom

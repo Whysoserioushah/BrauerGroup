@@ -18,6 +18,21 @@ section Inv
 
 open MulOpposite
 
+abbrev Endmop (A : Type*) [Ring A] [Algebra R A] : Module.End R A →ₐ[R] Module.End R Aᵐᵒᵖ where
+  toFun f := (opLinearEquiv R).toLinearMap ∘ₗ f ∘ₗ (opLinearEquiv R).symm.toLinearMap
+  map_one' := rfl
+  map_mul' _ _ := rfl
+  map_zero' := rfl
+  map_add' _ _ := rfl
+  commutes' _ := rfl
+
+set_option backward.isDefEq.respectTransparency false in
+abbrev EndmopEquiv (A : Type*) [Ring A] [Algebra R A] : Module.End R A ≃ₐ[R] Module.End R Aᵐᵒᵖ :=
+  AlgEquiv.ofBijective (Endmop R A) ⟨
+  fun f1 f2 h ↦ by simpa using h, fun f ↦ ⟨(opLinearEquiv R).symm.toLinearMap ∘ₗ f ∘ₗ
+    (opLinearEquiv R).toLinearMap, rfl⟩⟩
+
+
 example (A : Type*) [Ring A] [Algebra R A] : Aᵐᵒᵖᵐᵒᵖ ≃ₐ[R] A := by
   exact (AlgEquiv.opOp R A).symm
 
@@ -25,6 +40,7 @@ example (A : Type*) [Ring A] [Algebra R A] : Aᵐᵒᵖᵐᵒᵖ ≃ₐ[R] A := 
     -- ((Algebra.TensorProduct.congr (AlgEquiv.refl (A₁ := Aᵐᵒᵖ)) (AlgEquiv.opOp R A).symm).trans
     -- (Algebra.TensorProduct.comm _ _ _)).toAlgHom
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 ```
   A ⊗ Aᵐᵒᵖ -----------------> End R A
@@ -37,7 +53,7 @@ Aᵐᵒᵖ⊗ Aᵐᵒᵖᵐᵒᵖ -------------> End R Aᵐᵒᵖ
 ```
 -/
 lemma Mopcomm_square (A : Type*) [Ring A] [Algebra R A] :
-    AlgHom.mulLeftRight R Aᵐᵒᵖ = ((opLinearEquiv R).conjAlgEquiv R|>.toAlgHom.comp <|
+    AlgHom.mulLeftRight R Aᵐᵒᵖ = (EndmopEquiv R A|>.toAlgHom.comp <|
     (AlgHom.mulLeftRight R A).comp <|
     (Algebra.TensorProduct.comm R Aᵐᵒᵖ A).toAlgHom.comp <|
     (Algebra.TensorProduct.congr (AlgEquiv.refl) (AlgEquiv.opOp R A).symm).toAlgHom) := by
@@ -50,7 +66,7 @@ lemma mop_bij (A : Azumaya R) : Function.Bijective (AlgHom.mulLeftRight R Aᵐ�
   erw [Function.Bijective.of_comp_iff]
   · simp only [AlgHom.coe_comp]
     rw [Function.Bijective.of_comp_iff]
-    · exact (opLinearEquiv R).conjAlgEquiv R|>.bijective
+    · exact EndmopEquiv R A|>.bijective
     · rw [Function.Bijective.of_comp_iff]
       · exact IsAzumaya.bij
       · rw [Function.Bijective.of_comp_iff]
@@ -77,7 +93,7 @@ private abbrev ee : Module.End R R ≃ₐ[R] R where
   right_inv r := by simp
   map_mul' _ _ := by simp
   map_add' _ _ := rfl
-  commutes' _ := by simp
+  map_smul' _ _ := by simp
 
 lemma Azumaya.inv_mul (A : Azumaya R) :
     IsMoritaEquivalent R (Azumaya.mul R (Azumaya.Inv R A) A) 1 := by

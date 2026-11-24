@@ -74,7 +74,7 @@ theorem centralSimple_over_extension_iff_nontrivial
       exact ineq1
     let e : K ⊗[k] Subalgebra.center k A ≃ₗ[k] Subalgebra.center k (K ⊗[k] A) :=
       (TensorProduct.congr (Submodule.topEquiv.symm ≪≫ₗ
-        show _ ≃ₗ[k] Subalgebra.toSubmodule (Subalgebra.center k K) from LinearEquiv.ofLinear
+        show _ ≃ₗ[k] Subalgebra.toSubmodule (Subalgebra.center k K) from .ofLinearMap
         (Submodule.inclusion (by simp)) (Submodule.inclusion (by simp)) rfl rfl)
         (LinearEquiv.refl _ _)) ≪≫ₗ
       (IsCentralSimple.centerTensor k K A)
@@ -147,7 +147,7 @@ def extension_inv [FiniteDimensional k A]
         simp only [map_one, one_ne_zero] at this
       simp only [nezero, false_or] at this
       exact this
-    haveI : FiniteDimensional k (K ⊗[k] A) := Module.Finite.trans (R := k) K (K ⊗[k] A)
+    have : FiniteDimensional k (K ⊗[k] A) := Module.Finite.trans (R := k) K (K ⊗[k] A)
     exact FiniteDimensional.of_injective (K := k) to_ten.toLinearMap Isinj
 
 theorem CSA_iff_exist_split (k_bar : Type u) [Field k_bar] [Algebra k k_bar]
@@ -157,7 +157,7 @@ theorem CSA_iff_exist_split (k_bar : Type u) [Field k_bar] [Algebra k k_bar]
         Nonempty (L ⊗[k] A ≃ₐ[L] Matrix (Fin n) (Fin n) L) := by
   constructor
   · rintro ⟨_, _⟩
-    haveI := hk_bar.1
+    have := hk_bar.isAlgClosed
     obtain ⟨n, hn, ⟨iso⟩⟩ := simple_eq_matrix_algClosed k_bar (k_bar ⊗[k] A)
     refine ⟨n, hn, ?_⟩
     use lemma_tto.ℒℒ n k k_bar A iso
@@ -165,21 +165,20 @@ theorem CSA_iff_exist_split (k_bar : Type u) [Field k_bar] [Algebra k k_bar]
     exact ⟨_, _, inferInstance, ⟨lemma_tto.isoRestrict n k k_bar A iso⟩⟩
   · rintro ⟨n, hn, L, _, _, _, ⟨iso⟩⟩
     have : NeZero n := ⟨hn⟩
-    refine (centralsimple_over_extension_iff k A L).mpr <|
-      ⟨Algebra.IsCentral.of_algEquiv _ _ _ iso.symm, ⟨?_⟩⟩
-    rw [← RingEquiv.mapTwoSidedIdeal iso.symm.toRingEquiv |>.isSimpleOrder_iff]
+    refine (centralsimple_over_extension_iff k A L).mpr
+      ⟨.of_algEquiv _ _ _ iso.symm, ⟨?_⟩⟩
+    rw [← TwoSidedIdeal.orderIsoOfRingEquiv iso.symm.toRingEquiv |>.isSimpleOrder_iff]
     exact IsSimpleRing.simple
 
 lemma dim_is_sq (k_bar : Type u) [Field k_bar] [Algebra k k_bar] [hk_bar : IsAlgClosure k k_bar]
     [Algebra.IsCentral k A] [IsSimpleRing A] [FiniteDimensional k A] :
     IsSquare (Module.finrank k A) := by
-  haveI := hk_bar.1
+  have := hk_bar.isAlgClosed
   obtain ⟨n, _, ⟨iso⟩⟩ := simple_eq_matrix_algClosed k_bar (k_bar ⊗[k] A)
   refine ⟨n, ?_⟩
   have := Module.finrank_matrix k_bar k_bar (Fin n) (Fin n)
   simp only [Fintype.card_fin, Module.finrank_self, mul_one] at this
-  exact (Module.finrank_baseChange (R := k_bar) (S := k) (M' := A)).symm|>.trans <|
-    LinearEquiv.finrank_eq iso.toLinearEquiv|>.trans this
+  exact dim_eq k k_bar A|>.trans <| LinearEquiv.finrank_eq iso.toLinearEquiv|>.trans this
 
 def deg (A : CSA k) : ℕ := dim_is_sq k A k_bar |>.choose
 
@@ -188,7 +187,7 @@ lemma deg_sq_eq_dim (A : CSA k) : (deg k k_bar A) ^ 2 = Module.finrank k A :=
 
 instance deg_pos (A : CSA k) : NeZero (deg k k_bar A) := by
   constructor
-  by_contra! h
+  by_contra h
   apply_fun (·^2) at h
   rw [deg_sq_eq_dim k k_bar A, pow_two, mul_zero] at h
   have := Module.finrank_pos_iff (R := k) (M := A)|>.2 inferInstance
@@ -205,7 +204,7 @@ def isSplit (L : Type u) [Field L] [Algebra k L] : Prop :=
 def split_by_alg_closure (A : CSA k) : split k A k_bar where
   n := deg k k_bar A
   iso := by
-    haveI := hk_bar.1
+    haveI := hk_bar.isAlgClosed
     choose n _ iso using simple_eq_matrix_algClosed k_bar (k_bar ⊗[k] A)
     have iso' := iso.some; clear iso
     have e : Matrix (Fin n) (Fin n) k_bar ≃ₐ[k_bar] Matrix (Fin (deg k k_bar A))
@@ -226,33 +225,26 @@ def extension_over_split (A : CSA k) (L L' : Type u) [Field L] [Field L'] [Algeb
   n := deg k k_bar A
   iso := by
     obtain ⟨n, iso⟩ := hA
-    let e1 : L' ⊗[k] A ≃ₐ[L] L' ⊗[L] (L ⊗[k] A) := {
-      __ := absorb_eqv k L L' A
-      commutes' _ := rfl
-    }
+    let e1 : L' ⊗[k] A ≃ₐ[L] L' ⊗[L] (L ⊗[k] A) :=
+      .ofCommutes (absorb_eqv k L L' A).toRingEquiv fun _ ↦ by rfl
     let e2 := e1.trans <| Algebra.TensorProduct.congr .refl iso
-    let e3 : L' ⊗[k] A ≃ₐ[L'] L' ⊗[L] Matrix (Fin n) (Fin n) L := {
-      __ := e2
-      commutes' := fun l' => by
-        simp only [AlgEquiv.toEquiv_eq_coe, Algebra.TensorProduct.algebraMap_apply,
-          Algebra.algebraMap_self, RingHom.id_apply, Equiv.toFun_as_coe, EquivLike.coe_coe]
-        simp only [AlgEquiv.toEquiv_eq_coe, AlgEquiv.trans_apply, Algebra.TensorProduct.congr_apply,
-          AlgEquiv.refl_toAlgHom, e2, e1]
+    let e3 : L' ⊗[k] A ≃ₐ[L'] L' ⊗[L] Matrix (Fin n) (Fin n) L :=
+      .ofCommutes e2.toRingEquiv fun l' => by
+        simp only [Algebra.TensorProduct.algebraMap_apply, Algebra.algebraMap_self,
+          RingHom.id_apply]
+        simp only [AlgEquiv.trans_apply, Algebra.TensorProduct.congr_apply,
+          AlgEquiv.refl_toAlgHom, e2, e1, AlgEquiv.coe_toRingEquiv, AlgEquiv.ofCommutes_apply]
         erw [absorb_eqv_apply, Algebra.TensorProduct.map_tmul]
         simp only [AlgHom.coe_id, id_eq, Algebra.TensorProduct.one_def.symm, map_one]
-    }
-    let e4 : L' ⊗[L] Matrix (Fin n) (Fin n) L ≃ₐ[L'] Matrix (Fin n) (Fin n) L' := {
-      __ := matrixEquivTensor _ _ _|>.symm
-      commutes' := fun l' ↦ by
-        simp only [AlgEquiv.toEquiv_eq_coe, Algebra.TensorProduct.algebraMap_apply,
-          Algebra.algebraMap_self, RingHom.id_apply, Equiv.toFun_as_coe, EquivLike.coe_coe,
-          matrixEquivTensor_apply_symm, Matrix.map]
+    let e4 : L' ⊗[L] Matrix (Fin n) (Fin n) L ≃ₐ[L'] Matrix (Fin n) (Fin n) L' :=
+      .ofCommutes (matrixEquivTensor _ _ _|>.symm).toRingEquiv fun l' ↦ by
+        simp only [Algebra.TensorProduct.algebraMap_apply, Algebra.algebraMap_self,
+          RingHom.id_apply]
         ext i j
         obtain rfl | hij := eq_or_ne i j
         · simp [Matrix.one_apply_eq, Algebra.algebraMap_eq_smul_one, Matrix.smul_apply]
         · simp [hij, Matrix.one_apply_ne, Algebra.algebraMap_eq_smul_one]
-    }
-    let e5 : n = deg k k_bar A := by
+    have e5 : n = deg k k_bar A := by
       have := deg_sq_eq_dim k k_bar A
       rw [pow_two] at this
       have e6 := LinearEquiv.finrank_eq (e3.trans e4).toLinearEquiv|>.trans <|
@@ -263,13 +255,13 @@ def extension_over_split (A : CSA k) (L L' : Type u) [Field L] [Field L'] [Algeb
     exact (e3.trans e4).trans <| Matrix.reindexAlgEquiv L' _ (finCongr e5)
 
 include k_bar in
-theorem extension_over_split' (A : Type u) [Ring A] [IsSimpleRing A] [Algebra k A]
+lemma extension_over_split' (A : Type u) [Ring A] [IsSimpleRing A] [Algebra k A]
     [Algebra.IsCentral k A] [FiniteDimensional k A] (L L' : Type u) [Field L] [Field L']
     [Algebra k L] (hA : isSplit k A L) [Algebra L L'] [Algebra k L'] [IsScalarTower k L L'] :
     isSplit k A L' := by
   obtain ⟨n, hn, ⟨e⟩⟩ := hA
   obtain ⟨n, e⟩ := extension_over_split k k_bar ⟨.of k A⟩ L L' ⟨n, e⟩
-  let e5 : n = deg k k_bar ⟨.of k A⟩ := by
+  have e5 : n = deg k k_bar ⟨.of k A⟩ := by
       have := deg_sq_eq_dim k k_bar ⟨.of k A⟩
       rw [pow_two] at this
       have e6 := LinearEquiv.finrank_eq e.toLinearEquiv|>.trans <|

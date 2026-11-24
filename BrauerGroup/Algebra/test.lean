@@ -134,7 +134,7 @@ lemma isNonarch_of_finiteDimensional
     [ValuativeRel.IsRankLeOne L] :
     IsNonarchimedeanLocalField L := by
   -- (e) Nontriviality of `L`'s valuation, pushed up from `K` along `mapValueGroupWithZero`.
-  haveI : ValuativeRel.IsNontrivial L := by
+  have : ValuativeRel.IsNontrivial L := by
     obtain ⟨a, ha0, ha1⟩ := (inferInstance : ValuativeRel.IsNontrivial K).condition
     refine ⟨⟨ValuativeExtension.mapValueGroupWithZero K L a, ?_, ?_⟩⟩
     · simpa using
@@ -143,37 +143,37 @@ lemma isNonarch_of_finiteDimensional
         (ValuativeExtension.mapValueGroupWithZero_strictMono (A := K) (B := L)).injective.ne ha1
   -- (d) Local compactness of `L`: `K` is a complete, locally compact nontrivially normed field
   -- (its norm topology is defeq to the given one), and `L` is finite-dimensional over it.
-  haveI : LocallyCompactSpace L := by
-    letI : (Valued.v (R := K)).RankOne :=
+  have : LocallyCompactSpace L := by
+    let : (Valued.v (R := K)).RankOne :=
       { hom' := IsRankLeOne.nonempty.some.emb (R := K).comp MonoidWithZeroHom.ValueGroup₀.embedding
         strictMono' := IsRankLeOne.nonempty.some.strictMono.comp
             MonoidWithZeroHom.ValueGroup₀.embedding_strictMono }
-    letI : NontriviallyNormedField K := Valued.toNontriviallyNormedField K (ValueGroupWithZero K)
-    haveI : IsTopologicalAddGroup L := IsModuleTopology.topologicalAddGroup K L
+    let : NontriviallyNormedField K := Valued.toNontriviallyNormedField K (ValueGroupWithZero K)
+    have : IsTopologicalAddGroup L := IsModuleTopology.isTopologicalAddGroup K L
     exact LocallyCompactSpace.of_finiteDimensional_of_complete K L
   -- (c) The given topology on `L` is the valuative topology of `valuation L`.
-  haveI : IsValuativeTopology L := by
-    letI : (Valued.v (R := K)).RankOne :=
+  have : IsValuativeTopology L := by
+    let : (Valued.v (R := K)).RankOne :=
       { hom' := IsRankLeOne.nonempty.some.emb (R := K).comp MonoidWithZeroHom.ValueGroup₀.embedding
         strictMono' := IsRankLeOne.nonempty.some.strictMono.comp
             MonoidWithZeroHom.ValueGroup₀.embedding_strictMono }
-    letI : NontriviallyNormedField K := Valued.toNontriviallyNormedField K (ValueGroupWithZero K)
-    haveI hAddG : IsTopologicalAddGroup L := IsModuleTopology.topologicalAddGroup K L
+    let : NontriviallyNormedField K := Valued.toNontriviallyNormedField K (ValueGroupWithZero K)
+    have hAddG : IsTopologicalAddGroup L := IsModuleTopology.isTopologicalAddGroup K L
     -- The given topology equals the valuation topology, because both are the `K`-module topology.
     have hEq : (inferInstance : TopologicalSpace L) = ValuativeRel.topologicalSpace L := by
       have h_given : (inferInstance : TopologicalSpace L) = moduleTopology K L :=
         eq_moduleTopology K L
       have h_v : ValuativeRel.topologicalSpace L = moduleTopology K L := by
-        letI τv : TopologicalSpace L := ValuativeRel.topologicalSpace L
-        haveI a1 : IsTopologicalAddGroup L := inferInstance
-        haveI a2 : T2Space L := by
+        let τv : TopologicalSpace L := ValuativeRel.topologicalSpace L
+        have a1 : IsTopologicalAddGroup L := inferInstance
+        have a2 : T2Space L := by
           apply IsTopologicalAddGroup.t2Space_of_zero_sep
           intro x x_ne
           refine ⟨{ y | valuation L y < valuation L x }, ?_, by simp⟩
           rw [IsValuativeTopology.mem_nhds_zero_iff]
           exact ⟨Units.mk0 (valuation L x) (by simpa [valuation_eq_zero_iff] using x_ne),
             fun y hy => by simpa using hy⟩
-        haveI a3 : ContinuousSMul K L := by
+        have a3 : ContinuousSMul K L := by
           -- `algebraMap K L` is continuous: `K`'s valuation balls map into `L`'s, because `K`'s
           -- value scale is cofinal below every `γ ∈ (ValueGroupWithZero L)ˣ` (needs
           -- `IsRankLeOne L`).
@@ -193,7 +193,7 @@ lemma isNonarch_of_finiteDimensional
             have hγ0 : (0 : ℝ≥0) < fL.emb (γ : ValueGroupWithZero L) :=
               calc (0 : ℝ≥0) = fL.emb 0 := (map_zero _).symm
                 _ < fL.emb (γ : ValueGroupWithZero L) :=
-                  fL.strictMono (zero_lt_iff.mpr (Units.ne_zero γ))
+                  fL.strictMono (pos_iff_ne_zero.mpr (Units.ne_zero γ))
             obtain ⟨n, hn⟩ := exists_pow_lt_of_lt_one hγ0 hemc1
             refine ⟨Units.mk0 (c ^ n) (pow_ne_zero n hc0.ne'), trivial, ?_⟩
             intro k hk
@@ -209,7 +209,7 @@ lemma isNonarch_of_finiteDimensional
           constructor
           simp_rw [Algebra.smul_def]
           exact (halg.comp continuous_fst).mul continuous_snd
-        haveI : IsModuleTopology K L := isModuleTopologyOfFiniteDimensional (𝕜 := K) (E := L)
+        have : IsModuleTopology K L := isModuleTopologyOfFiniteDimensional (𝕜 := K) (E := L)
         exact eq_moduleTopology K L
       rw [h_given, h_v]
     -- Transport `IsValuativeTopology` across the topology equality.

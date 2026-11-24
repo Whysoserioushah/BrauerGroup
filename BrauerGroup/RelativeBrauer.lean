@@ -6,9 +6,8 @@ Authors: Yunzhou Xie, Jujian Zhang
 module
 
 public import BrauerGroup.BrauerGroup
-public import BrauerGroup.Data.Matrix.Composition
 public import BrauerGroup.SplittingOfCSA
-public import BrauerGroup.RingTheory.SimpleModule.WedderburnArtin
+public import BrauerGroup.Mathlib.RingTheory.SimpleModule.WedderburnArtin
 
 /-!
 # Relative Brauer Group
@@ -45,7 +44,7 @@ lemma BrauerGroup.split_iff (A : CSA F) : isSplit F A K ↔
     simp only [MonoidHom.coe_mk, OneHom.coe_mk, Quotient.map'_mk'']
     change _ = Quotient.mk'' _
     simp only [Quotient.eq'']
-    exact ⟨1, n, one_ne_zero, hn.1, ⟨dim_one_iso (K ⊗[F] A) |>.trans iso⟩⟩,
+    exact ⟨1, n, one_ne_zero, hn.out, ⟨dim_one_iso (K ⊗[F] A) |>.trans iso⟩⟩,
     fun hA ↦ by
       simp only [MonoidHom.coe_mk, OneHom.coe_mk, Quotient.map'_mk''] at hA
       change _ = Quotient.mk'' _ at hA
@@ -53,24 +52,27 @@ lemma BrauerGroup.split_iff (A : CSA F) : isSplit F A K ↔
       change IsBrauerEquivalent _ _ at hA
       obtain ⟨n, m, hn, hm, ⟨iso⟩⟩ := hA
       let p : ℕ := Wedderburn_Artin_algebra_version K (K ⊗[F] A)|>.choose
-      let hp := Wedderburn_Artin_algebra_version K (K ⊗[F] A)|>.choose_spec.1
+      have hp := Wedderburn_Artin_algebra_version K (K ⊗[F] A)|>.choose_spec.1
       let D := Wedderburn_Artin_algebra_version K (K ⊗[F] A)|>.choose_spec.2.choose
-      letI := Wedderburn_Artin_algebra_version K (K ⊗[F] A)|>.choose_spec.2.choose_spec.choose
-      letI := Wedderburn_Artin_algebra_version K (K ⊗[F] A)|>.choose_spec.2.choose_spec
+      let := Wedderburn_Artin_algebra_version K (K ⊗[F] A)|>.choose_spec.2.choose_spec.choose
+      let := Wedderburn_Artin_algebra_version K (K ⊗[F] A)|>.choose_spec.2.choose_spec
         |>.choose_spec.choose
       let iso' := Wedderburn_Artin_algebra_version K (K ⊗[F] A)|>.choose_spec
         |>.2.choose_spec.choose_spec.choose_spec.some
       change K ⊗[F] A ≃ₐ[K] Matrix (Fin p) (Fin p) D at iso'
-      have e := (Matrix.compFinAlgEquiv _ _ _ K).symm.trans <|
+      have e := Matrix.reindexAlgEquiv K _ (finProdFinEquiv.symm) |>.trans <|
+        Matrix.compAlgEquiv _ _ _ _|>.symm.trans <|
         iso.mapMatrix (m := (Fin p))|>.symm.trans <|
         (Matrix.compAlgEquiv (Fin p) (Fin n) D K |>.trans <| Matrix.reindexAlgEquiv K D
         (Equiv.prodComm (Fin p) (Fin n))|>.trans <| Matrix.compAlgEquiv (Fin n) (Fin p) D K
         |>.symm.trans <| iso'.mapMatrix.symm).symm.mapMatrix |>.trans <|
-        Matrix.compFinAlgEquiv p p _ K |>.trans <| Matrix.compFinAlgEquiv _ _ D K
+        Matrix.compAlgEquiv (Fin p) (Fin p) _ K |>.trans <| Matrix.reindexAlgEquiv K _
+        (finProdFinEquiv)|>.trans <| Matrix.compAlgEquiv _ _  D K|>.trans <|
+        Matrix.reindexAlgEquiv K _ (finProdFinEquiv)
       have D_findim := is_fin_dim_of_wdb K (K ⊗[F] A) hp D iso'
-      haveI : NeZero (p * p * n) := ⟨by simpa [hn]⟩
-      haveI : NeZero (p * m) := ⟨by simpa [hm]⟩
-      exact ⟨p, ⟨hp⟩, ⟨iso'.trans <| IsSimpleRing.wedderburn_artin_divisionring_unique K
+      have : NeZero (p * p * n) := ⟨by simpa [hn]⟩
+      have : NeZero (p * m) := ⟨by simpa [hm]⟩
+      exact ⟨p, ⟨hp⟩, ⟨iso'.trans <| IsSimpleRing.wedderburn_artin_divisionRing_unique K
         (Matrix (Fin (p * p * n)) (Fin (p * p * n)) D)
         .refl e.symm |>.some.mapMatrix⟩⟩⟩
 
@@ -102,29 +104,27 @@ lemma exists_common_division_algebra (A B : CSA.{u, u} K) (h : IsBrauerEquivalen
       Nonempty (A ≃ₐ[K] Matrix (Fin m) (Fin m) D) ∧
       Nonempty (B ≃ₐ[K] Matrix (Fin n) (Fin n) D) := by
   obtain ⟨n, hn, SA, _, _, ⟨isoA⟩⟩ := Wedderburn_Artin_algebra_version K A
-  haveI : Algebra.IsCentral K (Matrix (Fin n) (Fin n) SA) :=
-    Algebra.IsCentral.of_algEquiv K _ _ isoA
-  haveI : Algebra.IsCentral K SA := is_central_of_wdb _ _ _ _ hn isoA
+  have : Algebra.IsCentral K (Matrix (Fin n) (Fin n) SA) := .of_algEquiv K _ _ isoA
+  have : Algebra.IsCentral K SA := is_central_of_wdb _ _ _ _ hn isoA
   have : FiniteDimensional K (Matrix (Fin n) (Fin n) SA) :=
     Module.Finite.of_injective isoA.symm.toLinearMap isoA.symm.injective
   have : FiniteDimensional K SA := is_fin_dim_of_wdb _ _ hn _ isoA
   have eq1 : IsBrauerEquivalent ⟨.of K SA⟩ A :=
     ⟨n, 1, hn, one_ne_zero, ⟨AlgEquiv.symm <| AlgEquiv.trans (dim_one_iso A) isoA⟩⟩
   obtain ⟨m, hm, SB, _, _, ⟨isoB⟩⟩ := Wedderburn_Artin_algebra_version K B
-  haveI : Algebra.IsCentral K (Matrix (Fin m) (Fin m) SB) :=
-    Algebra.IsCentral.of_algEquiv K _ _ isoB
-  haveI : Algebra.IsCentral K SB := is_central_of_wdb _ _ _ _ hm isoB
+  have : Algebra.IsCentral K (Matrix (Fin m) (Fin m) SB) := .of_algEquiv K _ _ isoB
+  have : Algebra.IsCentral K SB := is_central_of_wdb _ _ _ _ hm isoB
   have : FiniteDimensional K (Matrix (Fin m) (Fin m) SB) :=
     .of_injective isoB.symm.toLinearMap isoB.symm.injective
   have : FiniteDimensional K SB := is_fin_dim_of_wdb _ _ hm _ isoB
   have eq2 : IsBrauerEquivalent ⟨.of K SA⟩ B := .trans eq1 h
   obtain ⟨a, a', ha, ha', ⟨e⟩⟩ := eq2
-  haveI : FiniteDimensional K (Matrix (Fin a') (Fin a') B) :=
+  have : FiniteDimensional K (Matrix (Fin a') (Fin a') B) :=
     LinearEquiv.finiteDimensional (matrixEquivTensor (Fin a') K B).toLinearEquiv.symm
-  haveI : NeZero a' := ⟨ha'⟩
-  haveI : NeZero a := ⟨ha⟩
+  have : NeZero a' := ⟨ha'⟩
+  have : NeZero a := ⟨ha⟩
   have : NeZero m := ⟨hm⟩
-  obtain ⟨isoAB⟩ := IsSimpleRing.wedderburn_artin_divisionring_unique K
+  obtain ⟨isoAB⟩ := IsSimpleRing.wedderburn_artin_divisionRing_unique K
     (Matrix (Fin a') (Fin a') B) e.symm <|
       (AlgEquiv.mapMatrix ‹_›).trans <| Matrix.compFinAlgEquiv _ _ _ _
   exact ⟨SA, inferInstance, inferInstance, n, m, ⟨hn⟩, ⟨hm⟩, ⟨isoA⟩,

@@ -1,10 +1,9 @@
 module
 
 public import BrauerGroup.BrauerGroup
-public import BrauerGroup.Data.Matrix.Composition
 public import BrauerGroup.CentralSimple
+public import BrauerGroup.Mathlib.Data.Matrix.Composition
 public import BrauerGroup.Morita.ChangeOfRings
-public import Mathlib.RingTheory.SimpleRing.Congr
 
 @[expose] public section
 
@@ -25,7 +24,68 @@ lemma TensorProduct.flip_mk_injective {R M N : Type*} [CommRing R] [IsDomain R] 
     (smul_left_injective R ha)
   simpa using e
 
+set_option backward.isDefEq.respectTransparency false in
+lemma IsCentral.left_of_tensor (B C : Type*)
+    [Ring B] [Ring C] [Nontrivial B] [Nontrivial C] [Algebra K C] [Algebra K B]
+    [FiniteDimensional K B] [hbc : Algebra.IsCentral K (B ⊗[K] C)] :
+    Algebra.IsCentral K B := by
+  have : Nontrivial (B ⊗[K] C) := Module.FaithfullyFlat.lTensor_nontrivial _ _ _
+  have h := (Subalgebra.equivOfEq (R := K) (A := B ⊗[K] C) _ _ <|
+    hbc.center_eq_bot K (B ⊗[K] C)) |>.trans <| Algebra.botEquiv K (B ⊗[K] C)
+  have : (Algebra.TensorProduct.includeLeft.comp (Subalgebra.center K B).val).range ≤
+    Subalgebra.center K (B ⊗[K] C) := fun x hx ↦ by
+    simp only [AlgHom.mem_range, AlgHom.coe_comp, Subalgebra.coe_val, Function.comp_apply,
+      Algebra.TensorProduct.includeLeft_apply, Subtype.exists, exists_prop] at hx
+    obtain ⟨b, hb0, hb⟩ := hx
+    rw [Subalgebra.mem_center_iff] at hb0 ⊢
+    intro bc
+    induction bc with
+    | tmul b' c =>
+      subst hb
+      simp only [Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul]
+      congr 1
+      exact hb0 b'
+    | add _ _ _ _ => simp_all [add_mul, mul_add]
+  have eq: (Algebra.TensorProduct.includeLeft.comp (Subalgebra.center K B).val).range =
+      (⊥ : Subalgebra K (B ⊗[K] C)) := by
+    refine le_antisymm ?_ <| OrderBot.bot_le _
+    rw [← hbc.center_eq_bot]; exact this
+  let f : Subalgebra.center K B →ₐ[K] ((Algebra.TensorProduct.includeLeft (R := K) (B := C)).comp
+    (Subalgebra.center K B).val).range := {
+      toFun := fun ⟨b, hb⟩ ↦ ⟨b ⊗ₜ 1, ⟨⟨b, hb⟩, rfl⟩⟩
+      map_one' := by simp; rfl
+      map_mul' := fun _ _ ↦ by ext : 1; simp
+      map_zero' := by ext; simp
+      map_add' := fun _ _ ↦ by ext; simp [add_tmul]
+      commutes' := fun _ ↦ rfl}
+  have f_surj : Function.Surjective f := fun ⟨bc, ⟨b, hb⟩, h⟩ ↦ ⟨⟨b, hb⟩, by simpa [f] using h⟩
+  have e : ((Algebra.TensorProduct.includeLeft (R := K) (B := C)).comp
+    (Subalgebra.center K B).val).range ≃ₐ[K] (Subalgebra.center K B) :=
+    (AlgEquiv.ofBijective f
+    ⟨fun ⟨b1, hb1⟩ ⟨b2, hb2⟩ h12 ↦ by
+      simp only [AlgHom.coe_mk, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
+        Subtype.mk.injEq, f] at h12
+      ext
+      exact TensorProduct.flip_mk_injective _ one_ne_zero h12,
+    f_surj⟩).symm
+  have e2 := Subalgebra.equivOfEq _ _ eq |>.trans <| Algebra.botEquiv K _
+  have ee: Subalgebra.center K B ≃ₐ[K] K := e.symm.trans e2
+  exact ⟨le_of_eq <| Subalgebra.eq_of_le_of_finrank_eq (OrderBot.bot_le _)
+    (by rw [ee.toLinearEquiv.finrank_eq, Subalgebra.finrank_bot, Module.finrank_self])|>.symm⟩
+
 variable (A : Type u) [Ring A] [Algebra K A]
+
+lemma Algebra.IsCentral_ofAlgEquiv (A B : Type*) [Ring A] [Ring B] [Algebra K A] [Algebra K B]
+    (e : A ≃ₐ[K] B) (hA : Algebra.IsCentral K A) :  Algebra.IsCentral K B where
+  out x hx := by
+    obtain ⟨k, hk⟩ := hA.out (show e.symm x ∈ _ by
+      simp only [Subalgebra.mem_center_iff] at hx ⊢
+      exact fun x ↦ by simpa using congr(e.symm $(hx (e x))))
+    exact ⟨k, by apply_fun e.symm; rw [← hk]; simp⟩
+
+lemma IsSimpleRing.ofAlgEquiv (A B : Type*) [Ring A] [Ring B] [Algebra K A] [Algebra K B]
+    (e : A ≃ₐ[K] B) (hA : IsSimpleRing A) : IsSimpleRing B :=
+  ⟨OrderIso.isSimpleOrder_iff (TwoSidedIdeal.orderIsoOfRingEquiv e.toRingEquiv)|>.1 hA.simple⟩
 
 theorem IsAzumaya_iff_CentralSimple [Nontrivial A] : IsAzumaya K A ↔ FiniteDimensional K A ∧
     Algebra.IsCentral K A ∧ IsSimpleRing A :=
@@ -33,10 +93,12 @@ theorem IsAzumaya_iff_CentralSimple [Nontrivial A] : IsAzumaya K A ↔ FiniteDim
     letI e := AlgEquiv.ofBijective _ bij|>.trans <| algEquivMatrix <| Module.finBasis _ _
     letI : Nonempty (Fin (Module.finrank K A)) := ⟨⟨_, Module.finrank_pos⟩⟩
     ⟨IsAzumaya.toFinite, ⟨by
-    have : Algebra.IsCentral K (A ⊗[K] Aᵐᵒᵖ) := Algebra.IsCentral.of_algEquiv K _ _ e.symm
-    exact Algebra.IsCentral.left_of_tensor_of_field K A Aᵐᵒᵖ, by
-    haveI := IsSimpleRing.matrix (Fin (Module.finrank K A)) K
-    have sim : IsSimpleRing (A ⊗[K] Aᵐᵒᵖ) := IsSimpleRing.of_ringEquiv e.symm.toRingEquiv this
+    have : Algebra.IsCentral K (A ⊗[K] Aᵐᵒᵖ) :=
+      Algebra.IsCentral_ofAlgEquiv K _ _ e.symm <| Algebra.IsCentral.matrix K K
+        (Fin (Module.finrank K A))
+    exact IsCentral.left_of_tensor K A Aᵐᵒᵖ, by
+    have := IsSimpleRing.matrix (Fin (Module.finrank K A)) K
+    have sim : IsSimpleRing (A ⊗[K] Aᵐᵒᵖ) := IsSimpleRing.ofAlgEquiv K _ _ e.symm this
     exact IsSimpleRing.left_of_tensor K A Aᵐᵒᵖ⟩⟩,
     fun ⟨fin, cen, sim⟩ ↦ {
       out := Module.Projective.out
@@ -44,14 +106,13 @@ theorem IsAzumaya_iff_CentralSimple [Nontrivial A] : IsAzumaya K A ↔ FiniteDim
         specialize ha (1 : A)
         rw [← Algebra.algebraMap_eq_smul_one, ← Algebra.algebraMap_eq_smul_one] at ha
         exact FaithfulSMul.algebraMap_injective _ _ ha
-      fg_top := fin.1
-      bij := AlgHom.bijective_of_finrank_eq
-        (AlgHom.mulLeftRight K A) <| tensor_self_op.dim_eq _ _
+      fg_top := fin.fg_top
+      bij := (AlgHom.mulLeftRight K A).bijective_of_finrank_eq <| tensor_self_op.dim_eq _ _
     }⟩
 
 def finswap {n m : ℕ} : Fin (n * m) ≃ Fin (m * n) where
-  toFun i := ⟨i.1, by rw [mul_comm m n]; exact i.2⟩
-  invFun i := ⟨i.1, by rw [mul_comm n m]; exact i.2⟩
+  toFun i := ⟨i.val, by rw [mul_comm m n]; exact i.isLt⟩
+  invFun i := ⟨i.val, by rw [mul_comm n m]; exact i.isLt⟩
   left_inv _ := rfl
   right_inv _ := rfl
 
@@ -64,16 +125,16 @@ lemma IsMorita_iff_IsBrauer' (R : Type u) [CommRing R] (A B : Type v) [Ring A] [
   by
     obtain ⟨n, hn, D, _, _, ⟨e⟩⟩ := Wedderburn_Artin_algebra_version' R A
     obtain ⟨m, hm, E, _, _, ⟨e'⟩⟩ := Wedderburn_Artin_algebra_version' R B
-    letI e1 := MoritaEquivalence.ofAlgEquiv e
-    letI e2 := MoritaEquivalence.ofAlgEquiv e'
+    let e1 := MoritaEquivalence.ofAlgEquiv e
+    let e2 := MoritaEquivalence.ofAlgEquiv e'
     have : NeZero m := ⟨hm⟩
     have : NeZero n := ⟨hn⟩
-    haveI := moritaEquivalenceMatrix D R (0 : Fin n) |>.symm
+    have := moritaEquivalenceMatrix D R (0 : Fin n) |>.symm
     have ww := MoritaEquivalence.trans R e1 this |>.symm
-    haveI := moritaEquivalenceMatrix E R (0 : Fin m) |>.symm
+    have := moritaEquivalenceMatrix E R (0 : Fin m) |>.symm
     have ww' := MoritaEquivalence.trans R e2 this
-    haveI h := MoritaEquivalence.trans R ww hAB.cond.some
-    haveI h' := MoritaEquivalence.trans R h ww'
+    have h := MoritaEquivalence.trans R ww hAB.cond.some
+    have h' := MoritaEquivalence.trans R h ww'
     have := MoritaEquivalence.algEquivOfDivisionRing R D E h'
     refine ⟨m, n, hm, hn, ⟨e.mapMatrix.trans <| Matrix.compFinAlgEquiv _ _ _ _ |>.trans <|
       this.mapMatrix.trans <| Matrix.reindexAlgEquiv _ _ finswap|>.trans <|
@@ -111,8 +172,8 @@ instance (n : ℕ) [NeZero n] : FaithfulSMul R (Matrix (Fin n) (Fin n) R) where
 open MulOpposite in
 abbrev matrixAlgEquivMatrixMop (n : ℕ) :
   Matrix (Fin n) (Fin n) R ≃ₐ[R] (Matrix (Fin n) (Fin n) R)ᵐᵒᵖ :=
-  (AlgEquiv.toOpposite R R).mapMatrix.trans <| AlgEquiv.ofRingEquiv
-  (f := RingEquiv.mopMatrix) <|
+  (AlgEquiv.toOpposite R R).mapMatrix.trans <| .ofCommutes
+  RingEquiv.mopMatrix <|
   fun r ↦ by
     simp only [RingEquiv.mopMatrix_apply, MulOpposite.algebraMap_apply, op_inj]
     ext i j
@@ -120,6 +181,69 @@ abbrev matrixAlgEquivMatrixMop (n : ℕ) :
     split_ifs with h1 h2 h3 <;> tauto
 
 noncomputable abbrev mopAlgEquivEnd : Rᵐᵒᵖ ≃ₐ[R] Module.End R R := AlgEquiv.moduleEndSelf R
+
+noncomputable abbrev tensorEquivEnd : R ⊗[R] Rᵐᵒᵖ ≃ₐ[R] Module.End R R :=
+  Algebra.TensorProduct.lid R Rᵐᵒᵖ|>.trans <| mopAlgEquivEnd R
+
+set_option backward.isDefEq.respectTransparency false in
+lemma equal_mulLeftRight : tensorEquivEnd R = AlgHom.mulLeftRight R R := by
+  ext r
+  simp [AlgHom.mulLeftRight_apply]
+
+lemma bij_Rtensor : Function.Bijective (AlgHom.mulLeftRight R R) := by
+  rw [← equal_mulLeftRight]
+  exact (tensorEquivEnd R).bijective
+
+instance : FaithfulSMul R R where
+  eq_of_smul_eq_smul {r1 r2} hr := by
+    specialize hr 1
+    simp only [smul_eq_mul, mul_one] at hr
+    exact hr
+
+theorem IsAzumaya_R : IsAzumaya R R where
+  bij := bij_Rtensor R
+
+noncomputable section
+
+open MulOpposite Matrix
+
+abbrev Mat.inv (n : ℕ) :
+    Module.End R (Matrix (Fin n) (Fin n) R) →ₗ[R]
+      Matrix (Fin n) (Fin n) R ⊗[R] (Matrix (Fin n) (Fin n) R)ᵐᵒᵖ where
+  toFun := fun f ↦ ∑ ⟨⟨i, j⟩, k, l⟩ : (Fin n × Fin n) × Fin n × Fin n,
+    f (single j k 1) i l • (single i j 1) ⊗ₜ[R] op (single k l 1)
+  map_add' := fun f1 f2 ↦ by
+    simp [add_smul, Finset.sum_add_distrib]
+  map_smul' := fun r f ↦ by
+    simp [SemigroupAction.mul_smul, Finset.smul_sum]
+
+lemma single.eq (n : ℕ) (i j : Fin n) :
+    single i j (1 : R) = of (fun i' j' ↦ if i = i' ∧ j = j' then 1 else 0) := rfl
+
+lemma Mat.inv_toFun1' (n : ℕ) :
+    (Mat.inv R n).comp (AlgHom.mulLeftRight R (Matrix (Fin n) (Fin n) R)).toLinearMap = .id :=
+  Basis.ext ((Matrix.stdBasis _ _ _).tensorProduct ((Matrix.stdBasis _ _ _).map (opLinearEquiv ..)))
+  fun ⟨⟨i0, j0⟩, k0, l0⟩ ↦  by
+    simp [stdBasis_eq_single, single, ite_and, Matrix.mul_apply, Fintype.sum_prod_type]
+
+set_option backward.isDefEq.respectTransparency false in
+lemma Mat.inv_toFun2' (n : ℕ) :
+    (AlgHom.mulLeftRight R (Matrix (Fin n) (Fin n) R)).toLinearMap.comp (Mat.inv R n) = .id := by
+  ext f : 1
+  apply Basis.ext (Matrix.stdBasis _ _ _)
+  intro ⟨i, j⟩
+  simp only [LinearMap.coe_comp, AlgHom.coe_toLinearMap, LinearMap.coe_mk, AddHom.coe_mk,
+    Function.comp_apply, map_sum, map_smul, stdBasis_eq_single, LinearMap.coe_sum, Finset.sum_apply,
+    LinearMap.smul_apply, AlgHom.mulLeftRight_apply, unop_op, single_mul_mul_single, one_mul,
+    mul_one, smul_single, smul_eq_mul, LinearMap.id_coe, id_eq]
+  ext k l
+  simp [Matrix.sum_apply, single, Fintype.sum_prod_type, ite_and, apply_ite]
+
+lemma Mat.bij (n : ℕ) : Function.Bijective (AlgHom.mulLeftRight R (Matrix (Fin n) (Fin n) R)) :=
+  ⟨Function.HasLeftInverse.injective ⟨Mat.inv R n, DFunLike.congr_fun (Mat.inv_toFun1' R n)⟩,
+  Function.HasRightInverse.surjective ⟨Mat.inv R n, DFunLike.congr_fun (Mat.inv_toFun2' R n)⟩⟩
+
+end
 
 instance (n : ℕ) [NeZero n] : FaithfulSMul R (Matrix (Fin n) (Fin n) R) where
   eq_of_smul_eq_smul {r1 r2} h := by

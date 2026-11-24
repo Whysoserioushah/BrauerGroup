@@ -1,6 +1,7 @@
 module
 
 public import Mathlib.FieldTheory.IsAlgClosed.Basic
+public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.RingTheory.Flat.Basic
 public import Mathlib.RingTheory.TensorProduct.Free
 
@@ -13,6 +14,18 @@ open Module TensorProduct
 universe u
 
 section
+
+variable (K L : Type u) [Field K] [Field L] [Algebra K L]
+  (V : Type u) [AddCommGroup V] [Module K V] [Module.Finite K V]
+
+lemma dim_eq : Module.finrank K V = Module.finrank L (L ⊗[K] V) := by
+  let b := Module.finBasis K V
+  let b' := Algebra.TensorProduct.basis L b
+  rw [Module.finrank_eq_card_basis b, Module.finrank_eq_card_basis b']
+
+end
+
+section
 variable (K K_bar : Type u) [Field K] [Field K_bar] [Algebra K K_bar] [IsAlgClosure K K_bar]
 
 variable (A : Type u) [AddCommGroup A] [Module K A]
@@ -23,15 +36,13 @@ def intermediateTensor (L : IntermediateField K K_bar) : Submodule K (K_bar ⊗[
   LinearMap.range (LinearMap.rTensor _ (L.val.toLinearMap) : L ⊗[K] A →ₗ[K] K_bar ⊗[K] A)
 
 def intermediateTensor' (L : IntermediateField K K_bar) : Submodule L (K_bar ⊗[K] A) :=
-  LinearMap.range ({LinearMap.rTensor _ (L.val.toLinearMap) with
+  ({ (L.val.toLinearMap).rTensor A with
     map_smul' l x := by
       simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, RingHom.id_apply]
-      induction x using TensorProduct.induction_on with
-      | zero => simp
-      | tmul x a =>
-        simp only [smul_tmul', smul_eq_mul, LinearMap.rTensor_tmul, AlgHom.toLinearMap_apply,
-          _root_.map_mul, IntermediateField.coe_val]; rfl
-      | add x y hx hy => simp only [smul_add, map_add, hx, hy] } : L ⊗[K] A →ₗ[L] K_bar ⊗[K] A)
+      induction x with
+      | add x y hx hy => simp only [smul_add, map_add, hx, hy]
+      | tmul x a => simp; rfl
+  } : L ⊗[K] A →ₗ[L] K_bar ⊗[K] A).range
 
 def intermediateTensorEquiv (L : IntermediateField K K_bar) :
     intermediateTensor K K_bar A L ≃ₗ[K] L ⊗[K] A :=
@@ -44,7 +55,7 @@ def intermediateTensorEquiv (L : IntermediateField K K_bar) :
 omit [IsAlgClosure K K_bar] in
 @[simp]
 lemma intermediateTensorEquiv_apply_tmul (L : IntermediateField K K_bar)
-      (x : L) (a : A) (h : x.1 ⊗ₜ[K] a ∈ intermediateTensor K K_bar A L) :
+      (x : L) (a : A) (h : x.val ⊗ₜ[K] a ∈ intermediateTensor K K_bar A L) :
     intermediateTensorEquiv K K_bar A L ⟨_, h⟩ =
     x ⊗ₜ a := by
   simp only [intermediateTensorEquiv]
@@ -59,11 +70,7 @@ def intermediateTensorEquiv' (L : IntermediateField K K_bar) :
   map_smul' := by
     rintro x ⟨-, ⟨y, rfl⟩⟩
     simp only [RingHom.id_apply]
-    induction y using TensorProduct.induction_on with
-    | zero =>
-      simp only [map_zero, SetLike.mk_smul_mk, smul_zero]
-      erw [map_zero]
-      rw [smul_zero]
+    induction y with
     | tmul y a =>
       simp only [LinearMap.coe_mk, LinearMap.coe_toAddHom, LinearMap.rTensor_tmul,
         AlgHom.toLinearMap_apply, IntermediateField.coe_val, SetLike.mk_smul_mk, smul_tmul',
@@ -123,16 +130,14 @@ theorem inter_tensor_union :
     (intermediateTensor K K_bar A L) = ⊤ := by
   rw [eq_top_iff]
   rintro x -
-  induction x using TensorProduct.induction_on with
-  |zero => simp
-  |tmul x a =>
-    have fin0: FiniteDimensional K K⟮x⟯ := IntermediateField.adjoin.finiteDimensional (by
-      observe : IsAlgebraic K x
-      exact Algebra.IsIntegral.isIntegral x)
+  induction x with
+  | tmul x a =>
+    have fin0 : FiniteDimensional K K⟮x⟯ :=
+      IntermediateField.adjoin.finiteDimensional (Algebra.IsIntegral.isIntegral x)
     exact Submodule.mem_sSup_of_directed (SetOfFinite_nonempty K K_bar A) (is_direct K K_bar A) |>.2
       ⟨intermediateTensor K K_bar A K⟮x⟯, ⟨⟨⟨K⟮x⟯, fin0⟩, rfl⟩,
         ⟨(⟨x, IntermediateField.mem_adjoin_simple_self K x⟩ ⊗ₜ a), by simp⟩⟩⟩
-  |add x y hx hy =>
+  | add x y hx hy =>
   apply AddMemClass.add_mem <;> assumption
 
 theorem algclosure_element_in (x : K_bar ⊗[K] A) : ∃(F : IntermediateField K K_bar),
@@ -215,12 +220,11 @@ instance : Module ℒ (ℒ ⊗[k] A) := TensorProduct.leftModule
 instance : FiniteDimensional ℒ (intermediateTensor' k k⁻ A ℒ) :=
     Module.Finite.equiv (intermediateTensorEquiv' k k_bar A ℒ).symm
 
-omit [NeZero n] [FiniteDimensional k A] in
+omit [NeZero n] in
 theorem dim_ℒ_eq : Module.finrank ℒ (intermediateTensor' k k⁻ A ℒ) = n^2 := by
-    have eq1 := (Module.finrank_baseChange (R := k⁻) (S := k) (M' := A)).symm |>.trans
-      iso.toLinearEquiv.finrank_eq
+    have eq1 := dim_eq k k⁻ A |>.trans iso.toLinearEquiv.finrank_eq
     simp only [Module.finrank_matrix, Fintype.card_fin, Module.finrank_self, mul_one] at eq1
-    rw [pow_two, ← eq1, (Module.finrank_baseChange (R := ℒ) (S := k) (M' := A)).symm]
+    rw [pow_two, ← eq1, dim_eq k ℒ A]
     exact LinearEquiv.finrank_eq (intermediateTensorEquiv' k k_bar A ℒ)
 
 def e_hat : Basis (Fin n × Fin n) ℒ (intermediateTensor' k k_bar A ℒ) :=
@@ -275,7 +279,6 @@ lemma comm_triangle :
   rfl
 
 set_option backward.isDefEq.respectTransparency false in
-omit [FiniteDimensional k A] in
 /--
 intermidateTensor ----> M_n(ℒ)
   | val                 | inclusion'
@@ -308,7 +311,6 @@ lemma comm_square' :
     algebraMap ℒ k_bar ((if i.1 = a ∧ i.2 = b then 1 else 0) : ℒ)
   simp
 
-omit [FiniteDimensional k A] in
 /-- This shows the following diagram commutes:
      isoRestrict
   ℒ ⊗_k A -----> M_n(ℒ)
@@ -325,7 +327,6 @@ lemma comm_square :
   rw [← comm_triangle n k k_bar A iso, ← LinearMap.comp_assoc, comm_square' n k k_bar A iso]
   rfl
 
-omit [FiniteDimensional k A] in
 lemma isoRestrict_map_one : isoRestrict' n k k⁻ A iso 1 = 1 := by
   /-
         isoRestrict
@@ -351,7 +352,6 @@ lemma isoRestrict_map_one : isoRestrict' n k k⁻ A iso 1 = 1 := by
   refine inclusion'_injective n k k_bar A iso (eq.trans ?_)
   rw [_root_.map_one]
 
-omit [FiniteDimensional k A] in
 lemma isoRestrict_map_mul (x y : ℒ ⊗[k] A) :
     isoRestrict' n k k⁻ A iso (x * y) =
     isoRestrict' n k k⁻ A iso x * isoRestrict' n k k⁻ A iso y := by
@@ -397,6 +397,6 @@ lemma isoRestrict_map_mul (x y : ℒ ⊗[k] A) :
 
 def isoRestrict : ℒ ⊗[k] A ≃ₐ[ℒ] Matrix (Fin n) (Fin n) ℒ :=
   AlgEquiv.ofLinearEquiv (isoRestrict' n k k⁻ A iso)
-    (isoRestrict_map_one n k k⁻ A iso) (isoRestrict_map_mul n k k⁻ A iso)
+    (isoRestrict_map_mul n k k⁻ A iso)
 
 end lemma_tto

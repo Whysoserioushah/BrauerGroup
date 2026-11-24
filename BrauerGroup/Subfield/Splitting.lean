@@ -1,9 +1,7 @@
 module
 
-public import BrauerGroup.Data.Matrix.Composition
 public import BrauerGroup.MatrixEquivTensor
 public import BrauerGroup.RelativeBrauer
-public import Mathlib.Algebra.Central.Basic
 public import BrauerGroup.Subfield.FiniteDimensional
 public import BrauerGroup.Subfield.Subfield
 
@@ -18,6 +16,7 @@ open FiniteDimensional MulOpposite BrauerGroup TensorProduct
 section CSA
 
 set_option backward.isDefEq.respectTransparency false in
+set_option maxSynthPendingDepth 2 in
 lemma exists_embedding_of_isSplit [FiniteDimensional F K] (A : CSA F) (split : isSplit F A K) :
     ∃ (B : CSA F), (Quotient.mk'' A : BrauerGroup F) * (Quotient.mk'' B) = 1 ∧
       ∃ (_ : K →ₐ[F] B), (Module.finrank F K)^2 = Module.finrank F B := by
@@ -30,42 +29,49 @@ lemma exists_embedding_of_isSplit [FiniteDimensional F K] (A : CSA F) (split : i
         map_mul' := by intros; ext; rfl
         map_zero' := by ext; rfl
         map_add' := by intros; ext; rfl
-        commutes' := by intros; ext; rfl } <| iso'.toAlgHom.restrictScalars F) <|
+        commutes' := by intros; ext; rfl
+        map_smul' := by intros; ext; rfl } <| iso'.toAlgHom.restrictScalars F) <|
       Algebra.TensorProduct.includeRight (R := F) (A := K) (B := A)
   let B := Subalgebra.centralizer F (AlgHom.range emb : Set (Module.End F (Fin n → K)))
   let e : A ≃ₐ[F] (AlgHom.range emb) :=
     AlgEquiv.ofInjective _ (IsSimpleRing.iff_injective_ringHom A|>.1 inferInstance emb.toRingHom)
-  haveI : Algebra.IsCentral F (AlgHom.range emb) := Algebra.IsCentral.of_algEquiv F _ _ e
-  haveI : IsSimpleRing (AlgHom.range emb) := IsSimpleRing.of_ringEquiv e.toRingEquiv inferInstance
-  haveI : NeZero (Module.finrank F (Fin n → K)) := by
+  have : Algebra.IsCentral F (AlgHom.range emb) := .of_algEquiv F _ _ e
+  have : IsSimpleRing (AlgHom.range emb) := by
+    constructor
+    rw [← TwoSidedIdeal.orderIsoOfRingEquiv e.toRingEquiv |>.isSimpleOrder_iff]
+    exact IsSimpleRing.simple
+  have : NeZero (Module.finrank F (Fin n → K)) := by
     constructor
     have : 0 < Module.finrank F (Fin n → K) := Module.finrank_pos
     omega
-  haveI : Algebra.IsCentral F (Module.End F (Fin n → K)) := by
+  have : Algebra.IsCentral F (Module.End F (Fin n → K)) := by
     have f := algEquivMatrix (R := F) (M := Fin n → K) (Module.finBasis _ _)
-    exact Algebra.IsCentral.of_algEquiv F _ _ f.symm
-  haveI : IsSimpleRing (Module.End F (Fin n → K)) := IsSimpleRing.of_ringEquiv
-    (algEquivMatrix (R := F) (M := Fin n → K) (Module.finBasis _ _)).toRingEquiv.symm inferInstance
-  haveI : Algebra.IsCentral F B :=
+    exact .of_algEquiv F _ _ f.symm
+  have : IsSimpleRing (Module.End F (Fin n → K)) := by
+    have f := algEquivMatrix (R := F) (M := Fin n → K) (Module.finBasis _ _)
+    constructor
+    rw [TwoSidedIdeal.orderIsoOfRingEquiv f.toRingEquiv |>.isSimpleOrder_iff]
+    exact IsSimpleRing.simple
+  have : Algebra.IsCentral F B :=
   { out := fun x hx => by
       rw [Algebra.mem_bot]
       rw [Subalgebra.mem_center_iff] at hx
       have hx' : ⟨x, by
-          rw [← Subalgebra.centralizer_centralizer (B := emb.range)]
+          rw [← emb.range.centralizer_centralizer]
           intro y hy
           specialize hx ⟨y, hy⟩
           simpa [Subtype.ext_iff] using hx⟩ ∈ Subalgebra.center F emb.range := by
         rw [Subalgebra.mem_center_iff]
         rintro ⟨_, ⟨y, rfl⟩⟩
         rw [Subtype.ext_iff]
-        exact x.2 (emb y) ⟨y, rfl⟩
+        exact x.property (emb y) ⟨y, rfl⟩
       rw [Algebra.IsCentral.center_eq_bot, Algebra.mem_bot] at hx'
       obtain ⟨r, hr⟩ := hx'
       simp only [Subtype.ext_iff, SubalgebraClass.coe_algebraMap] at hr
       use r
       rw [Subtype.ext_iff, ← hr]
       rfl }
-  haveI : IsSimpleRing B := Subalgebra.centralizer_isSimple _
+  have : IsSimpleRing B := emb.range.centralizer_isSimple
   refine ⟨⟨.of F B⟩, ?_,
     { toFun r :=
         ⟨{
@@ -78,11 +84,8 @@ lemma exists_embedding_of_isSplit [FiniteDimensional F K] (A : CSA F) (split : i
         }, by
         rintro _ ⟨x, rfl⟩
         exact LinearMap.ext fun v ↦ by simp [emb]⟩
-      map_one' := by ext; simp only [one_smul, LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk,
-        LinearMap.coe_single, Function.comp_apply, OneMemClass.coe_one, Module.End.one_apply]
-      map_mul' := by intros; ext; simp only [LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk,
-        LinearMap.coe_single, Function.comp_apply, Pi.smul_apply, smul_eq_mul, _root_.mul_assoc,
-        MulMemClass.coe_mul, Module.End.mul_apply]
+      map_one' := by ext; simp
+      map_mul' _ _ := by ext; simp [_root_.mul_assoc]
       map_zero' := by ext; simp only [zero_smul, LinearMap.coe_comp, LinearMap.coe_mk,
         AddHom.coe_mk, LinearMap.coe_single, Function.comp_apply, Pi.zero_apply,
         ZeroMemClass.coe_zero, LinearMap.zero_comp, LinearMap.zero_apply]
@@ -93,18 +96,17 @@ lemma exists_embedding_of_isSplit [FiniteDimensional F K] (A : CSA F) (split : i
         AddHom.coe_mk, LinearMap.coe_single, Function.comp_apply, Pi.smul_apply,
         SubalgebraClass.coe_algebraMap, Module.algebraMap_end_apply] }, ?_⟩
   · change Quotient.mk'' _ = Quotient.mk'' (⟨AlgCat.of F F⟩ : CSA F)
-    have := Subalgebra.tensorCentralizerEquiv (B := emb.range)
+    have := emb.range.tensorCentralizerEquiv
     have iso : A ⊗[F] B ≃ₐ[F] Matrix (Fin (Module.finrank F (Fin n → K)))
       (Fin (Module.finrank F (Fin n → K))) F :=
       AlgEquiv.symm <|
         AlgEquiv.trans (algEquivMatrix (R := F) (M := Fin n → K) (Module.finBasis _ _)).symm
-        (Subalgebra.tensorCentralizerEquiv (B := emb.range) |>.trans <|
+        (emb.range.tensorCentralizerEquiv |>.trans <|
           Algebra.TensorProduct.congr e.symm AlgEquiv.refl)
     apply Quotient.sound'
     exact ⟨1, Module.finrank F (Fin n → K), one_ne_zero, by aesop, ⟨(dim_one_iso _).trans iso⟩⟩
   · change Module.finrank F K ^ 2 = Module.finrank F B
-    have dim_eq1 : Module.finrank F B * _ = _ :=
-      Subalgebra.finrank_centralizer_mul_finrank (F := F) emb.range
+    have dim_eq1 : Module.finrank F B * _ = _ := emb.range.finrank_centralizer_mul_finrank
     rw [Module.finrank_linearMap, show Module.finrank F (Fin n → K) =
       Module.finrank F K * Module.finrank K (Fin n → K) from
       (Module.finrank_mul_finrank F K (Fin n → K)).symm, Module.finrank_fin_fun,
@@ -117,7 +119,7 @@ lemma exists_embedding_of_isSplit [FiniteDimensional F K] (A : CSA F) (split : i
     rw [dim_eq2, ← pow_two] at dim_eq1
     let m := Module.finrank F B
     let M := Module.finrank F K
-    haveI : Nontrivial B := ⟨0, 1, fun r ↦ by
+    have : Nontrivial B := ⟨0, 1, fun r ↦ by
       simp only [zero_ne_one] at r⟩
     simp only [_root_.mul_one] at dim_eq1
     change m * n ^ 2 = M^2 * _ at dim_eq1
@@ -126,7 +128,7 @@ lemma exists_embedding_of_isSplit [FiniteDimensional F K] (A : CSA F) (split : i
     clear dim_eq2
     simp only [mul_eq_mul_right_iff, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true,
       pow_eq_zero_iff] at dim_eq1
-    refine dim_eq1 |>.resolve_right hn.1 |>.symm
+    refine dim_eq1 |>.resolve_right hn.out |>.symm
 
 /--
 theorem 3.3
@@ -138,7 +140,7 @@ theorem isSplit_iff_dimension [FiniteDimensional F K] (A : CSA F) :
   constructor
   · intro split
     obtain ⟨B, eq1, ι, eq2⟩ := exists_embedding_of_isSplit K F A split
-    refine ⟨⟨.of F B.1ᵐᵒᵖ⟩, ?_, {
+    refine ⟨⟨.of F B.toAlgCatᵐᵒᵖ⟩, ?_, {
       toFun k := op <| ι k
       map_one' := by simp
       map_mul' := by intros; simp [← op_mul, ← map_mul, mul_comm]
@@ -154,7 +156,7 @@ theorem isSplit_iff_dimension [FiniteDimensional F K] (A : CSA F) :
     let n := Module.finrank F K
     have n_pos : 0 < n := Module.finrank_pos
     replace dim_eq : Module.finrank F B = n^2 := dim_eq.symm
-    letI : Module K B :=
+    let : Module K B :=
     { smul c a := a * ι c
       one_smul := by intros; change _ * _ = _; simp
       mul_smul := by
@@ -164,11 +166,11 @@ theorem isSplit_iff_dimension [FiniteDimensional F K] (A : CSA F) :
       add_smul := by intros; change _ * _ = _ * _ + _ * _; simp [mul_add]
       zero_smul := by intros; change _ * _ = _; simp }
     have smul_def (r : K) (a : B) : r • a = a * (ι r) := rfl
-    haveI : SMulCommClass K F B :=
+    have : SMulCommClass K F B :=
     { smul_comm := by
         intro a b c
         simp only [smul_def, Algebra.smul_mul_assoc] }
-    haveI : IsScalarTower F K B :=
+    have : IsScalarTower F K B :=
     { smul_assoc := by
         intro a b c
         simp only [smul_def, map_smul, Algebra.mul_smul_comm] }
@@ -204,10 +206,8 @@ theorem isSplit_iff_dimension [FiniteDimensional F K] (A : CSA F) :
     let μ' : K ⊗[F] B →ₗ[F] Module.End K B := TensorProduct.lift μ
     let μ'' : K ⊗[F] B →ₗ[K] Module.End K B :=
     { __ := μ'
-      map_smul' := by
-        intro r a
-        induction a using TensorProduct.induction_on with
-        | zero => simp
+      map_smul' r a := by
+        induction a with
         | tmul c a =>
           ext a'
           simp only [smul_eq_mul, smul_def, smul_tmul', AddHom.toFun_eq_coe, lift.tmul',
@@ -222,24 +222,17 @@ theorem isSplit_iff_dimension [FiniteDimensional F K] (A : CSA F) :
       (by
         ext
         simp only [smul_eq_mul, Algebra.TensorProduct.one_def, LinearMap.coe_mk, lift.tmul',
-          AddHom.coe_mk, one_smul, _root_.one_mul, Module.End.one_apply, μ'', μ', μ])
+          AddHom.coe_mk, one_smul, _root_.one_mul, one_apply_eq_self, μ'', μ', μ])
       (by
         intro x y
         ext a''
-        induction x using TensorProduct.induction_on with
-        | zero => simp
+        induction x with
         | tmul c a =>
-          induction y using TensorProduct.induction_on with
-          | zero => simp
-          | tmul c' a' =>
-            simp only [smul_eq_mul, Algebra.TensorProduct.tmul_mul_tmul, mul_comm c c',
-              LinearMap.coe_mk, lift.tmul', AddHom.coe_mk, mul_smul, _root_.mul_assoc,
-              Module.End.mul_apply, map_smul, μ'', μ', μ]
-          | add m n hm hn =>
-            simp only [mul_add, map_add, LinearMap.add_apply, hm, Module.End.mul_apply, hn]
-        | add m n hm hn =>
-          simp only [add_mul, map_add, LinearMap.add_apply, hm, Module.End.mul_apply, hn])
-    haveI : FiniteDimensional K B := FiniteDimensional.right F K B
+          induction y with
+          | tmul c' a' => simp [mul_comm c c', mul_smul, _root_.mul_assoc, μ'', μ', μ]
+          | add m n hm hn => simp [mul_add, map_add, *]
+        | add m n hm hn => simp [add_mul, map_add, *])
+    have : FiniteDimensional K B := FiniteDimensional.right F K B
     let e : Module.End K B ≃ₐ[K] Matrix _ _ _ := algEquivMatrix (Module.finBasis _ _)
     rw [split_sound' K F A B (Quotient.eq''.1 eq)]
     refine ⟨Module.finrank K B, ⟨fun r => by have := Module.finrank_pos (R := K) (M := B); omega⟩,
@@ -269,16 +262,17 @@ theorem isSplit_if_equiv (A B : CSA F) (hAB : IsBrauerEquivalent A B) (hA : isSp
   obtain ⟨n, m, hn, hm, ⟨iso⟩⟩ := hAB
   obtain ⟨p, hp, ⟨e⟩⟩ := hA
   obtain ⟨q, hq, D, hD1, _, ⟨e'⟩⟩ := Wedderburn_Artin_algebra_version K (K ⊗[F] B)
-  haveI := is_fin_dim_of_wdb K (K ⊗[F] B) hq D e'
-  have ee := (Matrix.compFinAlgEquiv m q D K).symm.trans <| e'.mapMatrix.symm.trans <|
+  have := is_fin_dim_of_wdb K (K ⊗[F] B) hq D e'
+  have ee := Matrix.reindexAlgEquiv _ _ finProdFinEquiv|>.symm.trans <|
+    Matrix.compAlgEquiv _ _ _ _ |>.symm.trans <| e'.mapMatrix.symm.trans <|
     matrixTensorEquivTensor K F B (Fin m) |>.symm.trans <|
     Algebra.TensorProduct.congr (A := K) (S := K) .refl iso|>.symm.trans <|
     matrixTensorEquivTensor K F A (Fin n)|>.trans <| e.mapMatrix (m := (Fin n))|>.trans <|
-    Matrix.compFinAlgEquiv n p K K
-  haveI : NeZero (m * q) := ⟨by aesop⟩
-  haveI : NeZero (n * p) := ⟨by aesop⟩
+      Matrix.compAlgEquiv (Fin n) (Fin p) K K |>.trans <| Matrix.reindexAlgEquiv K K finProdFinEquiv
+  have : NeZero (m * q) := ⟨by aesop⟩
+  have : NeZero (n * p) := ⟨by aesop⟩
   exact ⟨q, ⟨hq⟩, ⟨e'.trans <|
-    IsSimpleRing.wedderburn_artin_divisionring_unique K
+    IsSimpleRing.wedderburn_artin_divisionRing_unique K
       (Matrix (Fin (m * q)) (Fin (m * q)) D) AlgEquiv.refl ee |>.some.mapMatrix⟩⟩
 
 end CSA2

@@ -1,7 +1,8 @@
 module
 
-public import BrauerGroup.RingTheory.SimpleModule.WedderburnArtin
+public import BrauerGroup.BrauerGroup
 public import BrauerGroup.FrobeniusTheorem
+public import BrauerGroup.Mathlib.RingTheory.SimpleModule.WedderburnArtin
 
 @[expose] public section
 
@@ -28,15 +29,12 @@ abbrev toEnd_map : ℍ[ℝ] ⊗[ℝ] ℍ[ℝ] →ₗ[ℝ] Module.End ℝ (ℍ[�
 set_option maxSynthPendingDepth 2 in
 lemma toEnd_map.map_mul (x1 x2 : ℍ[ℝ] ⊗[ℝ] ℍ[ℝ]) : toEnd_map (x1 * x2) =
     toEnd_map x1 * toEnd_map x2 := by
-  induction x1 using TensorProduct.induction_on with
-  | zero => simp
-  | tmul q1 q2 =>
-    induction x2 using TensorProduct.induction_on with
-    | zero => simp
-    | tmul q3 q4 => ext : 1; simp [← _root_.mul_assoc]
-    | add x y h1 h2 =>
-      rw [mul_add, map_add, map_add, mul_add, h1, h2]
+  induction x1 with
   | add x y h1 h2 => rw [add_mul, map_add, map_add, add_mul, h1, h2]
+  | tmul q1 q2 =>
+  induction x2 with
+  | add x y h1 h2 => rw [mul_add, map_add, map_add, mul_add, h1, h2]
+  | tmul q3 q4 => ext : 1; simp [← _root_.mul_assoc]
 
 abbrev toEnd : ℍ[ℝ] ⊗[ℝ] ℍ[ℝ] →ₐ[ℝ] Module.End ℝ (ℍ[ℝ]) where
   toFun := toEnd_map
@@ -52,10 +50,10 @@ set_option backward.isDefEq.respectTransparency false in
 instance : Algebra.IsCentral ℝ ℍ[ℝ] := ⟨fun q hq ↦ by
   rw [Subalgebra.mem_center_iff] at hq
   change ∃(_ : _), _ = _
-  use q.1
-  let eq1 := hq ⟨0, 1, 0, 0⟩
-  let eq2 := hq ⟨0, 0, 1, 0⟩
-  let eq3 := hq ⟨0, 0, 0, 1⟩
+  use q.re
+  have eq1 := hq ⟨0, 1, 0, 0⟩
+  have eq2 := hq ⟨0, 0, 1, 0⟩
+  have eq3 := hq ⟨0, 0, 0, 1⟩
   rw [Quaternion.ext_iff] at eq1 eq2 eq3
   obtain ⟨_, _, eq13, eq14⟩ := eq1
   obtain ⟨_, eq22, _, eq24⟩ := eq2
@@ -64,14 +62,11 @@ instance : Algebra.IsCentral ℝ ℍ[ℝ] := ⟨fun q hq ↦ by
     imI_mul, zero_add, add_zero, imJ_mul, sub_self, imK_mul, AlgHom.toRingHom_eq_coe,
     RingHom.coe_coe] at *
   simp only [neg_eq_self, self_eq_neg, Algebra.ofId_apply, algebraMap_def] at *
-  change (⟨q.1, 0, 0, 0⟩ : ℍ[ℝ]) = ⟨q.1, q.2,q.3,q.4⟩
+  change (⟨q.re, 0, 0, 0⟩ : ℍ[ℝ]) = ⟨q.re, q.imI, q.imJ, q.imK⟩
   ext <;> simp_all⟩
 
-instance : IsSimpleRing (ℍ[ℝ] ⊗[ℝ] ℍ[ℝ]) := inferInstance
-
 lemma toEnd_bij : Function.Bijective toEnd :=
-  AlgHom.bijective_of_finrank_eq (F := ℝ) (A := ℍ[ℝ] ⊗[ℝ] ℍ[ℝ])
-      (B := Module.End ℝ ℍ[ℝ]) toEnd <| by
+  toEnd.bijective_of_finrank_eq <| by
     rw [show Module.finrank ℝ (Module.End ℝ _) =
       Module.finrank ℝ (Matrix (Fin <| Module.finrank ℝ ℍ[ℝ]) (Fin <| Module.finrank ℝ ℍ[ℝ]) ℝ)
       from (algEquivMatrix <| Module.finBasis _ _).toLinearEquiv.finrank_eq]
@@ -87,13 +82,13 @@ lemma QuaternionTensorEquivOne : IsBrauerEquivalent (K := ℝ) ⟨.of ℝ (ℍ[�
 lemma QuaternionNotEquivR : ¬ IsBrauerEquivalent (K := ℝ) ⟨.of ℝ ℍ[ℝ]⟩ ⟨.of ℝ ℝ⟩ := by
   intro h
   obtain ⟨n, m, hn, hm, ⟨e⟩⟩ := h
-  letI : NeZero n := ⟨hn⟩
-  letI : NeZero m := ⟨hm⟩
-  obtain ⟨e'⟩ := IsSimpleRing.wedderburn_artin_divisionring_unique ℝ
+  have : NeZero n := ⟨hn⟩
+  have : NeZero m := ⟨hm⟩
+  obtain ⟨e'⟩ := IsSimpleRing.wedderburn_artin_divisionRing_unique ℝ
     (Matrix (Fin n) (Fin n) ℍ[ℝ]) AlgEquiv.refl e
   have eq2 := e'.toLinearEquiv.finrank_eq
   simp only [Module.finrank_self] at eq2
-  haveI := eq2.symm.trans <| Quaternion.finrank_eq_four (R := ℝ)
+  have := eq2.symm.trans <| Quaternion.finrank_eq_four (R := ℝ)
   norm_num at this
 
 lemma BrauerOverR (A : CSA.{0, 0} ℝ) :
@@ -102,16 +97,16 @@ lemma BrauerOverR (A : CSA.{0, 0} ℝ) :
   else
   right
   obtain ⟨n, hn, D, _, _, ⟨e⟩⟩ := Wedderburn_Artin_algebra_version.{0, 0} ℝ A
-  letI := A.4
-  letI : FiniteDimensional ℝ D := is_fin_dim_of_wdb ℝ A hn D e
+  have := A.fin_dim
+  have : FiniteDimensional ℝ D := is_fin_dim_of_wdb ℝ A hn D e
   obtain ⟨⟨e'⟩⟩ | hD2 | hD3 := FrobeniusTheorem D
   · have := is_central_of_wdb ℝ A n D hn e|>.center_eq_bot
     have e2 : Subalgebra.center ℝ D ≠ ⊥ := by
       refine ne_of_gt ?_
-      letI : Algebra ℂ D := RingHom.toAlgebra' e'.symm fun z d ↦ by
+      let : Algebra ℂ D := RingHom.toAlgebra' e'.symm fun z d ↦ by
         simp only [RingHom.coe_coe]
         rw [← e'.symm_apply_apply d, ← map_mul, mul_comm, map_mul]
-      letI : IsScalarTower ℝ ℂ D := {
+      have : IsScalarTower ℝ ℂ D := {
         smul_assoc := fun r z d ↦ by
           change e'.symm _  * _ = _ • (e'.symm z * d)
           rw [map_smul, Algebra.smul_mul_assoc]
@@ -124,8 +119,8 @@ lemma BrauerOverR (A : CSA.{0, 0} ℝ) :
           rw [← e'.symm_apply_apply d, ← e'.symm_apply_apply d']
           conv_lhs => rw [← _root_.map_mul e'.symm, mul_comm, map_mul]
       rw [this]
-      exact SetLike.lt_iff_le_and_exists.2 ⟨fun _ _ ↦ ⟨⟩, ⟨e'.symm Complex.I, ⟨⟨⟩, by
-        by_contra! mem
+      exact lt_iff_le_and_exists_mem_notMem.2 ⟨fun _ _ ↦ ⟨⟩, ⟨e'.symm Complex.I, ⟨⟨⟩, by
+        by_contra mem
         change ∃(_ : _), _ = _ at mem
         obtain ⟨r, eq⟩ := mem
         simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe] at eq
@@ -154,8 +149,8 @@ abbrev toC2 : Additive (BrauerGroup ℝ) →+ ZMod 2 where
       else
         simp [h]
         have : ¬ IsBrauerEquivalent B (BrauerGroup.one_in') := by
-          by_contra!
-          haveI := hAB.trans this
+          by_contra
+          have := hAB.trans this
           tauto
         simpa using this
   map_zero' := by
@@ -188,8 +183,8 @@ abbrev toC2 : Additive (BrauerGroup ℝ) →+ ZMod 2 where
           <| (kroneckerMatrixTensor' ℝ B m 1).trans <| AlgEquiv.mapMatrix (
             Algebra.TensorProduct.lid _ _) : Matrix _ _ (A ⊗[ℝ] B) ≃ₐ[ℝ] Matrix _ _ B)⟩⟩
       -- rw [this]
-      by_contra! hBB
-      haveI := this.symm.trans hBB
+      by_contra hBB
+      have := this.symm.trans hBB
       tauto
     else
     if hB : IsBrauerEquivalent B one_in' then
@@ -200,8 +195,8 @@ abbrev toC2 : Additive (BrauerGroup ℝ) →+ ZMod 2 where
         (Algebra.TensorProduct.congr AlgEquiv.refl e).trans <|
         (kroneckerMatrixTensor' A ℝ 1 m).trans <| AlgEquiv.mapMatrix <|
         Algebra.TensorProduct.rid _ _ _⟩⟩
-    by_contra! hAA
-    haveI := this.symm.trans hAA
+    by_contra hAA
+    have := this.symm.trans hAA
     tauto
     else
     simp only [hA, ↓reduceIte, hB]

@@ -5,8 +5,8 @@ Authors: Yunzhou Xie, Jujian Zhang, Kevin Buzzard
 -/
 module
 
-public import BrauerGroup.Algebra.Central.TensorProduct
-public import BrauerGroup.RingTheory.SimpleRing.TensorProduct
+public import BrauerGroup.Mathlib.Algebra.Central.TensorProduct
+public import BrauerGroup.Mathlib.RingTheory.SimpleRing.TensorProduct
 public import BrauerGroup.Wedderburn
 public import Mathlib.Algebra.Central.Basic
 public import Mathlib.Algebra.Central.Matrix
@@ -102,7 +102,7 @@ noncomputable def centerTensor
     Subalgebra.center K B ⊗[K] Subalgebra.center K C ≃ₗ[K]
     Subalgebra.center K (B ⊗[K] C) :=
     LinearEquiv.ofInjective (centerTensorCenter K B C) (centerTensorCenter_injective K B C) ≪≫ₗ
-    (show _ ≃ₗ[K] Subalgebra.toSubmodule (Subalgebra.center K (B ⊗[K] C)) from LinearEquiv.ofLinear
+    (show _ ≃ₗ[K] Subalgebra.toSubmodule (Subalgebra.center K (B ⊗[K] C)) from .ofLinearMap
       (Submodule.inclusion (by
         rw [center_tensor_center]
         intro x hx
@@ -135,7 +135,7 @@ theorem CSA_implies_CSA (K : Type*) (B : Type v) [Field K] [Ring B] [Algebra K B
     (Wdb : B ≃ₐ[K] (Matrix (Fin n) (Fin n) D)) [Algebra.IsCentral K B] [IsSimpleRing B] :
     Algebra.IsCentral K D := by
   refine ⟨fun d hd => ?_⟩
-  obtain ⟨k, hk⟩ := (Algebra.IsCentral.of_algEquiv K B (Matrix (Fin n) (Fin n) D) Wdb).1
+  obtain ⟨k, hk⟩ := (Algebra.IsCentral.of_algEquiv K B (Matrix (Fin n) (Fin n) D) Wdb).out
     (show (Matrix.diagonal fun _ ↦ d) ∈ _ by
       rw [Matrix.mem_center_iff']
       refine ⟨⟨d, hd⟩, ?_⟩
