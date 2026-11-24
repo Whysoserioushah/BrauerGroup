@@ -1,6 +1,7 @@
 module
 
 public import Mathlib.RingTheory.SimpleRing.Basic
+public import Mathlib.RingTheory.TwoSidedIdeal.Kernel
 
 @[expose] public section
 
