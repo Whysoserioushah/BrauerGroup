@@ -1,7 +1,6 @@
 module
 
 public import BrauerGroup.Mathlib.Algebra.CrossProduct.Basic
-public import BrauerGroup.Mathlib.LinearAlgebra.LinearIndependent.Defs
 public import BrauerGroup.Mathlib.RingTheory.Congruence.Basic
 public import BrauerGroup.Mathlib.RingTheory.TwoSidedIdeal.Lattice
 public import Mathlib.Algebra.BrauerGroup.Defs

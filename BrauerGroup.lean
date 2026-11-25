@@ -45,7 +45,6 @@ public import BrauerGroup.Mathlib.Algebra.Split.Finrank
 public import BrauerGroup.Mathlib.CategoryTheory.Endomorphism
 public import BrauerGroup.Mathlib.Data.Matrix.Composition
 public import BrauerGroup.Mathlib.GroupTheory.CyclicIndex
-public import BrauerGroup.Mathlib.LinearAlgebra.LinearIndependent.Defs
 public import BrauerGroup.Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
 public import BrauerGroup.Mathlib.LinearAlgebra.Matrix.Module
 public import BrauerGroup.Mathlib.LinearAlgebra.Matrix.ToLin
